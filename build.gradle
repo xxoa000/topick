@@ -1,0 +1,83 @@
+/* 프로젝트에 사용할 기능(플러그인)을 추가하는 영역 */
+plugins {
+	id 'java'
+	/* Java프로젝트: java컴파일, test실행, jar생성, src/main/java 구조사용 */
+	
+	id 'org.springframework.boot' version '3.5.14'
+	/* Spring Boot: 내장톰캣실행, bootRun, 실행가능한 jar생성, SpringBoot 의존성 자동처리 */
+	
+	id 'io.spring.dependency-management' version '1.1.7'
+	/* 라이브러리 버전 관리를 쉽게 해주는 플러그인 */
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT' //SNAPSHOT: 아직 개발중인 버전
+description = 'kdt_오늘의 식당 팀프로젝트'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+		/* 사용할 Java 버전 지정 
+	  	 * - toolchain 장점
+		 *   개발PC Java버전 달라도 자동으로 맞는 JDK 사용가능 (팀개발 안정성 증가) */
+	}
+}
+
+repositories { 		//라이브러리 다운로드 저장소
+	mavenCentral()  //가장 대표적인 Java 라이브러리 저장소
+}
+
+/* dependencies 요약
+ *	.implementation: 컴파일+실행 모두 필요한 라이브러리
+ *	.runtimeOnly: 실행할 때만 필요한 라이브러리 
+ *	.(...) 생략가능 -> implementation("javax.xml.bind:jaxb-api:2.3.1")
+ *	. 버젼생략  
+ *	 -> 가능한경우
+ *		SpringBoot가 내부적으로 BOM(Bill Of Materials, 검증한 라이브러리 버전목록)을 사용, 자동관리함
+ *	 -> 불가능한 경우
+ *		위 BOM에 없는 경우 오류발생
+ *		주로 오래된 또는 외부 라이브러리 인 경우는 버젼을 명시하는것이 안전. */
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testCompileOnly 'org.projectlombok:lombok'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	
+	/* for JWT */  
+	implementation("io.jsonwebtoken:jjwt-api:0.12.3")
+	implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
+	implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
+	
+	/*  GSON: json 객체 <-> java 객체를 자동변환 해주는 대표 라이브러리 */
+	implementation("com.google.code.gson:gson:2.13.2")
+}
+
+
+
+/* 다양한 task 설정
+ * -> Test task로 JUnit5 사용 설정 */
+tasks.named('test') {
+
+	useJUnitPlatform()
+}
+
+
+/* 리소스파일 복사과정 중 중복파일 처리방법 지정
+ *	( 주로 빌드과정에서 발생함)
+ *	.EXCLUDE : 제외(무시)하고 하나만 포함_많이 사용
+ *	.INCLUDE : 중복 허용
+ *	.FAIL : 중복발생시 빌드실패
+ *	.WARN : 경고만 출력 */
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
