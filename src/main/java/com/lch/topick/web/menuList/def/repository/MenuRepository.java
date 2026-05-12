@@ -10,7 +10,5 @@ public interface MenuRepository extends JpaRepository<Menu,Long> {
 	
 	public List<Menu> findByMenuNo(Long menuNo);
 	
-	public List<Menu> findAll();
-	
 	
 }//interface
