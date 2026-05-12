@@ -12,13 +12,13 @@ import com.lch.topick.web.client.def.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(value="/api/client")
+@RequestMapping("/api/client")
 @RequiredArgsConstructor
 public class ClientController {
 	
 	private final ClientRepository clientRepository;
 	
-	@GetMapping
+	@GetMapping("/clientList")
 	public List<Client> clientList() {
 		
 		return clientRepository.findAll();
