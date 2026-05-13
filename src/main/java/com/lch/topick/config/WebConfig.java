@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+//이클립스 깃연동 테스
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 	
