@@ -1,20 +1,12 @@
 HELP.md
-/.gradle/
-/build/
-!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 *.class
 
 ### STS ###
 .apt_generated
-.classpath
 .factorypath
-.project
-.settings
 .springBeans
-.sts4-cache
-/bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
@@ -36,3 +28,40 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+
+# --- OS 별 임시 파일 (Mac/Windows 충돌 방지) ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# --- Gradle 관련 (핵심) ---
+.gradle/
+build/
+bin/
+!gradle/wrapper/gradle-wrapper.jar
+
+# --- Eclipse 관련 (팀원 간 경로 충돌 방지) ---
+# 프로젝트의 뼈대인 소스 코드만 공유하고, 설정은 각자 빌드 시 생성하게 합니다.
+.metadata/
+.classpath
+.project
+.settings/
+.recommenders/
+.factorypath
+.springBeans
+.sts4-cache
+.loadpath
+*.pydevproject
+
+# --- 기타 빌드/IDE 임시 파일 ---
+out/
+tmp/
+*.log
+*.tmp
+local.properties
