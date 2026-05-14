@@ -13,8 +13,11 @@ public interface ClientService {
 	/* SELECT 고객 상세 */
 	public Client selectOne(String clientId);
 	
-	/* join || 내 정보 수정 */
-	public Client save(String clientId, ClientRequestDTO requestDto);
+	/* INSERT 새 계정 생성 */
+	public Client insert(ClientRequestDTO dto);
+
+	/* UPDATE 기존 계정 수정 */
+	public Client update(String clientId, ClientRequestDTO dto);
 	
 	/* resign 회원탈퇴 */
 	public void delete(String clientId);
