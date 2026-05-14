@@ -10,12 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="client")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Client {
@@ -46,7 +48,7 @@ public class Client {
 	@Column(name="client_create_at", nullable=false)
 	private LocalDateTime clientCreateAt;
 	
-	@Column(name="client_update_at")
+	@Column(name="client_update_at", updatable = false)
 	private LocalDateTime clientUpdateAt;
 	
 	@Column(name="client_last_login_at")
