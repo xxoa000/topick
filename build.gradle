@@ -1,13 +1,13 @@
-/* 프로젝트에 사용할 기능(플러그인)을 추가하는 영역 */
+// 프로젝트에 사용할 기능(플러그인)을 추가하는 영역
 plugins {
 	id 'java'
-	/* Java프로젝트: java컴파일, test실행, jar생성, src/main/java 구조사용 */
+	// Java프로젝트: java컴파일, test실행, jar생성, src/main/java 구조사용
 	
 	id 'org.springframework.boot' version '3.5.14'
-	/* Spring Boot: 내장톰캣실행, bootRun, 실행가능한 jar생성, SpringBoot 의존성 자동처리 */
+	// Spring Boot: 내장톰캣실행, bootRun, 실행가능한 jar생성, SpringBoot 의존성 자동처리
 	
 	id 'io.spring.dependency-management' version '1.1.7'
-	/* 라이브러리 버전 관리를 쉽게 해주는 플러그인 */
+	// 라이브러리 버전 관리를 쉽게 해주는 플러그인
 }
 
 group = 'com.example'
@@ -53,12 +53,12 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	
-	/* for JWT */  
+	// for JWT  
 	implementation("io.jsonwebtoken:jjwt-api:0.12.3")
 	implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
 	
-	/*  GSON: json 객체 <-> java 객체를 자동변환 해주는 대표 라이브러리 */
+	// GSON: json 객체 <-> java 객체를 자동변환 해주는 대표 라이브러리
 	implementation("com.google.code.gson:gson:2.13.2")
 }
 
