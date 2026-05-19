@@ -89,7 +89,7 @@ public class MemberServiceImpl implements MemberService {
 			throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);	
 		}
 		// 1.3 비밀번호 동일 체크
-		if ( !pwEncoder.matches(requestDto.getMemberPw(),entity.getMemberPw()) ) {
+		if ( !pwEncoder.matches(requestDto.getMemberPw(), entity.getMemberPw()) ) {
 			throw new CustomException(ErrorCode.LOGIN_FAILED);	
 		} 
 		
@@ -108,18 +108,21 @@ public class MemberServiceImpl implements MemberService {
 	
 	
 	
-	// Update 더미 데이터 계정에 전체 권한 부여
+	// Update 더미 데이터 계정에 전체 권한 부여 & 비밀번호 암호화 
 	@Override
 	public int addDefaultRole() {
 		List<Member> entityList = repository.findAll();
 		int count = 0 ;
 		
 		for ( Member entity : entityList ) {
-			entity.addDefaultRole();
-			count++;
-		}
+			entity.addDefaultRole();										 	 // 기본 권한 부여
+			String pw = entity.getMemberPw();
+			if (!isEncode(pw)) { entity.changePw(pwEncoder.encode(pw)); }  		 // 비밀번호 인코딩
+			count++; 
+		}		
 		return count;
 	}
+	private boolean isEncode(String pw) { return pw != null && pw.matches("^\\$2[aby]\\$\\d{2}\\$.{53}$"); }
 	
 	
 	// UPDATE 기존 계정 권한 수정

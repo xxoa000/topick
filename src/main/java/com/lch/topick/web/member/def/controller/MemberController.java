@@ -64,10 +64,10 @@ public class MemberController {
 	
 	// 회원가입
 	@PostMapping("/join")
-	public ResponseEntity<?> join(@RequestBody MemberJoinRequestDTO dto) {
+	public ResponseEntity<?> join(@RequestBody MemberJoinRequestDTO requestDto) {
 		
 		return ResponseEntity.status(HttpStatus.CREATED)
-							 .body(memberService.insert(dto)); //성공시 코드 201
+							 .body(memberService.insert(requestDto)); //성공시 코드 201
 	}// join
 	
 	
@@ -90,11 +90,14 @@ public class MemberController {
 	
 	
 	
-	// 더미 데이터 전체에 기본 권한 부여
+	// 더미 데이터 전체에 비밀번호 암호화 & 기본 권한 부여
 	@PatchMapping
 	public ResponseEntity<Integer> addDefaultRole() {
 		return ResponseEntity.ok(memberService.addDefaultRole());
 	}
+	
+	
+	
 	
 	// 계정 권한 수정
 	@PatchMapping("/updateRole")

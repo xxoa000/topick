@@ -98,8 +98,9 @@ public class Member {
 	private List<MemberRole> roleList = new ArrayList<>();
 
 	
-	// 1.1 기본 권한(MEMBER) 부여
+	// 1.1 더미 데이터에 기본 권한(MEMBER) 부여
 	public void addDefaultRole() { addRole(MemberRole.MEMBER); }
+
 	
 	// 1.2 권한 추가
 	public void addRole(MemberRole memberRole) {

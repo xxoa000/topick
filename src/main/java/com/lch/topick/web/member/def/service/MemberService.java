@@ -22,10 +22,10 @@ public interface MemberService {
 	public Boolean exist(String memberId);
 	
 	// INSERT 회원가입
-	public Member insert(MemberJoinRequestDTO dto);
+	public Member insert(MemberJoinRequestDTO requestDto);
 	
 	// SELECT 로그인
-	public MemberLoginResponseDTO login(MemberLoginRequestDTO dto);
+	public MemberLoginResponseDTO login(MemberLoginRequestDTO requestDto);
 	
 	// INSERT,UPDATE 더미 데이터 전체에 기본 권한 부여 
 	public int addDefaultRole();
