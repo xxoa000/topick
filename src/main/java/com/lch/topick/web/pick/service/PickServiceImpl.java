@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor // 생성자를 통해 리포지토리를 자동으로 주입받음
 public class PickServiceImpl implements PickService {
@@ -37,11 +40,25 @@ public class PickServiceImpl implements PickService {
         //사용자 취향과 일치하는 항목을 가진 food에 점수 부여(+1)
         for (PickEntity food : filteredFoods) {
             int score = 0;
+
             if (food.getFoodTemp().equals(request.getFoodTemp())) score++;
+
             if (food.getFoodIsSoup().equals(request.getFoodIsSoup())) score++;
-            if (food.getFoodMainIngredient().contains(food.getFoodMainIngredient())) score++;
-            if (food.getFoodFlavor().contains(food.getFoodFlavor())) score++;
+
+            if (request.getFoodMainIngredient() != null &&
+                request.getFoodMainIngredient().contains(food.getFoodMainIngredient())) {
+                score++;
+            }
+
+            if (request.getFoodFlavor() != null &&
+                request.getFoodFlavor().contains(food.getFoodFlavor())) {
+                score++;
+            }
+
             if (food.getFoodFullness().equals(request.getFoodFullness())) score++;
+
+            // 로그 출력
+            log.info("음식: {}, 점수: {}", food.getFoodName(), score);
 
             scoredList.add(new ScoredFood(food, score));
         }
