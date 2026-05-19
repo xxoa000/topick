@@ -18,4 +18,6 @@ public class MyLocationSetDTO {
 	private String addressLot;		//지번, API: jibunAddress
 	private String addressDetail;	//상세, API: x
 	private String addressName;		//별칭, API: buildingName
+	private String addressX; 		//경도, API: longitude, 	
+	private String addressY; 		//위도, API: latitude, 
 }

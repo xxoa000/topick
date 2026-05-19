@@ -36,5 +36,11 @@ public class MyLocationSet {
 	@Column(length=50, nullable=false)
 	private String addressName;		//별칭, API: buildingName
 	
+	@Column(length=30, nullable=true)
+	private String addressX; //경도, API: longitude,
+
+	@Column(length=30, nullable=true)
+	private String addressY; //위도, API: latitude, 
+	
 	
 }
