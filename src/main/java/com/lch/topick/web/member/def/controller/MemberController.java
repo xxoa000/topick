@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lch.topick.web.member.def.domain.MemberJoinRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginRequestDTO;
+import com.lch.topick.web.member.def.domain.MemberRoleUpdateRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
 import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.service.MemberService;
@@ -51,10 +52,10 @@ public class MemberController {
 	
 	
 	// 회원가입 - Id 중복 확인
-	@GetMapping("/idCheck/{newId}")
-	public ResponseEntity<String> idCheck(@PathVariable("newId") String newId) {
+	@GetMapping("/idCheck/{memberId}")
+	public ResponseEntity<String> idCheck(@PathVariable("memberId") String memberId) {
 		
-		boolean exist = memberService.exist(newId);
+		boolean exist = memberService.exist(memberId);
 		if (!exist) return ResponseEntity.ok("사용 가능한 ID 입니다.");
 		return ResponseEntity.ok("이미 존재하는 ID 입니다.");
 		
@@ -85,6 +86,22 @@ public class MemberController {
 		return ResponseEntity.ok("로그아웃 되었습니다.");
 	}//logout
 
+	
+	
+	
+	
+	// 더미 데이터 전체에 기본 권한 부여
+	@PatchMapping
+	public ResponseEntity<Integer> addDefaultRole() {
+		return ResponseEntity.ok(memberService.addDefaultRole());
+	}
+	
+	// 계정 권한 수정
+	@PatchMapping("/updateRole")
+	public ResponseEntity<?> updateRole(@RequestBody MemberRoleUpdateRequestDTO requestDto) {
+		return ResponseEntity.status(HttpStatus.OK)
+							 .body(memberService.updateRole(requestDto));
+	}//updateRole
 	
 	
 	// 기존 계정 수정

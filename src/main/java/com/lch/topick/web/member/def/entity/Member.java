@@ -70,6 +70,7 @@ public class Member {
 	@Column(name = "member_update_at")
 	private LocalDateTime memberUpdateAt;
 
+	@LastModifiedDate
 	@Column(name = "member_last_login_at")
 	private LocalDateTime memberLastLoginAt;
 
@@ -94,13 +95,27 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	@Builder.Default
 	@Column(name = "member_role")
-	private List<MemberRole> roleList = new ArrayList<>(List.of(MemberRole.MEMBER));
+	private List<MemberRole> roleList = new ArrayList<>();
+
 	
-	// 1.1 새 권한 추가
-	public void addRole(MemberRole memberRole) { roleList.add(memberRole); }
+	// 1.1 기본 권한(MEMBER) 부여
+	public void addDefaultRole() { addRole(MemberRole.MEMBER); }
 	
-	// 1.2 권한 초기화
-	public void clearRole() { roleList.clear(); }
+	// 1.2 권한 추가
+	public void addRole(MemberRole memberRole) {
+		if (!roleList.contains(memberRole)) roleList.add(memberRole);
+	} //addRole
+	
+	
+	// 1.3 권한 수정
+	public void updateRole(List<MemberRole> memberRoleList) {
+		roleList.clear(); 									// 기존 권한 초기화
+		
+		for (MemberRole memberRole : memberRoleList) {
+			if (!roleList.contains(memberRole)) 					// 중복 권한 방지
+				roleList.add(memberRole);							// 중복 없으면 권한 추가
+		}		
+	} //updateRole
 	
 	
 
@@ -110,6 +125,11 @@ public class Member {
 		dataMap.put("memberId", this.memberId);
 		dataMap.put("roleList", this.roleList);
 		return dataMap;
+	} //claimList
+	
+	// 2.1 로그인 성공 후 last_login_at 기록
+	public void updateLastLoginAt() {
+	    this.memberLastLoginAt = LocalDateTime.now();
 	}
 	
 	
@@ -122,7 +142,7 @@ public class Member {
 		this.memberPhone = phone;
 		this.memberGender = gender;
 		this.memberBirthday = birthday;
-	}
+	} //putInfo
 
 	// 3.2 내 정보 - 일부만 수정. 수정된 값이 있는 경우만 수정되고, 그외 컬럼은 기존 값 동일
 	public void patchInfo(String name, String email, String phone, String gender, LocalDate birthday) {
