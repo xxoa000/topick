@@ -13,10 +13,10 @@ public interface MenuService {
 	public List<Menu> selectOne(Long menuNo);
 
 	/* 식당 상세 > 메뉴 추가, 수정 */
-	Long save (Menu entity);
+	public Long save (Menu entity);
 	
 	/* 메뉴 리스트 > 메뉴 삭제 */
-	void delete(Long menuNo) throws Exception;
+	public void delete(Long menuNo) throws Exception;
 	
 	
 }//interface
