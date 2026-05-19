@@ -1,6 +1,7 @@
 package com.lch.topick.web.myLocationSet.controller;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,8 @@ public class MyLocationSetController {
             //=> 추후, 조건에 따라 Role 추가하면됨
             //entity.addRole(MemberRole.USER); 
             //=> save
+
+        	Map<String, String> coordinate = myLocationSetService.findCoordinateByAddress(dto.getAddressRoad());
         	
         	MyLocationSet entity = MyLocationSet.builder()
             .memberId(dto.getMemberId())
@@ -43,7 +46,10 @@ public class MyLocationSetController {
             .addressLot(dto.getAddressLot())
             .addressDetail(dto.getAddressDetail())
             .addressName(dto.getAddressName())
+            .addressX(coordinate.get("longitude"))
+            .addressY(coordinate.get("latitude"))
             .build();
+        	
             log.info(" MyLocationSet Insert 성공 => "+ myLocationSetService.save(entity));
             return ResponseEntity.ok("등록 성공");
         } catch (Exception e) {

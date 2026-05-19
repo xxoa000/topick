@@ -1,6 +1,7 @@
 package com.lch.topick.web.myLocationSet.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.lch.topick.web.myLocationSet.entity.MyLocationSet;
 
@@ -16,4 +17,7 @@ public interface MyLocationSetService {
 
 	//** delete
 	void deleteById(int id) throws Exception;
+	
+	//select: 경도, 위도 
+	Map<String, String> findCoordinateByAddress(String addressRoad);
 }
