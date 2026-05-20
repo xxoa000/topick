@@ -92,8 +92,6 @@ public class TokenProvider {
 	        throw new CustomException(ErrorCode.JWT_ERROR);
 	    } //try
 		
-		
-		
 	} //validateToken
 	
 
