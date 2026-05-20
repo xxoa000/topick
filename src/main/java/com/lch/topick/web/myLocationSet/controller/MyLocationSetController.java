@@ -29,7 +29,6 @@ public class MyLocationSetController {
 	@PostMapping("/join")
     public ResponseEntity<?> join(HttpServletRequest request, @RequestBody MyLocationSetDTO dto) 
                                             throws IOException {
-        // 3) Service 처리
         try {
             //  USER Role 추가후
             //=> save 전에 USER Role 추가
@@ -57,4 +56,7 @@ public class MyLocationSetController {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("등록실패: "+e.toString());
         }
     } //join
+	
+	
+	
 }
