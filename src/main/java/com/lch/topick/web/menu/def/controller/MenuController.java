@@ -22,13 +22,13 @@ import lombok.extern.log4j.Log4j2;
 public class MenuController {
 
 	private final MenuService menuService;
-	//cummit test
+	
 	/* (SELECT) 식당 상세 > 메뉴 리스트 */
 	@GetMapping("/store/{storeNo}/menu")
 	public ResponseEntity<?> menuList(@PathVariable("storeNo") Long storeNo) {
 		List<Menu> list = menuService.selectList(storeNo);
 
-		if (!list.isEmpty() && list.size() > 0) {
+		if (list!=null && list.size() > 0) {
 			return ResponseEntity.status(HttpStatus.OK).body(list);
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("메뉴가 없습니다.");
@@ -40,7 +40,7 @@ public class MenuController {
 	public ResponseEntity<?> menuDetail(@PathVariable Long MenuNo) {
 		List<Menu> list = menuService.selectOne(MenuNo);
 		
-		if (!list.isEmpty() && list.size() > 0) {
+		if (list!=null && list.size() > 0) {
 			return ResponseEntity.status(HttpStatus.OK).body(list);
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("메뉴가 없습니다.");
