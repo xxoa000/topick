@@ -70,7 +70,6 @@ public class Member {
 	@Column(name = "member_update_at")
 	private LocalDateTime memberUpdateAt;
 
-	@LastModifiedDate
 	@Column(name = "member_last_login_at")
 	private LocalDateTime memberLastLoginAt;
 
