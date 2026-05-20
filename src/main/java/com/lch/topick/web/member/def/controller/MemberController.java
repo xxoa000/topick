@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lch.topick.exception.CustomException;
 import com.lch.topick.web.member.def.domain.MemberJoinRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberRoleUpdateRequestDTO;
@@ -67,7 +68,7 @@ public class MemberController {
 	public ResponseEntity<?> join(@RequestBody MemberJoinRequestDTO requestDto) {
 		
 		return ResponseEntity.status(HttpStatus.CREATED)
-							 .body(memberService.insert(requestDto)); //성공시 코드 201
+							 .body("회원가입 성공했습니다. 로그인 후 사용해주세요."); //성공시 코드 201
 	}// join
 	
 	
