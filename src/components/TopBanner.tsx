@@ -1,3 +1,12 @@
 export default function TopBanner(){
-  return <></>
+  return (
+    <>
+      <table border={1}>
+
+        <div>TopBanner</div>
+      </table>
+    </>
+
+
+  )
 }

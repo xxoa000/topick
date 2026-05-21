@@ -1,3 +1,11 @@
 export default function Footer(){
-  return <></>
+  return (
+    <>
+      <table border={1}>
+
+        <div>Footer</div>
+      </table>
+    </>
+
+  ) 
 }
