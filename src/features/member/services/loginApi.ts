@@ -5,15 +5,15 @@ const BASE_URL = "http://localhost:8080/api";
 
 export const getLoginResDto = async ():Promise<LoginResponseDTO[]> => {
 
-	const LoginData {
-		loginIdValue,
-		loginPwValue;
-	}
+	// const LoginData {
+	// 	loginIdValue,
+	// 	loginPwValue;
+	// }
 
 	try {
 		const response = await axios.post<LoginResponseDTO[]>(
 			BASE_URL+"/member/login",
-			LoginData,
+			// LoginData,
 			
 		);
 		return response.data;
