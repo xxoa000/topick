@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.lch.topick.exception.CustomException;
 import com.lch.topick.exception.ErrorCode;
-import com.lch.topick.web.filter.entity.Store;
 import com.lch.topick.web.menu.def.entity.Menu;
 import com.lch.topick.web.menu.def.repository.MenuRepository;
 import com.lch.topick.web.order.def.domain.OrderCreateRequestDTO;
@@ -15,7 +14,8 @@ import com.lch.topick.web.order.def.entity.OrderDetail;
 import com.lch.topick.web.order.def.entity.OrderList;
 import com.lch.topick.web.order.def.repository.OrderDetailRepository;
 import com.lch.topick.web.order.def.repository.OrderListRepository;
-import com.lch.topick.web.store.let.repository.StoreLetRepository;
+import com.lch.topick.web.store.let.entity.Store;
+import com.lch.topick.web.store.let.repository.StoreRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
 	
 	private final OrderListRepository listRepository;
 	private final OrderDetailRepository detRepository;
-	private final StoreLetRepository storeRepository;
+	private final StoreRepository storeRepository;
 	private final MenuRepository menuRepository;
 	
 	// C - Create
