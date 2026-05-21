@@ -1,3 +1,7 @@
 export default function TopBanner(){
-  return <></>
+  return (
+    <div className="top-banner">
+      TopBanner
+      </div>
+  );
 }
