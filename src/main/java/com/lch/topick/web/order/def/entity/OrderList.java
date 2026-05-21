@@ -73,5 +73,13 @@ public class OrderList {
 	// 주문시 요청사항
 	@Column(name = "order_list_request", length = 255)
 	private String orderListRequest;
+	
+	
+	// 총 금액 계산
+	// 추후 finalPrice 할인금액 계산 메서드 추가
+	public void changePrice(Integer totalPrice) {
+		this.orderListTotalPrice = totalPrice;
+		this.orderListFanalPrice = totalPrice;
+	}
 
 }// class
