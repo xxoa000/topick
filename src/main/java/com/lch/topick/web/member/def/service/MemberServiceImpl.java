@@ -98,7 +98,7 @@ public class MemberServiceImpl implements MemberService {
 		final String token = tokenProvider.createToken(entity.claimList());
 		entity.updateLastLoginAt();
 		
-		// 3. 클라이언트로 필요한 데이터만 보내기 위해 응답용 DTO return
+		// 3. 클라이언트로 필요한 데이터만 보내기 위해, 응답용 DTO return
 		return new MemberLoginResponseDTO(
 				token,
 				entity.getMemberId(),
