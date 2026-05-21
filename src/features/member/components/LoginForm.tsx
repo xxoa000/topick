@@ -1,16 +1,25 @@
 import { useState } from "react";
+import { loginApi } from "../services/loginApi";
+import { useNavigate } from "react-router-dom";
 
 
 export default function LoginForm() {
 
+	const navigate = useNavigate();
+
 	const [memberId, setMemberId] = useState("");
 	const [memberPw, setMemberPw] = useState("");
-	const handleSubmit = (e: React.SyntheticEvent) => {
+	const handleSubmit = async (e: React.SyntheticEvent) => {
 		e.preventDefault();
 
-		// input value 확인용
-		console.log("아이디:", memberId);
-		console.log("비밀번호:", memberPw);
+		try {
+			const data = await loginApi(memberId, memberPw);
+			console.log(data);
+			sessionStorage.setItem("memberIsLogin", JSON.stringify(data));
+			navigate("/");
+		} catch(err) {
+			console.error(err);
+		}
 	}
 
 
