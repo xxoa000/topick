@@ -1,22 +1,16 @@
 import { Route, Routes } from "react-router-dom";
 
 import MyLocationSet from '../features/myLocationSet/pages/MyLocationSet'
+import Login from "../features/member/pages/Login";
 
 export default function Section(){
   return (
-    <>
-      <table border={1}>
-
-        <div>section</div>
-        <Routes>
-          <Route path="/myLocationSet/*" element={<MyLocationSet />} />
-          <Route path="/login/*" />
-          <Route path="/" />
-
-        </Routes>
-
-      </table>
-    </>
-
-  )
+    <section>section
+      <Routes>
+        <Route path="/myLocationSet/*" element={<MyLocationSet />} />
+        <Route path="/login/*" element={<Login />}/>
+        <Route path="/" />
+      </Routes>
+    </section>
+  );
 }

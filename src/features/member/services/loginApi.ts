@@ -1,20 +1,17 @@
 import axios from "axios";
-import type {LoginResponseDTO} from "../types/loginResponseDTO";
+//import type {LoginRequestDTO, LoginResponseDTO} from "../types/loginResponseDTO";
 
 const BASE_URL = "http://localhost:8080/api";
 
-export const getLoginResDto = async ():Promise<LoginResponseDTO[]> => {
-
-	// const LoginData {
-	// 	loginIdValue,
-	// 	loginPwValue;
-	// }
+export const getLoginResDto = async (memberId: string, memberPw: string) => {
 
 	try {
-		const response = await axios.post<LoginResponseDTO[]>(
+		const response = await axios.post(
 			BASE_URL+"/member/login",
-			// LoginData,
-			
+			{
+				memberId,
+				memberPw
+			}
 		);
 		return response.data;
 
