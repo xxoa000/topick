@@ -36,8 +36,6 @@ public class MyLocationSetController {
             //entity.addRole(MemberRole.USER); 
             //=> save
 
-        	Map<String, String> coordinate = myLocationSetService.findCoordinateByAddress(dto.getAddressRoad());
-        	
         	MyLocationSet entity = MyLocationSet.builder()
             .memberId(dto.getMemberId())
             .addressPostcode(dto.getAddressPostcode())
@@ -45,8 +43,8 @@ public class MyLocationSetController {
             .addressLot(dto.getAddressLot())
             .addressDetail(dto.getAddressDetail())
             .addressName(dto.getAddressName())
-            .addressX(coordinate.get("longitude"))
-            .addressY(coordinate.get("latitude"))
+            .addressX(dto.getAddressX())
+            .addressY(dto.getAddressY())
             .build();
         	
             log.info(" MyLocationSet Insert 성공 => "+ myLocationSetService.save(entity));
