@@ -7,4 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class OrderListResponseDTO {
 
+	private Long orderListNo;
+	
 } //class
