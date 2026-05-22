@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import MyLocationSet from '../features/myLocationSet/pages/MyLocationSet'
-import Login from "../features/member/pages/Login";
+import Login from "../features/member/pages/LoginPage";
 import Home from "./Home";
 
 export default function Section(){
