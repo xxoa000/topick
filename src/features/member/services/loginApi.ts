@@ -3,7 +3,7 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:8080/api";
 
-export const getLoginResDto = async (memberId: string, memberPw: string) => {
+export const loginApi = async (memberId: string, memberPw: string) => {
 
 	try {
 		const response = await axios.post(
