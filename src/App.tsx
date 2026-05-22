@@ -1,5 +1,5 @@
 // src/App.tsx
-import './App.css';
+import './App.scss';
 import TopBanner from './components/TopBanner'
 import Header from './components/Header'
 import Section from './components/Section'
