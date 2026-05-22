@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ENV } from './env';
-import { SESSION_KEYS, API_TIMEOUT } from './constant';
+import { API_TIMEOUT, getSessionData } from '@/config/constant';
 
 /* ** axios 인스턴스 와 인터셉터 설정 
 1) axios 인스턴스(Instance)
@@ -40,13 +40,13 @@ export const refreshApiClient = axios.create({
 accessApiClient.interceptors.request.use(
   (config) => {
     // 요청이 날아가는 바로 그 순간 세션스토리지를 뒤져서 최신 ID를 가져옵니다.
-    const memberId = sessionStorage.getItem(SESSION_KEYS.MEMBER_ID);
-    console.log(`** [요청 인터셉터] accessApiClient, memberId=${memberId}`);
+    const member = getSessionData();
+    console.log(`** [요청 인터셉터] accessApiClient, memberId=${member.memberId}`);
 
     // API 요청 보내기 전 로그인 정보(memberId)가 존재할 경우,
     // Header에 X-USER-ID 자동으로 추가하여 백엔드에서 인증할 수 있도록 함
-    if (memberId) {
-      config.headers['X-USER-ID'] = memberId; 
+    if (member.memberId) {
+      config.headers['X-USER-ID'] = member.memberId; 
     }
     return config;
   },

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { loginApi } from "../services/loginApi";
 import { NavLink, useNavigate } from "react-router-dom";
+import { SESSION } from "@/config/constant";
 
 
 export default function LoginForm() {
@@ -15,7 +16,7 @@ export default function LoginForm() {
 		try {
 			const data = await loginApi(memberId, memberPw);
 			console.log(data);
-			sessionStorage.setItem("memberIsLogin", JSON.stringify(data));
+			sessionStorage.setItem(SESSION.ACCESS_DATA, JSON.stringify(data));
 			navigate("/");
 		} catch(err) {
 			console.error(err);
@@ -46,9 +47,11 @@ export default function LoginForm() {
 			</tr>
 		</tbody>
 		</table>
-		<div><NavLink to="">아이디 찾기</NavLink></div>
-		<div><NavLink to="">PW 찾기</NavLink></div>
-		<div><NavLink to="/join">회원가입</NavLink></div>
+		<ul>
+			<li><NavLink to="">아이디 찾기</NavLink></li>
+			<li><NavLink to="">PW 찾기</NavLink></li>
+			<li><NavLink to="/join">회원가입</NavLink></li>
+		</ul>
 	</form>
 	</div>
 	);

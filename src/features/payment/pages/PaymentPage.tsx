@@ -1,6 +1,7 @@
-export default function JoinForm() {
+export default function PaymentPage() {
 	return (
 	<div>
+		Payment Page
 		<form>
 			<table>
 				<tbody>
@@ -13,4 +14,4 @@ export default function JoinForm() {
 		</form>
 	</div>
 	)
-} //JoinForm
+}
