@@ -12,7 +12,7 @@ const MyLocationSet = () => {
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [address, setAddress] = useState<string>(''); // 선택된 주소 상태
-  const [addressData, setAddressData] = useState<any>(null); // 서버 전송용 원본 데이터 객체
+  const [addressData, setAddressData] = useState<Address | null>(null); // 서버 전송용 원본 데이터 객체
   const [addressName, setAddressName] = useState<string>(''); // 별칭 상태
   const [addressDetail, setAddressDetail] = useState<string>(''); // 상세주소 상태
 

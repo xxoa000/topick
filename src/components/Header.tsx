@@ -8,7 +8,7 @@ export default function Header(){
       <div><NavLink to='/myLocationSet'>내 위치 설정</NavLink></div>
       <div><NavLink to='/'>검색창</NavLink></div>
       <LoginHeader />
-      
+    
     </header>
   );
 }
