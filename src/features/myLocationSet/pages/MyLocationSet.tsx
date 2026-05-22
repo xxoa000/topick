@@ -3,14 +3,22 @@ import { useState } from 'react';
 
 import DaumPostcode, { type Address } from 'react-daum-postcode';
 
-// import axios from "axios";
 import { apiCall } from '../services/apiService'; // 기존 apiCall 임포트
 import { getCoordsByAddress } from '../services/coordsByAddress';
+import { useNavigate } from 'react-router-dom';
 
 const MyLocationSet = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [address, setAddress] = useState<string>(''); // 선택된 주소 상태
   const [addressData, setAddressData] = useState<any>(null); // 서버 전송용 원본 데이터 객체
+  const [addressName, setAddressName] = useState<string>(''); // 별칭 상태
+  const [addressDetail, setAddressDetail] = useState<string>(''); // 상세주소 상태
+
+  const handleClose = () => {
+    navigate(-1); // 브라우저 뒤로가기 실행 (모달 닫힘 효과)
+  };
 
   const handleComplete = (data: Address) => {
     let fullAddress = data.address;
@@ -29,7 +37,8 @@ const MyLocationSet = () => {
     console.log(data); // 콘솔에서 전체 데이터 구조 확인 가능 
     setAddress(fullAddress);
     setAddressData(data); // 서버로 보낼 원본 객체 저장 
-    setIsOpen(false); // 주소 선택 후 모달 자동으로 닫기 
+    setAddressName(data.buildingName);
+    setStep(2);
 
   };
 
@@ -53,8 +62,8 @@ const MyLocationSet = () => {
         addressPostcode: addressData.zonecode,
         addressRoad: addressData.roadAddress,
         addressLot: addressData.jibunAddress,
-        addressDetail: "상세주소 직접 입력란의 값", // 필요 시 input 추가
-        addressName: addressData.buildingName, //필요 시 input 추가
+        addressDetail: addressDetail, // 필요 시 input 추가
+        addressName: addressName || "내 위치", //필요 시 input 추가
         addressX: coords.x,
         addressY: coords.y
       };
@@ -79,83 +88,203 @@ const MyLocationSet = () => {
   };
 
   return (
-    <div>
-      <button onClick={() => setIsOpen(true)}>주소 검색</button>
-      {isOpen && (
-        <div style={modalOverlayStyle} onClick={() => setIsOpen(false)}>
-          {/* 모달 바디 상자 (e.stopPropagation()으로 흰 상자 클릭 시 닫히는 걸 막음) */}
-          <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-            {/* 모달 상단 헤더 영역 */}
+    <div style={modalOverlayStyle}>
+      <div style={modalContentStyle}>
+
+        {/* [화면 1] 나의 배송주소록 목록 */}
+        {step === 1 && (
+          <>
             <div style={modalHeaderStyle}>
-              <span style={{ fontWeight: 'bold', fontSize: '16px' }}>주소 검색</span>
-              <button onClick={() => setIsOpen(false)} style={closeBtnStyle}>X</button>
+              <div style={headerTitleStyle}>내 위치 설정</div>
+              <button onClick={handleClose} style={closeBtnStyle}>✕</button>
             </div>
 
-            {/* 카카오 주소 검색 도구 (높이를 지정해 주어야 모달 안에서 이쁘게 깨지지 않고 나옵니다) */}
-            <DaumPostcode onComplete={handleComplete} style={{ height: '470px' }} />
-          </div>
-        </div>
-      )}
+            <div style={modalBodyStyle}>
+              <button onClick={() => setStep(2)} style={addAddressBtnStyle}>
+                + 위치 추가하기
+              </button>
 
-      {/* 3. 검색 결과 출력 영역 */}
-      {address && (
-        <div style={resultBoxStyle}>
-          <p><strong>선택된 주소:</strong> {address}</p>
-          <p><strong>우편번호:</strong> {addressData?.zonecode}</p>
+              {/* 고정 크기 내부에서 가운데 정렬되도록 flex 적용 */}
+              <div style={emptyStateStyle}>
+                <div style={emptyIconStyle}>📍</div>
+                <p style={emptyTextStyle}>사용 가능한 위치가 없습니다.</p>
+                <p style={emptySubTextStyle}>위치 추가하기를 눌러<br />주소를 입력해주세요!</p>
+              </div>
+            </div>
+          </>
+        )}
 
-          <hr />
-          {/* 서버로 보내는 버튼 */}
-          <button onClick={sendToServer} style={sendBtnStyle}>
-            서버로 주소 전송하기
-          </button>
-        </div>
-      )}
+        {/* [화면 2] 데이터 추가하기 입력 폼 */}
+        {step === 2 && (
+          <>
+            <div style={modalHeaderStyle}>
+              <button onClick={() => setStep(1)} style={backBtnStyle}>＜</button>
+              <div style={headerTitleStyle}>위치 추가하기</div>
+              <button onClick={handleClose} style={closeBtnStyle}>✕</button>
+            </div>
+
+            {/* 내용이 많아도 모달 크기는 고정되고 이 영역만 스크롤됩니다 */}
+            <div style={modalBodyStyle}>
+              <div style={{ flex: 1 }}>
+
+                {/* 별칭 지정 */}
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>별칭 지정</label>
+                  <input type="text" placeholder="주소 별칭" style={{ ...inputStyle, marginBottom: '8px' }}
+                    value={addressName} onChange={(e) => setAddressName(e.target.value)} />
+                </div>
+
+                {/* 주소 */}
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>주소</label>
+                  <div style={searchBarContainerStyle} onClick={() => setStep(3)}>
+                    <span style={{ color: '#aaa', marginRight: '6px' }}>🔍</span>
+                    <input
+                      type="text"
+                      placeholder="우편번호 찾기"
+                      value={address ? `[${addressData?.zonecode}] ${address}` : ''}
+                      readOnly
+                      style={searchBarInputStyle}
+                    />
+                  </div>
+                  <br />
+                  <button onClick={() => setStep(2)} style={addAddressBtnStyle}>
+                    + 현재 위치로 찾기
+                  </button>
+
+                </div>
+
+                <div style={formGroupStyle}>
+                  <label style={labelStyle}>상세주소</label>
+                  <input type="text" placeholder="상세주소 (50자까지 입력 가능)" style={inputStyle} 
+                    value={addressDetail} onChange={(e) => setAddressDetail(e.target.value)}/>
+                </div>
+              </div>
+
+              {/* 하단 버튼 블록을 바닥에 고정 */}
+              <div style={buttonGroupStyle}>
+                <button onClick={() => setStep(1)} style={cancelBtnStyle}>취소하기</button>
+                <button onClick={sendToServer} style={saveBtnStyle}>저장하기</button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* [화면 3] 주소찾기 (다음 API 실행 화면) */}
+        {step === 3 && (
+          <>
+            <div style={modalHeaderStyle}>
+              <button onClick={() => setStep(2)} style={backBtnStyle}>＜</button>
+              <div style={headerTitleStyle}>주소찾기</div>
+              <button onClick={handleClose} style={closeBtnStyle}>✕</button>
+            </div>
+            {/* DaumPostcode가 고정된 바디 높이를 100% 채우도록 설정 */}
+            <div style={{ ...modalBodyStyle, overflow: 'hidden' }}>
+              <DaumPostcode onComplete={handleComplete} style={{ height: '100%', width: '100%' }} />
+            </div>
+          </>
+        )}
+
+      </div>
     </div>
-  );
+  )
 };
 
-// --- 기존 스타일 양식 ---
-const btnStyle = { padding: '8px 16px', backgroundColor: '#fd7e14', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' };
-const sendBtnStyle = { ...btnStyle, backgroundColor: '#007bff', marginTop: '10px' };
-const resultBoxStyle = { marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '4px' };
-
-// --- 모달 구조를 구현하기 위해 새로 추가된 필수 스타일 스타일 ---
 const modalOverlayStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: 0, left: 0, right: 0, bottom: 0,
-  backgroundColor: 'rgba(0, 0, 0, 0.5)', // 화면을 어둡게 만드는 반투명 검은 배경
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  zIndex: 1000 // 웹화면의 그 어떤 요소보다 가장 최상단에 뜨도록 배치
+  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000
 };
 
+// ★ 가로(maxWidth: 450px)와 세로(height: 620px)를 고정하고 Flex 구조 채택
 const modalContentStyle: React.CSSProperties = {
-  backgroundColor: 'white',
-  padding: '20px',
-  borderRadius: '8px',
-  width: '100%',
-  maxWidth: '500px', // 검색 도구가 들어갈 알맞은 가로 사이즈 고정
-  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-  boxSizing: 'border-box'
+  backgroundColor: 'white', padding: '20px', borderRadius: '16px',
+  width: '90%', maxWidth: '450px', height: '620px',
+  display: 'flex', flexDirection: 'column', boxSizing: 'border-box',
+  boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
 };
 
 const modalHeaderStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '15px',
-  paddingBottom: '10px',
-  borderBottom: '1px solid #eee'
+  display: 'flex', justifyContent: 'center', alignItems: 'center',
+  position: 'relative', paddingBottom: '15px', borderBottom: '1px solid #f1f3f5',
+  height: '30px', flexShrink: 0
 };
 
-const closeBtnStyle = {
-  border: 'none',
-  background: 'none',
-  fontSize: '18px',
-  cursor: 'pointer',
-  fontWeight: 'bold',
-  color: '#555'
+const backBtnStyle: React.CSSProperties = {
+  position: 'absolute', left: 0, border: 'none', background: 'none',
+  fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', color: '#555',
+  padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center'
 };
 
-export default MyLocationSet
+const headerTitleStyle: React.CSSProperties = {
+  fontWeight: 'bold', fontSize: '18px', color: '#111'
+};
+
+const closeBtnStyle: React.CSSProperties = {
+  position: 'absolute', right: 0, border: 'none', background: 'none',
+  fontSize: '20px', cursor: 'pointer', color: '#555'
+};
+
+// ★ 핵심: 남은 공간을 다 차지하고 내용이 넘치면 스크롤 바 생성
+const modalBodyStyle: React.CSSProperties = {
+  flex: 1, display: 'flex', flexDirection: 'column',
+  overflowY: 'auto', paddingTop: '15px'
+};
+
+/* 화면 1 (목록) 스타일 */
+const addAddressBtnStyle = {
+  width: '100%', padding: '12px', backgroundColor: 'transparent',
+  border: '1px solid #ced4da', borderRadius: '8px', cursor: 'pointer',
+  fontSize: '15px', fontWeight: '500', color: '#495057', marginBottom: '20px',
+  flexShrink: 0
+};
+
+const emptyStateStyle: React.CSSProperties = {
+  flex: 1, display: 'flex', flexDirection: 'column',
+  alignItems: 'center', justifyContent: 'center', paddingBottom: '40px'
+};
+
+const emptyIconStyle: React.CSSProperties = {
+  width: '60px', height: '60px', borderRadius: '50%', backgroundColor: '#f1f3f5',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  marginBottom: '15px', fontSize: '28px'
+};
+
+const emptyTextStyle = { fontSize: '16px', fontWeight: 'bold', color: '#495057', margin: '0 0 8px 0' };
+const emptySubTextStyle = { fontSize: '14px', color: '#868e96', textAlign: 'center' as const, margin: 0, lineHeight: '1.4' };
+
+/* 화면 2 (폼 입력) 스타일 */
+const formGroupStyle: React.CSSProperties = {
+  display: 'flex', flexDirection: 'column', marginBottom: '18px'
+};
+
+const labelStyle = { fontSize: '14px', fontWeight: 'bold', color: '#333', marginBottom: '8px' };
+
+const circleIconStyle = {
+  width: '38px', height: '38px', borderRadius: '50%', border: 'none',
+  color: 'white', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+};
+
+const helpTextStyle = { fontSize: '11px', color: '#adb5bd', marginBottom: '8px' };
+const inputStyle = {
+  width: '100%', padding: '11px', border: '1px solid #dee2e6', borderRadius: '8px',
+  boxSizing: 'border-box' as const, fontSize: '14px', outline: 'none'
+};
+
+const searchBarContainerStyle: React.CSSProperties = {
+  display: 'flex', alignItems: 'center', width: '100%', padding: '11px',
+  border: '1px solid #dee2e6', borderRadius: '8px', boxSizing: 'border-box', cursor: 'pointer'
+};
+
+const searchBarInputStyle = { border: 'none', outline: 'none', width: '100%', fontSize: '14px', cursor: 'pointer' };
+
+// 버튼 묶음을 아래에 고정하기 위한 스타일
+const buttonGroupStyle: React.CSSProperties = {
+  display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '15px', flexShrink: 0
+};
+
+const baseBtn = { padding: '14px', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', flex: 1 };
+const cancelBtnStyle = { ...baseBtn, backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', color: '#495057' };
+const saveBtnStyle = { ...baseBtn, backgroundColor: '#6bc941', color: 'white' };
+
+export default MyLocationSet;
