@@ -1,6 +1,6 @@
 // src/App.tsx
 import './App.css';
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 import TopBanner from './components/TopBanner'
 import Header from './components/Header'
