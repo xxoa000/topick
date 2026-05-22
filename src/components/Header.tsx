@@ -12,7 +12,7 @@ export default function Header(){
       {isLogin ? <div><NavLink to='/myLocationSet'>내 위치 설정</NavLink></div> : <div><NavLink to='/login'>내 위치 설정</NavLink></div> }
       <div><NavLink to='/'>검색창</NavLink></div>
       <LoginHeader />
-      
+    
     </header>
   );
 }
