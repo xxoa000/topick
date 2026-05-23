@@ -41,18 +41,16 @@ accessApiClient.interceptors.request.use(
   (config) => {
     // 요청이 날아가는 바로 그 순간 세션스토리지를 뒤져서 최신 ID를 가져옵니다.
     const member = getSessionData();
-    console.log(`** [요청 인터셉터] accessApiClient, memberId=${member.memberId}`);
+    console.log(`** [요청 인터셉터] accessApiClient, memberId=${member?.memberId}`);
 
     // API 요청 보내기 전 로그인 정보(memberId)가 존재할 경우,
-    // Header에 X-USER-ID 자동으로 추가하여 백엔드에서 인증할 수 있도록 함
-    if (member.memberId) {
-      config.headers['X-USER-ID'] = member.memberId; 
+    // Header에 자동으로 추가하여 백엔드에서 인증할 수 있도록 함
+    if (member?.accessToken) {
+      config.headers.Authorization = `Bearer ${member.accessToken}`; 
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 
@@ -103,7 +101,7 @@ accessApiClient.interceptors.response.use(
           window.location.replace("/login"); 
           
           // Promise를 pending(보류) 상태로 만들어 뒤이어 화면단에서 에러 폭탄이 터지는 것을 방지
-          return new Promise(() => {}); 
+          return Promise.reject(refreshError);
         } finally {
           isRefreshing = false; // 재발급 프로세스가 끝나면 상태 해제
         }
