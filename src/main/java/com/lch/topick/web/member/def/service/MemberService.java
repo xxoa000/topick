@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.lch.topick.web.member.def.domain.MemberJoinRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginRequestDTO;
-import com.lch.topick.web.member.def.domain.MemberLoginResponseDTO;
+import com.lch.topick.web.member.def.domain.MemberLoginResultDTO;
 import com.lch.topick.web.member.def.domain.MemberRoleUpdateRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberRoleUpdateResponseDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
@@ -25,7 +25,7 @@ public interface MemberService {
 	public Member insert(MemberJoinRequestDTO requestDto);
 	
 	// SELECT 로그인
-	public MemberLoginResponseDTO login(MemberLoginRequestDTO requestDto);
+	public MemberLoginResultDTO login(MemberLoginRequestDTO requestDto);
 	
 	// INSERT,UPDATE 더미 데이터 전체에 기본 권한 부여 
 	public int addDefaultRole();
