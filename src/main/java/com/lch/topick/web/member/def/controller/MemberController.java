@@ -91,7 +91,7 @@ public class MemberController {
 		.httpOnly(true) 		// js 가 refreshToken 에 접근 못하게 함
 		.path("/")				// 사이트 어디서든 쿠키 사용 가능
 		.secure(false)
-		.sameSite("None")		// 같은 도메인일 때만 쿠키 전송
+		.sameSite("Lax")		// 대부분의 같은 사이트 요청에 쿠키 전송
 		.maxAge( tokenProvider.getRefreshTokenExp()/1000 ) // 만료시간
 		.build();
 		
