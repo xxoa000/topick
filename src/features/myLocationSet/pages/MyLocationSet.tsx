@@ -6,7 +6,7 @@ import DaumPostcode, { type Address } from 'react-daum-postcode';
 import { apiCall } from '../services/apiService'; // 기존 apiCall 임포트
 import { getCoordsByAddress } from '../services/coordsByAddress';
 import { useNavigate } from 'react-router-dom';
-import { getSessionData } from "@/config/constant";
+import useCustomLogin from '@/hooks/useCustomLogin';
 
 const MyLocationSet = () => {
   const navigate = useNavigate();
@@ -17,8 +17,7 @@ const MyLocationSet = () => {
   const [addressName, setAddressName] = useState<string>(''); // 별칭 상태
   const [addressDetail, setAddressDetail] = useState<string>(''); // 상세주소 상태
 
-  const member = getSessionData();
-  const isLogin = member !== null;
+  const { member } = useCustomLogin();
 
   // 지도를 담을 DOM 참조와 선택된 임시 좌표 상태
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -67,7 +66,7 @@ const MyLocationSet = () => {
         return;
       }
       const requestData = {
-        memberId: member.memberId, // 실제 서비스라면 로그인된 ID 등을 넣으세요.
+        memberId: member?.memberId, // 실제 서비스라면 로그인된 ID 등을 넣으세요.
         addressPostcode: addressData.zonecode,
         addressRoad: addressData.roadAddress,
         addressLot: addressData.jibunAddress,

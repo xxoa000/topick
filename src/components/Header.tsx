@@ -1,15 +1,19 @@
 import { NavLink } from "react-router-dom"
 import LoginHeader from "../features/member/components/LoginHeader";
-import { getSessionData } from "@/config/constant";
+import useCustomLogin from "@/hooks/useCustomLogin";
+
 
 export default function Header(){
-  const member = getSessionData();
-  const isLogin = member !== null;
+  // 로그인 확인 (zustand 전역으로 관리)
+  const { isLogin } = useCustomLogin();
+
+  console.log(`isLogin: ${isLogin}`);
 
   return (
     <header>
       <div><NavLink to='/'>홈</NavLink></div>
-      {isLogin ? <div><NavLink to='/my-location-set'>내 위치 설정</NavLink></div> : <div><NavLink to='/login'>내 위치 설정</NavLink></div> }
+      {isLogin ? <div><NavLink to='/my-location-set'>내 위치 설정</NavLink></div> 
+               : <div><NavLink to='/member/login'>내 위치 설정</NavLink></div> }
       <div><NavLink to='/'>검색창</NavLink></div>
       <LoginHeader />
     
