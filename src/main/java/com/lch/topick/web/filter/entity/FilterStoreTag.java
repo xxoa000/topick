@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StoreTag {
+public class FilterStoreTag {
 	
 	@Id
 	@Column(name = "store_no")

@@ -15,15 +15,17 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name="store")
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class StoreLet {
+public class FilterStore {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
