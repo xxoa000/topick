@@ -124,6 +124,7 @@ public class Member {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put("memberId", this.memberId);
 		dataMap.put("roleList", this.roleList);
+		dataMap.put("tokenType", "access");
 		return dataMap;
 	} //claimList
 	

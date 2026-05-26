@@ -15,8 +15,10 @@ import lombok.Getter;
 public class MemberLoginResponseDTO {
 
 	// 서버 -> 클라이언트로 내보내는 데이터
-	private final String token;
 	private final String memberId;
+	private final String memberName;
+	private final String accessToken;
+	
 	
 	@Builder.Default
 	private List<MemberRole> roleList = new ArrayList<>();
