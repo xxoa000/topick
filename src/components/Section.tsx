@@ -14,8 +14,8 @@ export default function Section(){
       <Routes>
         <Route path="/" element={<Home />}/>
         <Route path="/my-location-set/*" element={<MyLocationSet />} />
-        <Route path="/login/*" element={<LoginPage />}/>
-        <Route path="/join/*" element={<JoinPage />}/>
+        <Route path="/member/login/*" element={<LoginPage />}/>
+        <Route path="/member/join/*" element={<JoinPage />}/>
         <Route path="/store/*" element={<StorePage />}/>
         <Route path="/order/*" element={<OrderPage />}/>
         <Route path="/payment/*" element={<PaymentPage />}/>
