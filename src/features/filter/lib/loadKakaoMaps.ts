@@ -52,7 +52,7 @@ function appendMapsScript(appKey: string): Promise<void> {
       loadPromise = null;
       reject(
         new Error(
-          '카카오 지도 SDK 로드 실패. Kakao Developers Web 도메인에 현재 주소(예: http://localhost:5173)가 등록되어 있는지 확인하세요.',
+          '카카오 지도 SDK 로드 실패. Kakao Developers Web 도메인에 현재 주소가 등록되어 있는지 확인하세요.',
         ),
       );
     };
@@ -63,7 +63,7 @@ function appendMapsScript(appKey: string): Promise<void> {
 export function loadKakaoMaps(appKey: string): Promise<void> {
   if (!appKey.trim()) {
     return Promise.reject(
-      new Error('kakao.maps.js-key가 설정되지 않았습니다. (application.properties)'),
+      new Error('kakao.maps.js-key가 application.properties에 설정되지 않았습니다.'),
     );
   }
 
@@ -73,7 +73,6 @@ export function loadKakaoMaps(appKey: string): Promise<void> {
     return waitForKakaoMaps(win);
   }
 
-  // react-daum-postcode가 kakao.postcode만 등록한 경우 maps SDK를 별도 로드
   if (win.kakao?.postcode && !win.kakao.maps) {
     loadPromise = null;
   }

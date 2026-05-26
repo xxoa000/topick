@@ -29,7 +29,7 @@ export async function apiCall(url: string, method: string, requestData: any, tok
 
   // 1.2) axios 전송 options
   let options: AxiosOptions = {
-      url,
+      url: "http://localhost:8080"   + url, 
       method: method, 
       headers: headers,
   };

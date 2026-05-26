@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useState } from 'react';
 
 import DaumPostcode, { type Address } from 'react-daum-postcode';
@@ -6,20 +6,28 @@ import DaumPostcode, { type Address } from 'react-daum-postcode';
 import { apiCall } from '../services/apiService'; // 기존 apiCall 임포트
 import { getCoordsByAddress } from '../services/coordsByAddress';
 import { useNavigate } from 'react-router-dom';
+import useCustomLogin from '@/hooks/useCustomLogin';
 
 const MyLocationSet = () => {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [address, setAddress] = useState<string>(''); // 선택된 주소 상태
-  const [addressData, setAddressData] = useState<any>(null); // 서버 전송용 원본 데이터 객체
+  const [addressData, setAddressData] = useState<Address | null>(null); // 서버 전송용 원본 데이터 객체
   const [addressName, setAddressName] = useState<string>(''); // 별칭 상태
   const [addressDetail, setAddressDetail] = useState<string>(''); // 상세주소 상태
+
+  const { member } = useCustomLogin();
+
+  // 지도를 담을 DOM 참조와 선택된 임시 좌표 상태
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const [tempCoords, setTempCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   const handleClose = () => {
     navigate(-1); // 브라우저 뒤로가기 실행 (모달 닫힘 효과)
   };
 
+  // 우편번호 검색 완료 처리 (Step 3 -> Step 2)
   const handleComplete = (data: Address) => {
     let fullAddress = data.address;
     let extraAddress = '';
@@ -37,7 +45,7 @@ const MyLocationSet = () => {
     console.log(data); // 콘솔에서 전체 데이터 구조 확인 가능 
     setAddress(fullAddress);
     setAddressData(data); // 서버로 보낼 원본 객체 저장 
-    setAddressName(data.buildingName);
+    setAddressName(data.buildingName || "현재 위치");
     setStep(2);
 
   };
@@ -58,7 +66,7 @@ const MyLocationSet = () => {
         return;
       }
       const requestData = {
-        memberId: "javaFather", // 실제 서비스라면 로그인된 ID 등을 넣으세요.
+        memberId: member?.memberId, // 실제 서비스라면 로그인된 ID 등을 넣으세요.
         addressPostcode: addressData.zonecode,
         addressRoad: addressData.roadAddress,
         addressLot: addressData.jibunAddress,
@@ -85,6 +93,103 @@ const MyLocationSet = () => {
     } catch (err) {
       console.error("좌표 변환 중 오류:", err);
     }
+  };
+
+  // ★ Step 4 진입 시 카카오 지도 초기화 및 GPS 호출 로직
+  useEffect(() => {
+    if (step !== 4 || !mapContainerRef.current) return; //step이 4가 아니거나 not null(not false) 
+
+    const { kakao } = window as any; // const kakao = (window as any).kakao;
+    if (!kakao || !kakao.maps) {
+      alert("카카오 맵 라이브러리가 로드되지 않았습니다.");
+      return;
+    }
+
+    // 기본 좌표 (GPS 차단 시 사용할 기본값: 미금역)
+    let defaultLat = 37.3500951835995;
+    let defaultLng = 127.108932846326;
+
+    const initMap = (latitude: number, longitude: number, myLevel: number) => {
+      const options = {
+        center: new kakao.maps.LatLng(latitude, longitude), //지도의 중심점
+        level: myLevel, // 확대/축소 수준
+      };
+      const map = new kakao.maps.Map(mapContainerRef.current, options); //그려질 div, 옵션
+
+      // 마커 생성 및 표시
+      const marker = new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(latitude, longitude),
+      });
+      marker.setMap(map);
+      setTempCoords({ lat: latitude, lng: longitude });
+
+      // 지도 클릭 시 마커 이동 및 좌표 업데이트 이벤트
+      kakao.maps.event.addListener(map, 'center_changed', () => {
+        const center = map.getCenter();
+        marker.setPosition(center);
+        setTempCoords({ lat: center.getLat(), lng: center.getLng() });
+      });
+    };
+
+    // 브라우저 Geolocation API로 현재 위치 가져오기
+    if (navigator.geolocation) { //브라우저 위치정보 API 존재 여부
+      navigator.geolocation.getCurrentPosition( //위치권한 허용 || 위치가 받아진 경우
+        (position) => {
+          initMap(position.coords.latitude, position.coords.longitude, 3);
+        },
+        () => { //위치권한 거부 || 위치를 불러올 수 없는 경우
+          alert("현재 위치(GPS)를 가져올 수 없어 기본 위치로 표시합니다.");
+          initMap(defaultLat, defaultLng, 3);
+        }
+      );
+    } else {
+      initMap(defaultLat, defaultLng, 3); 
+    }
+  }, [step]);
+
+  // ★ 지도에서 선택한 좌표를 텍스트 주소로 변환하여 등록 폼(Step 2)으로 복귀하는 함수
+  const handleConfirmCurrentLocation = () => {
+    if (!tempCoords) return;
+
+    const { kakao } = window as any;
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    geocoder.coord2Address(tempCoords.lng, tempCoords.lat, (result: any, status: any) => { //요청값 / () 응답값
+      if (status === kakao.maps.services.Status.OK) {
+        const addrInfo = result[0];
+
+        // 1. 필요한 데이터 추출 (도로명 주소 존재 여부에 따른 안전한 추출)
+        const roadAddress = addrInfo.road_address ? addrInfo.road_address.address_name : '';
+        const jibunAddress = addrInfo.address ? addrInfo.address.address_name : '';
+        const zonecode = addrInfo.road_address ? addrInfo.road_address.zone_no : '';
+        const buildingName = addrInfo.road_address ? addrInfo.road_address.building_name : '';
+        const bname = addrInfo.address ? addrInfo.address.region_3depth_name : ''; // 법정동 명칭
+
+        // 2. UI 표시용 전체 주소 문자열 (도로명 우선, 없으면 지번)
+        const displayAddress = roadAddress || jibunAddress;
+
+        // 3. 상태 업데이트 - 기존 코드의 sendToServer 및 UI와 호환되도록 구성
+        setAddress(displayAddress);
+
+        // ★ 핵심: Address 타입 객체 구조 모방 (sendToServer에서 사용하는 필드 위주)
+        setAddressData({
+          zonecode: zonecode || '00000',      // 우편번호
+          roadAddress: roadAddress || jibunAddress, // 도로명 주소 (없으면 지번으로 대체)
+          jibunAddress: jibunAddress,        // 지번 주소
+          address: displayAddress,           // 기본 주소 필드
+          buildingName: buildingName || '',  // 건물명
+          bname: bname || '',                // 법정동
+          addressType: addrInfo.road_address ? 'R' : 'J' // 도로명(R) 또는 지번(J) 타입 구분
+        } as Address);
+
+        // 4. 별칭 설정 (건물명이 있으면 건물명, 없으면 '현재 위치')
+        setAddressName(buildingName || '현재 위치');
+        
+        setStep(2);
+      } else {
+        alert("선택하신 지점의 주소를 변환할 수 없습니다.");
+      }
+    });
   };
 
   return (
@@ -148,7 +253,7 @@ const MyLocationSet = () => {
                     />
                   </div>
                   <br />
-                  <button onClick={() => setStep(2)} style={addAddressBtnStyle}>
+                  <button onClick={() => setStep(4)} style={addAddressBtnStyle}>
                     + 현재 위치로 찾기
                   </button>
 
@@ -180,7 +285,30 @@ const MyLocationSet = () => {
             </div>
             {/* DaumPostcode가 고정된 바디 높이를 100% 채우도록 설정 */}
             <div style={{ ...modalBodyStyle, overflow: 'hidden' }}>
-              <DaumPostcode onComplete={handleComplete} style={{ height: '100%', width: '100%' }} />
+            <DaumPostcode onComplete={handleComplete} style={{ height: '100%', width: '100%' }} />
+          </div>
+          </>
+        )}
+
+        {/* [화면 4] 현재 위치로 찾기 (카카오 지도 화면) */}
+        {step === 4 && (
+          <>
+            <div style={modalHeaderStyle}>
+              <button onClick={() => setStep(2)} style={backBtnStyle}>＜</button>
+              <div style={headerTitleStyle}>현재 위치 찾기</div>
+              <button onClick={handleClose} style={closeBtnStyle}>✕</button>
+            </div>
+            
+            <div style={{ ...modalBodyStyle, overflow: 'hidden', position: 'relative' }}>
+              {/* 실제 카카오 지도가 그려지는 영역 */}
+              <div ref={mapContainerRef} style={{ width: '100%', height: '82%', borderRadius: '8px' }}></div>
+              
+              {/* 지도 선택 완료 버튼 배치 */}
+              <div style={{ ...buttonGroupStyle, marginTop: '12px' }}>
+                <button onClick={handleConfirmCurrentLocation} style={saveBtnStyle}>
+                  이 위치로 주소 설정
+                </button>
+              </div>
             </div>
           </>
         )}

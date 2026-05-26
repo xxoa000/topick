@@ -1,26 +1,35 @@
 import { useState } from "react";
 import { loginApi } from "../services/loginApi";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { SESSION } from "@/config/constant";
+import useCustomLogin from "@/hooks/useCustomLogin";
 
 
 export default function LoginForm() {
-
 	const navigate = useNavigate();
-
+	const { login } = useCustomLogin();
 	const [memberId, setMemberId] = useState("");
 	const [memberPw, setMemberPw] = useState("");
+
 	const handleSubmit = async (e: React.SyntheticEvent) => {
 		e.preventDefault();
 
 		try {
 			const data = await loginApi(memberId, memberPw);
-			console.log(data);
-			sessionStorage.setItem("memberIsLogin", JSON.stringify(data));
+
+			// 로그인 성공시, 세션스토리지에 accessToken 저장
+			sessionStorage.setItem(SESSION.ACCESS_DATA, JSON.stringify(data));
+
+			// 전역 상태관리 저장소에도 로그인 정보 저장
+			login(data);
+
+			// 로그인 성공시 홈으로 url 이동
 			navigate("/");
+
 		} catch(err) {
 			console.error(err);
 		}
-	}
+	} //handleSubmit
 
 
 	return (
@@ -46,6 +55,11 @@ export default function LoginForm() {
 			</tr>
 		</tbody>
 		</table>
+		<ul>
+			<li><NavLink to="">아이디 찾기</NavLink></li>
+			<li><NavLink to="">PW 찾기</NavLink></li>
+			<li><NavLink to="/member/join">회원가입</NavLink></li>
+		</ul>
 	</form>
 	</div>
 	);

@@ -1,6 +1,6 @@
 // Vite 환경 기준 (CRA 환경이라면 process.env 사용)
 export const ENV = {
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || '/api',
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL = 'https://localhost:8080/api',
   IS_PRODUCTION: import.meta.env.MODE === 'production',
 } as const;
 

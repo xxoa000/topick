@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef } from 'react';
-import { getKakaoMaps } from '../../../shared/kakao/kakaoMapsApi';
+import { getKakaoMaps } from '../lib/kakaoMapsApi';
 import {
   loadKakaoMaps,
   relayoutMap,
   type KakaoMap,
-} from '../../../shared/kakao/loadKakaoMaps';
+} from '../lib/loadKakaoMaps';
 import { fetchKakaoMapsJsKey } from '../services/filterApi';
 import { useFilterSearch } from '../context/FilterSearchContext';
 

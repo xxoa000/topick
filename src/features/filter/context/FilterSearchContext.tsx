@@ -8,8 +8,8 @@ import {
   type ReactNode,
 } from 'react';
 import type { StoreItem } from '../../store/types';
-import { getKakaoMaps } from '../../../shared/kakao/kakaoMapsApi';
-import { type KakaoMap, type KakaoMarker } from '../../../shared/kakao/loadKakaoMaps';
+import { getKakaoMaps } from '../lib/kakaoMapsApi';
+import { type KakaoMap, type KakaoMarker } from '../lib/loadKakaoMaps';
 import { fetchStoreMenus, fetchTags, searchByFilter, searchByKeyword } from '../services/filterApi';
 import type { Menu, SearchResponse, Tag } from '../types';
 

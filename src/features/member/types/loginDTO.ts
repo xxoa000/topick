@@ -5,6 +5,7 @@ export interface LoginRequestDTO {
 
 export interface LoginResponseDTO {
 	memberId: string;
-	memberPw: string;
+	memberName: string;
+	accessToken: string;
 	roleList: string[]; 
 }
