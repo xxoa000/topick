@@ -1,5 +1,5 @@
 package com.lch.topick.web.store.let.service;
 
-public interface StoreLetService {
+public interface FilterStoreService {
 
 } //interface

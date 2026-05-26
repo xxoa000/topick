@@ -8,6 +8,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class StoreLetServiceImpl implements StoreLetService {
+public class FilterStoreServiceImpl implements FilterStoreService {
 
 } //class
