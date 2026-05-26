@@ -1,5 +1,4 @@
 import { NavLink, useNavigate } from "react-router-dom"
-import { SESSION } from "@/config/constant";
 import useCustomLogin from "@/hooks/useCustomLogin";
 
 
@@ -10,7 +9,6 @@ export default function LoginHeader(){
 
   // 로그아웃 & 화면 새로고침
   const handleLogout = () => {
-    sessionStorage.removeItem(SESSION.ACCESS_DATA);
     logout();
     navigate("/");
   }

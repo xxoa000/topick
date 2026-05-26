@@ -30,9 +30,10 @@ export const zustandAuthStore = create<AuthType>((set) => ({
   }),
 
   // 로그아웃시
-  logout: () => set({
-    member: null,
-  })
+  logout: () => {
+    sessionStorage.removeItem(SESSION.ACCESS_DATA);
+    set({ member: null })
+  },
 }));
 
 
@@ -45,7 +46,7 @@ const useCustomLogin = () => {
   const logout = zustandAuthStore((state) => state.logout);
 
   // 로그인 여부
-  const isLogin = !!member?.accessToken;
+  const isLogin = !!member;
 
   return {
     member,
