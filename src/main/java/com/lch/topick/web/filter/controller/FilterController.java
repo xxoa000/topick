@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.lch.topick.web.filter.domain.FilterRequestDTO;
+import com.lch.topick.web.filter.domain.KakaoMapsConfigDTO;
+import com.lch.topick.web.filter.domain.MenuDTO;
 import com.lch.topick.web.filter.domain.SearchResponseDTO;
 import com.lch.topick.web.filter.service.KakaoSearchService;
 import com.lch.topick.web.store.let.domain.StoreRequestDTO;

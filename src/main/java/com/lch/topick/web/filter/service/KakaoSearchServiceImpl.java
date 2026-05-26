@@ -15,9 +15,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.lch.topick.web.filter.domain.FilterRequestDTO;
 import com.lch.topick.web.filter.domain.KeywordRequestDTO;
+import com.lch.topick.web.filter.domain.MenuDTO;
 import com.lch.topick.web.filter.domain.SearchResponseDTO;
 import com.lch.topick.web.store.let.domain.StoreItemDTO;
 import com.lch.topick.web.store.let.domain.StoreRequestDTO;
+import com.lch.topick.web.menu.def.entity.Menu;
+import com.lch.topick.web.menu.def.repository.MenuRepository;
 import com.lch.topick.web.store.let.entity.Store;
 import com.lch.topick.web.store.let.repository.StoreRepository;
 
@@ -37,13 +40,18 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     // Store DB 접근
     private final StoreRepository storeRepository;
 
+    // Menu DB 접근
+    private final MenuRepository menuRepository;
+
     // 생성자
     public KakaoSearchServiceImpl(
             @Value("${kakao.rest-api-key:}") String kakaoRestApiKey,
-            StoreRepository storeRepository) {
+            StoreRepository storeRepository,
+            MenuRepository menuRepository) {
         this.kakaoRestApiKey = kakaoRestApiKey;
         this.restClient = RestClient.builder().build();
         this.storeRepository = storeRepository;
+        this.menuRepository = menuRepository;
     }
 
     @Override
@@ -99,12 +107,12 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     	    store = storeRepository.save(newStore);
     	}
 
-        
-    	
-    	
-
-        // 현재는 빈 리스트 반환
-        return List.of();
+        return menuRepository.findByStoreNo(store.getStoreNo()).stream()
+                .map(menu -> new MenuDTO(
+                        menu.getMenuNo(),
+                        menu.getMenuName(),
+                        menu.getMenuPrice()))
+                .toList();
     }
 
     // 하나의 검색어(query) 로 카카오 API 를 호출해서 결과를 merge 에 저장하는 메서드

@@ -11,7 +11,7 @@ public class StoreItemDTO {
 	
 	
 	private String id;
-    private String place_name;    // 카카오 "place_name"
+    private String placeName;    // 카카오 "place_name"
     private String placeUrl;     // 카카오 "place_url"
     private String categoryName;     // 카카오 "category_name"
     private Double x;       // 카카오 "x" (경도)
