@@ -1,196 +1,20 @@
-import React, { useEffect, useRef } from 'react';
-import { useState } from 'react';
+import React from 'react';
+import DaumPostcode from 'react-daum-postcode';
+import { useMyLocation } from '../hooks/useMyLocation';
 
-import DaumPostcode, { type Address } from 'react-daum-postcode';
-
-import { apiCall } from '../services/apiService'; // 기존 apiCall 임포트
-import { getCoordsByAddress } from '../services/coordsByAddress';
-import { useNavigate } from 'react-router-dom';
-import useCustomLogin from '@/hooks/useCustomLogin';
+// 디자인 확인을 위한 임시 데이터 배열
+const mockAddresses = [
+  { id: 1, name: '우리집 🏠', address: '서울특별시 강남구 테헤란로 123', detail: '101동 202호' },
+  { id: 2, name: '회사 🏢', address: '경기도 성남시 분당구 판교역로 234', detail: 'H스퀘어 N동 5층' },
+];
 
 const MyLocationSet = () => {
-  const navigate = useNavigate();
-
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-  const [address, setAddress] = useState<string>(''); // 선택된 주소 상태
-  const [addressData, setAddressData] = useState<Address | null>(null); // 서버 전송용 원본 데이터 객체
-  const [addressName, setAddressName] = useState<string>(''); // 별칭 상태
-  const [addressDetail, setAddressDetail] = useState<string>(''); // 상세주소 상태
-
-  const { member } = useCustomLogin();
-
-  // 지도를 담을 DOM 참조와 선택된 임시 좌표 상태
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const [tempCoords, setTempCoords] = useState<{ lat: number; lng: number } | null>(null);
-
-  const handleClose = () => {
-    navigate(-1); // 브라우저 뒤로가기 실행 (모달 닫힘 효과)
-  };
-
-  // 우편번호 검색 완료 처리 (Step 3 -> Step 2)
-  const handleComplete = (data: Address) => {
-    let fullAddress = data.address;
-    let extraAddress = '';
-
-    if (data.addressType === 'R') {
-      if (data.bname !== '') {
-        extraAddress += data.bname;
-      }
-      if (data.buildingName !== '') {
-        extraAddress += extraAddress !== '' ? `, ${data.buildingName}` : data.buildingName;
-      }
-      fullAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
-    }
-
-    console.log(data); // 콘솔에서 전체 데이터 구조 확인 가능 
-    setAddress(fullAddress);
-    setAddressData(data); // 서버로 보낼 원본 객체 저장 
-    setAddressName(data.buildingName || "현재 위치");
-    setStep(2);
-
-  };
-
-  // 자바(서버)로 데이터를 보내는 함수
-  const sendToServer = async () => {
-    if (!addressData) {
-      alert("주소를 먼저 검색해주세요.");
-      return;
-    }
-
-    try {
-      const coords = await getCoordsByAddress(addressData.roadAddress);
-      console.log("coords");
-      console.log(coords);
-      if (!coords) {
-        alert("좌표를 변환할 수 없는 주소입니다.");
-        return;
-      }
-      const requestData = {
-        memberId: member?.memberId, // 실제 서비스라면 로그인된 ID 등을 넣으세요.
-        addressPostcode: addressData.zonecode,
-        addressRoad: addressData.roadAddress,
-        addressLot: addressData.jibunAddress,
-        addressDetail: addressDetail, // 필요 시 input 추가
-        addressName: addressName || "내 위치", //필요 시 input 추가
-        addressX: coords.x,
-        addressY: coords.y
-      };
-
-      console.log("서버로 보내는 데이터: ", requestData);
-
-      const url = '/api/myLocationSet/join'; // 자바 컨트롤러 매핑 주소
-
-      apiCall(url, 'POST', requestData, null)
-        .then((response) => {
-          alert("서버에 주소가 성공적으로 저장되었습니다");
-          console.log(response);
-          // navigate("/");
-        })
-        .catch((err) => {
-          console.error("전송 에러:", err);
-          alert(`저장 실패: ${err}`);
-        });
-    } catch (err) {
-      console.error("좌표 변환 중 오류:", err);
-    }
-  };
-
-  // ★ Step 4 진입 시 카카오 지도 초기화 및 GPS 호출 로직
-  useEffect(() => {
-    if (step !== 4 || !mapContainerRef.current) return; //step이 4가 아니거나 not null(not false) 
-
-    const { kakao } = window as any; // const kakao = (window as any).kakao;
-    if (!kakao || !kakao.maps) {
-      alert("카카오 맵 라이브러리가 로드되지 않았습니다.");
-      return;
-    }
-
-    // 기본 좌표 (GPS 차단 시 사용할 기본값: 미금역)
-    let defaultLat = 37.3500951835995;
-    let defaultLng = 127.108932846326;
-
-    const initMap = (latitude: number, longitude: number, myLevel: number) => {
-      const options = {
-        center: new kakao.maps.LatLng(latitude, longitude), //지도의 중심점
-        level: myLevel, // 확대/축소 수준
-      };
-      const map = new kakao.maps.Map(mapContainerRef.current, options); //그려질 div, 옵션
-
-      // 마커 생성 및 표시
-      const marker = new kakao.maps.Marker({
-        position: new kakao.maps.LatLng(latitude, longitude),
-      });
-      marker.setMap(map);
-      setTempCoords({ lat: latitude, lng: longitude });
-
-      // 지도 클릭 시 마커 이동 및 좌표 업데이트 이벤트
-      kakao.maps.event.addListener(map, 'center_changed', () => {
-        const center = map.getCenter();
-        marker.setPosition(center);
-        setTempCoords({ lat: center.getLat(), lng: center.getLng() });
-      });
-    };
-
-    // 브라우저 Geolocation API로 현재 위치 가져오기
-    if (navigator.geolocation) { //브라우저 위치정보 API 존재 여부
-      navigator.geolocation.getCurrentPosition( //위치권한 허용 || 위치가 받아진 경우
-        (position) => {
-          initMap(position.coords.latitude, position.coords.longitude, 3);
-        },
-        () => { //위치권한 거부 || 위치를 불러올 수 없는 경우
-          alert("현재 위치(GPS)를 가져올 수 없어 기본 위치로 표시합니다.");
-          initMap(defaultLat, defaultLng, 3);
-        }
-      );
-    } else {
-      initMap(defaultLat, defaultLng, 3); 
-    }
-  }, [step]);
-
-  // ★ 지도에서 선택한 좌표를 텍스트 주소로 변환하여 등록 폼(Step 2)으로 복귀하는 함수
-  const handleConfirmCurrentLocation = () => {
-    if (!tempCoords) return;
-
-    const { kakao } = window as any;
-    const geocoder = new kakao.maps.services.Geocoder();
-
-    geocoder.coord2Address(tempCoords.lng, tempCoords.lat, (result: any, status: any) => { //요청값 / () 응답값
-      if (status === kakao.maps.services.Status.OK) {
-        const addrInfo = result[0];
-
-        // 1. 필요한 데이터 추출 (도로명 주소 존재 여부에 따른 안전한 추출)
-        const roadAddress = addrInfo.road_address ? addrInfo.road_address.address_name : '';
-        const jibunAddress = addrInfo.address ? addrInfo.address.address_name : '';
-        const zonecode = addrInfo.road_address ? addrInfo.road_address.zone_no : '';
-        const buildingName = addrInfo.road_address ? addrInfo.road_address.building_name : '';
-        const bname = addrInfo.address ? addrInfo.address.region_3depth_name : ''; // 법정동 명칭
-
-        // 2. UI 표시용 전체 주소 문자열 (도로명 우선, 없으면 지번)
-        const displayAddress = roadAddress || jibunAddress;
-
-        // 3. 상태 업데이트 - 기존 코드의 sendToServer 및 UI와 호환되도록 구성
-        setAddress(displayAddress);
-
-        // ★ 핵심: Address 타입 객체 구조 모방 (sendToServer에서 사용하는 필드 위주)
-        setAddressData({
-          zonecode: zonecode || '00000',      // 우편번호
-          roadAddress: roadAddress || jibunAddress, // 도로명 주소 (없으면 지번으로 대체)
-          jibunAddress: jibunAddress,        // 지번 주소
-          address: displayAddress,           // 기본 주소 필드
-          buildingName: buildingName || '',  // 건물명
-          bname: bname || '',                // 법정동
-          addressType: addrInfo.road_address ? 'R' : 'J' // 도로명(R) 또는 지번(J) 타입 구분
-        } as Address);
-
-        // 4. 별칭 설정 (건물명이 있으면 건물명, 없으면 '현재 위치')
-        setAddressName(buildingName || '현재 위치');
-        
-        setStep(2);
-      } else {
-        alert("선택하신 지점의 주소를 변환할 수 없습니다.");
-      }
-    });
-  };
+  // Hook에서 필요한 데이터와 함수만 구조분해할당으로 가져옵니다.
+  const {
+    step, setStep, address, addressData, addressName, setAddressName,
+    addressDetail, setAddressDetail, mapContainerRef,
+    handleClose, handleComplete, sendToServer, handleConfirmCurrentLocation
+  } = useMyLocation();
 
   return (
     <div style={modalOverlayStyle}>
@@ -209,12 +33,35 @@ const MyLocationSet = () => {
                 + 위치 추가하기
               </button>
 
-              {/* 고정 크기 내부에서 가운데 정렬되도록 flex 적용 */}
-              <div style={emptyStateStyle}>
-                <div style={emptyIconStyle}>📍</div>
-                <p style={emptyTextStyle}>사용 가능한 위치가 없습니다.</p>
-                <p style={emptySubTextStyle}>위치 추가하기를 눌러<br />주소를 입력해주세요!</p>
-              </div>
+              {/* 저장된 위치 목록 표시 영역 */}
+              {mockAddresses && mockAddresses.length > 0 ? (
+                // 1. 저장된 위치 목록이 있을 때
+                <div style={addressListContainerStyle}>
+                  {mockAddresses.map((item) => (
+                    <div key={item.id} style={addressCardStyle}>
+                      <div style={cardContentStyle}>
+                        <div style={cardNameStyle}>{item.name}</div>
+                        <div style={cardAddressStyle}>{item.address}</div>
+                        <div style={cardDetailStyle}>{item.detail}</div>
+                      </div>
+
+                      <button onClick={() => alert('수정 기능 준비 중')} style={editBtnStyle}>
+                        수정
+                      </button>
+                      <button onClick={() => alert('삭제 기능 준비 중')} style={deleteBtnStyle}>
+                        삭제
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                // 2. 저장된 위치 목록이 없을 때 (Empty State)
+                <div style={emptyStateStyle}>
+                  <div style={emptyIconStyle}>📍</div>
+                  <p style={emptyTextStyle}>사용 가능한 위치가 없습니다.</p>
+                  <p style={emptySubTextStyle}>위치 추가하기를 눌러<br />주소를 입력해주세요!</p>
+                </div>
+              )}
             </div>
           </>
         )}
@@ -261,8 +108,8 @@ const MyLocationSet = () => {
 
                 <div style={formGroupStyle}>
                   <label style={labelStyle}>상세주소</label>
-                  <input type="text" placeholder="상세주소 (50자까지 입력 가능)" style={inputStyle} 
-                    value={addressDetail} onChange={(e) => setAddressDetail(e.target.value)}/>
+                  <input type="text" placeholder="상세주소 (50자까지 입력 가능)" style={inputStyle}
+                    value={addressDetail} onChange={(e) => setAddressDetail(e.target.value)} />
                 </div>
               </div>
 
@@ -285,8 +132,8 @@ const MyLocationSet = () => {
             </div>
             {/* DaumPostcode가 고정된 바디 높이를 100% 채우도록 설정 */}
             <div style={{ ...modalBodyStyle, overflow: 'hidden' }}>
-            <DaumPostcode onComplete={handleComplete} style={{ height: '100%', width: '100%' }} />
-          </div>
+              <DaumPostcode onComplete={handleComplete} style={{ height: '100%', width: '100%' }} />
+            </div>
           </>
         )}
 
@@ -298,11 +145,11 @@ const MyLocationSet = () => {
               <div style={headerTitleStyle}>현재 위치 찾기</div>
               <button onClick={handleClose} style={closeBtnStyle}>✕</button>
             </div>
-            
+
             <div style={{ ...modalBodyStyle, overflow: 'hidden', position: 'relative' }}>
               {/* 실제 카카오 지도가 그려지는 영역 */}
               <div ref={mapContainerRef} style={{ width: '100%', height: '82%', borderRadius: '8px' }}></div>
-              
+
               {/* 지도 선택 완료 버튼 배치 */}
               <div style={{ ...buttonGroupStyle, marginTop: '12px' }}>
                 <button onClick={handleConfirmCurrentLocation} style={saveBtnStyle}>
@@ -388,12 +235,6 @@ const formGroupStyle: React.CSSProperties = {
 
 const labelStyle = { fontSize: '14px', fontWeight: 'bold', color: '#333', marginBottom: '8px' };
 
-const circleIconStyle = {
-  width: '38px', height: '38px', borderRadius: '50%', border: 'none',
-  color: 'white', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
-};
-
-const helpTextStyle = { fontSize: '11px', color: '#adb5bd', marginBottom: '8px' };
 const inputStyle = {
   width: '100%', padding: '11px', border: '1px solid #dee2e6', borderRadius: '8px',
   boxSizing: 'border-box' as const, fontSize: '14px', outline: 'none'
@@ -416,3 +257,43 @@ const cancelBtnStyle = { ...baseBtn, backgroundColor: '#f8f9fa', border: '1px so
 const saveBtnStyle = { ...baseBtn, backgroundColor: '#6bc941', color: 'white' };
 
 export default MyLocationSet;
+
+// 목록을 감싸는 컨테이너
+const addressListContainerStyle: React.CSSProperties = {
+  display: 'flex', flexDirection: 'column', gap: '12px'
+};
+
+// 개별 주소 카드 카드 (버튼 배치를 위해 position: 'relative' 부여)
+const addressCardStyle: React.CSSProperties = {
+  position: 'relative',
+  padding: '16px',
+  border: '1px solid #e9ecef',
+  borderRadius: '12px',
+  backgroundColor: '#f8f9fa',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px'
+};
+
+// 우측 버튼들과 글자가 겹치지 않도록 안쪽 여백 설정
+const cardContentStyle: React.CSSProperties = {
+  paddingRight: '55px'
+};
+
+const cardNameStyle = { fontSize: '15px', fontWeight: 'bold', color: '#212529' };
+const cardAddressStyle = { fontSize: '13px', color: '#495057', marginTop: '4px', lineHeight: '1.4' };
+const cardDetailStyle = { fontSize: '13px', color: '#868e96' };
+
+// 우측 상단 수정 버튼
+const editBtnStyle: React.CSSProperties = {
+  position: 'absolute', top: '16px', right: '16px',
+  border: 'none', background: 'none', color: '#495057',
+  fontSize: '13px', fontWeight: '500', cursor: 'pointer', padding: 0
+};
+
+// 우측 하단 삭제 버튼
+const deleteBtnStyle: React.CSSProperties = {
+  position: 'absolute', bottom: '16px', right: '16px',
+  border: 'none', background: 'none', color: '#f03e3e',
+  fontSize: '13px', fontWeight: '500', cursor: 'pointer', padding: 0
+};
