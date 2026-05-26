@@ -1,0 +1,270 @@
+// 공통 버튼 기본 스타일 (플레이스홀더 선택자)
+%baseBtn {
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 450px;
+    height: 620px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+    // 헤더 영역
+    .modalHeader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f1f3f5;
+        height: 30px;
+        flex-shrink: 0;
+
+        .backBtn {
+            position: absolute;
+            left: 0;
+            border: none;
+            background: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #555;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .headerTitle {
+            font-weight: bold;
+            font-size: 18px;
+            color: #111;
+        }
+
+        .closeBtn {
+            position: absolute;
+            right: 0;
+            border: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #555;
+        }
+    }
+
+    // 바디 영역 (스크롤 포함)
+    .modalBody {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        padding-top: 15px;
+
+        /* [화면 1] 주소 목록 관련 스타일 */
+        .addAddressBtn {
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .addressListContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            .addressCard {
+                position: relative;
+                padding: 16px;
+                border: 1px solid #e9ecef;
+                border-radius: 12px;
+                background-color: #f8f9fa;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+
+                .cardContent {
+                    padding-right: 55px;
+                }
+
+                .cardName {
+                    font-size: 15px;
+                    font-weight: bold;
+                    color: #212529;
+                }
+
+                .cardAddress {
+                    font-size: 13px;
+                    color: #495057;
+                    margin-top: 4px;
+                    line-height: 1.4;
+                }
+
+                .cardDetail {
+                    font-size: 13px;
+                    color: #868e96;
+                }
+
+                .editBtn {
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
+                    border: none;
+                    background: none;
+                    color: #495057;
+                    font-size: 13px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    padding: 0;
+                }
+
+                .deleteBtn {
+                    position: absolute;
+                    bottom: 16px;
+                    right: 16px;
+                    border: none;
+                    background: none;
+                    color: #f03e3e;
+                    font-size: 13px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    padding: 0;
+                }
+            }
+        }
+
+        // 내역이 비었을 때
+        .emptyState {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 40px;
+
+            .emptyIcon {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background-color: #f1f3f5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 15px;
+                font-size: 28px;
+            }
+
+            .emptyText {
+                font-size: 16px;
+                font-weight: bold;
+                color: #495057;
+                margin: 0 0 8px 0;
+            }
+
+            .emptySubText {
+                font-size: 14px;
+                color: #868e96;
+                text-align: center;
+                margin: 0;
+                line-height: 1.4;
+            }
+        }
+
+        /* [화면 2] 폼 입력 관련 스타일 */
+        .formGroup {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 18px;
+
+            .label {
+                font-size: 14px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 8px;
+            }
+
+            .input {
+                width: 100%;
+                padding: 11px;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                box-sizing: border-box;
+                font-size: 14px;
+                outline: none;
+            }
+        }
+
+        .searchBarContainer {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-sizing: border-box;
+            cursor: pointer;
+
+            .searchBarInput {
+                border: none;
+                outline: none;
+                width: 100%;
+                font-size: 14px;
+                cursor: pointer;
+            }
+        }
+
+        // 하단 고정 버튼 그룹
+        .buttonGroup {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 15px;
+            flex-shrink: 0;
+
+            .cancelBtn {
+                @extend %baseBtn;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                color: #495057;
+            }
+
+            .saveBtn {
+                @extend %baseBtn;
+                background-color: #6bc941;
+                color: white;
+            }
+        }
+    }
+}
