@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AStoreItemDTO {
+public class FilterStoreItemDTO {
 	
 	
 	private String id;

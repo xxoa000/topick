@@ -15,7 +15,7 @@ import com.lch.topick.web.filter.domain.FilterRequestDTO;
 import com.lch.topick.web.filter.domain.MenuDTO;
 import com.lch.topick.web.filter.domain.SearchResponseDTO;
 import com.lch.topick.web.filter.service.KakaoSearchService;
-import com.lch.topick.web.store.let.domain.AStoreRequestDTO;
+import com.lch.topick.web.store.let.domain.FilterStoreRequestDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +39,7 @@ public class FilterController {
     // 마커 클릭 시 가게 저장 및 메뉴 조회
     @ResponseBody
     @PostMapping("/menu/store")
-    public List<MenuDTO> menuList(@RequestBody AStoreRequestDTO req) {
+    public List<MenuDTO> menuList(@RequestBody FilterStoreRequestDTO req) {
         return kakaoSearchService.menuList(req);
     }
 

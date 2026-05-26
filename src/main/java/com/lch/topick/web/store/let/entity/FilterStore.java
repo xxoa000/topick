@@ -25,7 +25,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class AStore {
+public class FilterStore {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

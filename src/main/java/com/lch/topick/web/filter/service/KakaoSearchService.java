@@ -6,7 +6,7 @@ import com.lch.topick.web.filter.domain.FilterRequestDTO;
 import com.lch.topick.web.filter.domain.KeywordRequestDTO;
 import com.lch.topick.web.filter.domain.MenuDTO;
 import com.lch.topick.web.filter.domain.SearchResponseDTO;
-import com.lch.topick.web.store.let.domain.AStoreRequestDTO;
+import com.lch.topick.web.store.let.domain.FilterStoreRequestDTO;
 
 
 public interface KakaoSearchService {
@@ -17,5 +17,5 @@ public interface KakaoSearchService {
     // 태그 필터링
     SearchResponseDTO searchByFilter(FilterRequestDTO req);
 
-    List<MenuDTO> menuList(AStoreRequestDTO req);
+    List<MenuDTO> menuList(FilterStoreRequestDTO req);
 }
