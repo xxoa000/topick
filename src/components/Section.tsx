@@ -1,13 +1,14 @@
 import { Route, Routes } from "react-router-dom";
+import {FilterHomePage } from '../features/filter';
 import MyLocationSet from '../features/myLocationSet/pages/MyLocationSet'
 import Login from "../features/member/pages/LoginPage";
-import Home from "./Home";
+
 
 export default function Section(){
   return (
-    <section>section
+    <section className="section-root">
       <Routes>
-        <Route path="/" element={<Home />}/>
+        <Route path="/filter" element={<FilterHomePage />}/>
         <Route path="/myLocationSet/*" element={<MyLocationSet />} />
         <Route path="/login/*" element={<Login />}/>
       </Routes>

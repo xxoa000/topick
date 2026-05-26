@@ -1,7 +1,7 @@
 import axios from "axios";
 //import type {LoginRequestDTO, LoginResponseDTO} from "../types/loginResponseDTO";
 
-const BASE_URL = "http://localhost:8080/api";
+const BASE_URL = "/api";
 
 export const loginApi = async (memberId: string, memberPw: string) => {
 
