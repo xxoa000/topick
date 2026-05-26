@@ -1,0 +1,6 @@
+diff a/src/components/Home.tsx b/src/components/Home.tsx	(rejected hunks)
+@@ -0,3 +0,4 @@
+     </div>
+     );
+ }
+
