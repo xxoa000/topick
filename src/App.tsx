@@ -1,5 +1,6 @@
 // src/App.tsx
-import './App.scss';
+import './App.scss'; 
+import { Routes, Route } from 'react-router-dom'; 
 import TopBanner from './components/TopBanner'
 import Header from './components/Header'
 import Section from './components/Section'
@@ -17,4 +18,3 @@ export default function App() {
     </>
   );
 }
-
