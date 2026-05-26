@@ -1,6 +1,7 @@
 package com.lch.topick.web.member.def.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.lch.topick.jwtToken.TokenProvider;
 import com.lch.topick.web.member.def.domain.MemberJoinRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginResponseDTO;
+import com.lch.topick.web.member.def.domain.MemberLoginResultDTO;
 import com.lch.topick.web.member.def.domain.MemberRoleUpdateRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberRoleUpdateResponseDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
@@ -79,7 +81,7 @@ public class MemberServiceImpl implements MemberService {
 	
 	// SELECT 로그인
 	@Override
-	public MemberLoginResponseDTO login(MemberLoginRequestDTO requestDto) {
+	public MemberLoginResultDTO login(MemberLoginRequestDTO requestDto) {
 		
 		// 1.1 아이디 존재여부 체크
 		Member entity = repository.findById(requestDto.getMemberId())
@@ -94,16 +96,29 @@ public class MemberServiceImpl implements MemberService {
 		} 
 		
 		// 2. 로그인 성공
-		// token 생성, 유효시간은 application.properties의 jwt.access-token-expiration 사용
-		final String token = tokenProvider.createToken(entity.claimList());
+		/* accessToken, refreshToken 생성
+		 * 유효시간은 application.properties의 jwt 설정값 사용 */
+		final String accessToken = tokenProvider.createAccessToken(entity.claimList());
+		Map<String, Object> refreshClaimList = 
+			Map.of(
+				"memberId", entity.getMemberId(),
+				"tokenType", "refresh"
+			);
+		final String refreshToken = tokenProvider.createRefreshToken(refreshClaimList);
+		
+		// 2.1 DB 에 로그인 시각 update
 		entity.updateLastLoginAt();
 		
-		// 3. 클라이언트로 필요한 데이터만 보내기 위해, 응답용 DTO return
-		return new MemberLoginResponseDTO(
-				token,
+		// 2.2 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
+		MemberLoginResponseDTO responseDto = new MemberLoginResponseDTO(
 				entity.getMemberId(),
+				entity.getMemberName(),
+				accessToken,
 				entity.getRoleList()
 		);
+		
+		// 3. 응답DTO 와 refreshToken 반환 -> 컨트롤러에서 분리 처리하기 위함
+		return new MemberLoginResultDTO(responseDto, refreshToken);
 	}//login
 	
 	

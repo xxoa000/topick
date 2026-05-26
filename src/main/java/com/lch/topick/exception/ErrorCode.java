@@ -33,7 +33,7 @@ public enum ErrorCode {
 
     // Auth
     ACCESS_TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "토큰을 찾을 수 없습니다."),						// 401
-    ACCESS_DENIE(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     
     // JWT
     JWT_MALFORMED(HttpStatus.UNAUTHORIZED, "잘못된 형식의 토큰입니다."),							// 401

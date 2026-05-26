@@ -1,7 +1,10 @@
 package com.lch.topick.web.member.def.controller;
 
 
+import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,14 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lch.topick.exception.CustomException;
+import com.lch.topick.jwtToken.TokenProvider;
 import com.lch.topick.web.member.def.domain.MemberJoinRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginRequestDTO;
+import com.lch.topick.web.member.def.domain.MemberLoginResultDTO;
 import com.lch.topick.web.member.def.domain.MemberRoleUpdateRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
 import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.service.MemberService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -30,6 +35,7 @@ import lombok.extern.log4j.Log4j2;
 public class MemberController {
 
 	private final MemberService memberService;
+	private final TokenProvider tokenProvider;
 
 	
 	// 전체 고객 리스트
@@ -74,10 +80,25 @@ public class MemberController {
 	
 	// 로그인
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody MemberLoginRequestDTO requestDto) {
+	public ResponseEntity<?> login(
+								@RequestBody MemberLoginRequestDTO requestDto,
+								HttpServletResponse response) {
+								// 클라이언트 에게 보낼 HTTP 응답을 설정하는 객체
+		MemberLoginResultDTO resultDto = memberService.login(requestDto);
 		
-		return ResponseEntity.status(HttpStatus.OK)
-							 .body(memberService.login(requestDto));
+		// 쿠키 객체에 refreshToken 저장
+		ResponseCookie cookie = ResponseCookie.from("refreshToken", resultDto.getRefreshToken())
+		.httpOnly(true) 		// js 가 refreshToken 에 접근 못하게 함
+		.path("/")				// 사이트 어디서든 쿠키 사용 가능
+		.secure(false)
+		.sameSite("Lax")		// 대부분의 같은 사이트 요청에 쿠키 전송
+		.maxAge( tokenProvider.getRefreshTokenExp()/1000 ) // 만료시간
+		.build();
+		
+		// 쿠키를 응답 헤더에 추가하여 클라이언트로 전송
+		response.addHeader(HttpHeaders.SET_COOKIE , cookie.toString());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(resultDto.getResponseDto());
 	}// login
 	
 	
