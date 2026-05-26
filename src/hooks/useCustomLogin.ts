@@ -1,5 +1,4 @@
-// npm install zustand 라이브러리 설치
-import { create } from "zustand";
+import { create } from "zustand"; // npm install zustand 라이브러리 설치
 import type { LoginResponseDTO } from "@/features/member/types/loginDTO";
 import { SESSION } from "@/config/constant";
 
