@@ -45,51 +45,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final TokenProvider tokenProvider;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	
-	@Override
-	protected void doFilterInternal(
-			HttpServletRequest request, 
-			HttpServletResponse response, 
-			FilterChain filterChain
-	) throws ServletException, IOException {
+
+	
+	/* 1. Authorization 헤더에서 Bearer 토큰을 꺼냄.
+	 *
+	 * 요청 헤더 예:
+	 * Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+	 *
+	 * 여기서는 앞의 "Bearer " 7글자를 제거하고
+	 * 순수 JWT 문자열만 반환함. */
+	private String parseBearerToken(HttpServletRequest request) {
 		
-		try {
-			String token = parseBearerToken(request);
-			
-			/* 토큰이 없으면 인증 처리를 하지 않음.
-			 * 이 경우 바로 다음 필터 또는 Controller로 요청을 넘김.
-			 *
-			 * "null" 문자열 체크는 프론트에서 실수로 Authorization: Bearer null
-			 * 형태를 보낼 가능성을 방어하기 위한 코드임. */
-			
-			if (token != null && !token.equalsIgnoreCase("null")) {
-				authenticateByToken(token, request);
-			}
-			
-		} catch (Exception e) {
-			/*
-			 * JWT 검증 중 오류가 발생하면 현재 요청의 인증 정보를 비움.
-			 *
-			 * 여기서 예외를 다시 던지지 않으면 요청은 계속 다음 단계로 넘어감.
-			 * 보호된 API라면 이후 SecurityConfig의 권한 설정에서 차단됨.
-			 */
-			log.error("JWT 인증 필터 오류: {}"+e.getMessage());
-			SecurityContextHolder.clearContext();
-		} //try
+		String bearerToken = request.getHeader("Authorization");
 		
-		filterChain.doFilter(request, response);
+		if ( StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ") ) {
+			return bearerToken.substring(7);
+		}
 		
-	} //doFilterInternal
+		return null;
+	
+	} //parseBearerToken
 	
 	
 	
-	
-	// JWT 토큰으로 Spring Security 인증 객체를 생성하고 등록함.
+	// 2. JWT 토큰으로 Spring Security 인증 객체를 생성하고 등록함.
 	private void authenticateByToken(String token, HttpServletRequest request) {
 
 		Claims claims = tokenProvider.validateToken(token);
-
 		String memberId = claims.get("memberId", String.class);
-
 		List<String> roleList = objectMapper.convertValue(
 				claims.get("roleList"),
 				new TypeReference<List<String>>() {}
@@ -136,26 +119,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	
 	
+
 	
-	/* Authorization 헤더에서 Bearer 토큰을 꺼냄.
-	 *
-	 * 요청 헤더 예:
-	 * Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
-	 *
-	 * 여기서는 앞의 "Bearer " 7글자를 제거하고
-	 * 순수 JWT 문자열만 반환함. */
-	private String parseBearerToken(HttpServletRequest request) {
+	
+	// 3. 헤더에서 accessToken 을 꺼내 검증 -> 검증 성공시 로그인 사용자, 검증 실패시 비로그인 사용자로 취급
+	@Override
+	protected void doFilterInternal(
+			HttpServletRequest request, 
+			HttpServletResponse response, 
+			FilterChain filterChain
+	) throws ServletException, IOException {
 		
-		String bearerToken = request.getHeader("Authorization");
+		try {
+			String token = parseBearerToken(request);
+			/* 
+			 * 토큰이 없으면 인증 처리를 하지 않음.
+			 * 이 경우 바로 다음 필터 또는 Controller로 요청을 넘김.
+			 * "null" 문자열 체크는 프론트에서 실수로 Authorization: Bearer null
+			 * 형태를 보낼 가능성을 방어하기 위한 코드임.
+			 */
+			if (token != null && !token.equalsIgnoreCase("null")) {
+				authenticateByToken(token, request);
+			}
+			
+		} catch (Exception e) {
+			/*
+			 * JWT 검증 중 오류가 발생하면 현재 요청의 인증 정보를 비움.
+			 *
+			 * 여기서 예외를 다시 던지지 않으면 요청은 계속 다음 단계로 넘어감.
+			 * 보호된 API라면 이후 SecurityConfig의 권한 설정에서 차단됨.
+			 */
+			log.error("JWT 인증 필터 오류: {}"+e.getMessage());
+			SecurityContextHolder.clearContext();
+		} //try
 		
-		if ( StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ") ) {
-			return bearerToken.substring(7);
-		}
+		filterChain.doFilter(request, response);
 		
-		return null;
-	
-	} //parseBearerToken
-	
-	
+	} //doFilterInternal
 	
 }//class
