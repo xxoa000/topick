@@ -14,8 +14,8 @@ import com.lch.topick.web.order.def.entity.OrderDetail;
 import com.lch.topick.web.order.def.entity.OrderList;
 import com.lch.topick.web.order.def.repository.OrderDetailRepository;
 import com.lch.topick.web.order.def.repository.OrderListRepository;
-import com.lch.topick.web.store.let.entity.Store;
-import com.lch.topick.web.store.let.repository.StoreRepository;
+import com.lch.topick.web.store.let.entity.AStore;
+import com.lch.topick.web.store.let.repository.AStoreRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
 	
 	private final OrderListRepository listRepository;
 	private final OrderDetailRepository detRepository;
-	private final StoreRepository storeRepository;
+	private final AStoreRepository storeRepository;
 	private final MenuRepository menuRepository;
 	
 	// C - Create
@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
 	// 1.1 새 주문 생성
 	private OrderList insert(OrderCreateRequestDTO dto) {
 		
-		Store store = storeRepository.findById(dto.getStoreNo())
+		AStore store = storeRepository.findById(dto.getStoreNo())
 							.orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 		
 		// 주문 빌드

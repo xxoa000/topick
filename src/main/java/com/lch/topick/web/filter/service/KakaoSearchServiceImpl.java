@@ -17,12 +17,12 @@ import com.lch.topick.web.filter.domain.FilterRequestDTO;
 import com.lch.topick.web.filter.domain.KeywordRequestDTO;
 import com.lch.topick.web.filter.domain.MenuDTO;
 import com.lch.topick.web.filter.domain.SearchResponseDTO;
-import com.lch.topick.web.store.let.domain.StoreItemDTO;
-import com.lch.topick.web.store.let.domain.StoreRequestDTO;
+import com.lch.topick.web.store.let.domain.AStoreItemDTO;
+import com.lch.topick.web.store.let.domain.AStoreRequestDTO;
 import com.lch.topick.web.menu.def.entity.Menu;
 import com.lch.topick.web.menu.def.repository.MenuRepository;
-import com.lch.topick.web.store.let.entity.Store;
-import com.lch.topick.web.store.let.repository.StoreRepository;
+import com.lch.topick.web.store.let.entity.AStore;
+import com.lch.topick.web.store.let.repository.AStoreRepository;
 
 
 @Service
@@ -38,7 +38,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     private final String kakaoRestApiKey;
 
     // Store DB 접근
-    private final StoreRepository storeRepository;
+    private final AStoreRepository storeRepository;
 
     // Menu DB 접근
     private final MenuRepository menuRepository;
@@ -46,7 +46,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     // 생성자
     public KakaoSearchServiceImpl(
             @Value("${kakao.rest-api-key:}") String kakaoRestApiKey,
-            StoreRepository storeRepository,
+            AStoreRepository storeRepository,
             MenuRepository menuRepository) {
         this.kakaoRestApiKey = kakaoRestApiKey;
         this.restClient = RestClient.builder().build();
@@ -60,7 +60,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
 
         vaildateKeyword(req);
 
-        Map<String, StoreItemDTO> merge = new LinkedHashMap<>();
+        Map<String, AStoreItemDTO> merge = new LinkedHashMap<>();
 
         String keyword = (req.getKeyword() == null || req.getKeyword().isBlank())
                 ? DEFAULT_QUERY
@@ -68,7 +68,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
 
         fetchByQuery(req.getSwX(), req.getSwY(), req.getNeX(), req.getNeY(), keyword, merge);
 
-        List<StoreItemDTO> item = new ArrayList<>(merge.values());
+        List<AStoreItemDTO> item = new ArrayList<>(merge.values());
 
         return new SearchResponseDTO(item.size(), item);
     }
@@ -79,7 +79,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
 
         vaildateFilter(req);
 
-        Map<String, StoreItemDTO> merge = new LinkedHashMap<>();
+        Map<String, AStoreItemDTO> merge = new LinkedHashMap<>();
 
         List<String> input = buildInput(req.getTagName());
 
@@ -87,21 +87,21 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
             fetchByQuery(req.getSwX(), req.getSwY(), req.getNeX(), req.getNeY(), i, merge);
         }
 
-        List<StoreItemDTO> item = new ArrayList<>(merge.values());
+        List<AStoreItemDTO> item = new ArrayList<>(merge.values());
 
         return new SearchResponseDTO(item.size(), item);
     }
 
     @Override
     // 마커 클릭 시 가게 저장 및 메뉴 조회
-    public List<MenuDTO> menuList(StoreRequestDTO req) {
+    public List<MenuDTO> menuList(AStoreRequestDTO req) {
 
         // 1. kakaoId 로 store 조회
-    	Store store = storeRepository.findByKakaoId(req.getKakaoId());
+    	AStore store = storeRepository.findByKakaoId(req.getKakaoId());
 
     	if (store == null) {
     	    // 새로 저장
-    	    Store newStore = new Store();
+    	    AStore newStore = new AStore();
     	    newStore.setKakaoId(req.getKakaoId());
     	    newStore.setStoreName(req.getStoreName());
     	    store = storeRepository.save(newStore);
@@ -117,7 +117,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
 
     // 하나의 검색어(query) 로 카카오 API 를 호출해서 결과를 merge 에 저장하는 메서드
     private void fetchByQuery(Double swX, Double swY, Double neX, Double neY,
-                              String query, Map<String, StoreItemDTO> merge) {
+                              String query, Map<String, AStoreItemDTO> merge) {
 
         String url = UriComponentsBuilder
                 .fromHttpUrl("https://dapi.kakao.com/v2/local/search/keyword.json")
@@ -150,7 +150,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
             Double y = Double.parseDouble(d.path("y").asText("0"));
             String id = d.path("id").asText(null);
 
-            merge.putIfAbsent(id, new StoreItemDTO(
+            merge.putIfAbsent(id, new AStoreItemDTO(
                     id,
                     placeName,
                     placeUrl,
