@@ -26,7 +26,7 @@ export const PickComponent: React.FC = () => {
 
     return (
       <div className={styles.pickContainer}>
-        {/* 진행과정을 프로그래스바로 알려줌*/}
+        {/*진행과정을 프로그래스바로 표시*/}
         <div className={styles.progressHeader}>
           <span className={styles.stepIndicator}>{currentStep} / {totalSteps}</span>
           <div className={styles.progressBarWrapper}>
