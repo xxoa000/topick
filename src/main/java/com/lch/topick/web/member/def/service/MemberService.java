@@ -2,6 +2,8 @@ package com.lch.topick.web.member.def.service;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+
 import com.lch.topick.web.member.def.domain.MemberJoinRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginResultDTO;
@@ -9,8 +11,6 @@ import com.lch.topick.web.member.def.domain.MemberRoleUpdateRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberRoleUpdateResponseDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
 import com.lch.topick.web.member.def.entity.Member;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 public interface MemberService {
 	
@@ -32,7 +32,7 @@ public interface MemberService {
 	public MemberLoginResultDTO login(MemberLoginRequestDTO requestDto);
 	
 	// Read) SELECT 로그아웃
-	public void logout(HttpServletResponse response);
+	public void logout(Authentication auth);
 	
 	
 	// Update) UPDATE 기존 계정 권한 수정
@@ -47,9 +47,7 @@ public interface MemberService {
 	
 	
 	// Update) INSERT,UPDATE 더미 데이터 전체에 기본 권한 부여 
-		public int addDefaultRole();
+	public int addDefaultRole();
 	
-	// Delete) DELETE 토큰 데이터 삭제
-	public void clearToken(String memberId);
 
 }//interface

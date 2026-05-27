@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,6 @@ import com.lch.topick.web.member.def.domain.MemberRoleUpdateResponseDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
 import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.repository.MemberRepository;
-
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -124,12 +123,17 @@ public class MemberServiceImpl implements MemberService {
 		return new MemberLoginResultDTO(responseDto, refreshToken);
 	} //login
 	
+	
+	
 	// Read) SELECT 로그아웃
 	@Override
-	public void logout(HttpServletResponse response) {
-		Member entity = repository.findById(response.getHeader("memberId"))
+	public void logout(Authentication auth) {
+	
+		String memberId = auth.getName();
+		Member entity = repository.findById(memberId)
 		  		.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 		
+		entity.clearToken();
 	} //logout
 	
 	
@@ -147,8 +151,8 @@ public class MemberServiceImpl implements MemberService {
 		return new MemberRoleUpdateResponseDTO(
 				entity.getMemberId(),
 				entity.getRoleList()
-		);	
-	}
+				);
+	} //updateRole
 	
 	
 	
@@ -166,7 +170,7 @@ public class MemberServiceImpl implements MemberService {
 						 requestDto.getMemberGender(),
 						 requestDto.getMemberBirthday());
 		return entity;
-	}//update
+	} //update
 
 	
 	
@@ -198,6 +202,7 @@ public class MemberServiceImpl implements MemberService {
 		}		
 		return count;
 	}
+	// 이미 암호화 된 password 는 건너뜀
 	private boolean isEncode(String pw) { return pw != null && pw.matches("^\\$2[aby]\\$\\d{2}\\$.{53}$"); }
 	
 	
@@ -212,12 +217,5 @@ public class MemberServiceImpl implements MemberService {
 	}
 		
 	
-	// DELETE 토큰 데이터 삭제
-	@Override
-	public void clearToken(String memberId) {
-		Member entity = repository.findById(memberId)
-		  		.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-		entity.clearToken();
-	}
-
+	
 }// class
