@@ -10,33 +10,46 @@ import com.lch.topick.web.member.def.domain.MemberRoleUpdateResponseDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
 import com.lch.topick.web.member.def.entity.Member;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 public interface MemberService {
 	
-	// SELECT 고객 리스트
+	// Read) SELECT 고객 리스트
 	public List<Member> selectList();
 	
-	// SELECT 고객 상세
+	// Read) SELECT 고객 상세
 	public Member selectOne(String memberId);
+	
+	
 
-	// SELECT 회원가입 - Id 중복 확인
+	// Create) SELECT 회원가입 - Id 중복 확인
 	public Boolean exist(String memberId);
 	
-	// INSERT 회원가입
+	// Create) INSERT 회원가입
 	public Member insert(MemberJoinRequestDTO requestDto);
 	
-	// SELECT 로그인
+	// Read) SELECT 로그인
 	public MemberLoginResultDTO login(MemberLoginRequestDTO requestDto);
 	
-	// INSERT,UPDATE 더미 데이터 전체에 기본 권한 부여 
-	public int addDefaultRole();
+	// Read) SELECT 로그아웃
+	public void logout(HttpServletResponse response);
 	
-	// UPDATE 기존 계정 권한 수정
+	
+	// Update) UPDATE 기존 계정 권한 수정
 	public MemberRoleUpdateResponseDTO updateRole(MemberRoleUpdateRequestDTO requestDto);
 
-	// UPDATE 기존 계정 수정
+	// Update) UPDATE 기존 계정 수정
 	public Member update(String memberId, MemberUpdateRequestDTO requestDto);
 	
-	// UPDATE 회원탈퇴 (status 변경)
-	public void delete(String memberId);
+	// Update) UPDATE 회원탈퇴 (status 변경)
+	public void resign(String memberId);
+	
+	
+	
+	// Update) INSERT,UPDATE 더미 데이터 전체에 기본 권한 부여 
+		public int addDefaultRole();
+	
+	// Delete) DELETE 토큰 데이터 삭제
+	public void clearToken(String memberId);
 
 }//interface
