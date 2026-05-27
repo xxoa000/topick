@@ -3,11 +3,13 @@ import { ENV } from './env';
 import { API_TIMEOUT } from '@/config/constant';
 import { zustandAuthStore } from './../hooks/useCustomLogin';
 
+
+
 // ==========================================
 // 1. 독립된 두 개의 인스턴스 정의
 // ==========================================
 
-// 🚀 일반 요청 인스턴스 (매 요청마다 자동으로 Access Token을 헤더에 탑재)
+//일반 요청 인스턴스 (매 요청마다 자동으로 Access Token을 헤더에 탑재)
 export const accessApiClient = axios.create({
   baseURL: ENV.API_BASE_URL,
   timeout: API_TIMEOUT,
@@ -54,7 +56,7 @@ const processQueue = (error: AxiosError | null, token: string | null = null): vo
 
 
 // ==========================================
-// 3. 일반 인스턴스(accessApiClient)용 요청 인터셉터
+// 3. 일반 인스턴스(accessApiClient)용 request 인터셉터
 // ==========================================
 accessApiClient.interceptors.request.use(
   (config) => {
@@ -72,7 +74,7 @@ accessApiClient.interceptors.request.use(
 
 
 // ==========================================
-// 4. 일반 인스턴스(accessApiClient)용 응답 인터셉터
+// 4. 일반 인스턴스(accessApiClient)용 response 인터셉터
 // ==========================================
 accessApiClient.interceptors.response.use(
   (response) => response, // 2xx 성공 응답은 그대로 통과
@@ -106,15 +108,16 @@ accessApiClient.interceptors.response.use(
         console.log("🔄 Access Token 만료 감지: 토큰 재발급을 요청합니다.");
         
         // 1. refreshApiClient로 백엔드에 토큰 재발급 요청 (일반적으로 결과로 새 accessToken이 내려옴)
-        const response = await refreshApiClient.get('/auth/refresh'); 
+        const response = await refreshApiClient.post('/auth/refresh'); 
         const newAccessToken = response.data.accessToken; 
 
         // 2. Zustand Auth 스토어의 상태 갱신
-        const currentMember = zustandAuthStore.getState().member;
-        if (currentMember) {
-          zustandAuthStore.setState({
-            member: { ...currentMember, accessToken: newAccessToken }
-          });
+        const {member, login} = zustandAuthStore.getState();
+        if (member) {
+          login({
+            ...member,
+            accessToken : newAccessToken
+          })
         }
 
         // 3. 대기열(Queue)에 있던 동시 요청들에게 새 토큰을 전달하며 전부 해제(resolve)
@@ -141,7 +144,7 @@ accessApiClient.interceptors.response.use(
         
         // 스토리지 및 세션 초기화 후 로그인 페이지로 튕구기
         sessionStorage.clear();
-        window.location.replace("/login"); 
+        window.location.replace("/member/login"); 
         
         return Promise.reject(refreshError);
       } finally {
