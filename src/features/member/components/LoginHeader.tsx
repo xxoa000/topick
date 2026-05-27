@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom"
 import useCustomLogin from "@/hooks/useCustomLogin";
-import { refreshApiClient } from "@/config/axios";
+import accessApiClient from "@/config/axios";
 
 
 export default function LoginHeader(){
@@ -11,10 +11,12 @@ export default function LoginHeader(){
   // 로그아웃 & 화면 새로고침
   const handleLogout = async() => {
     try {
-      await refreshApiClient.post( 
-        '/member/logout',
-        {},
-        { withCredentials: true }
+      await accessApiClient.post( 
+        "/member/logout",
+        {
+        }, {
+          withCredentials: true
+        }
       );
     } catch (error) {
       console.error(error); 
