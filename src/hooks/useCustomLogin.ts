@@ -24,9 +24,10 @@ export const zustandAuthStore = create<AuthType>((set) => ({
   member: getSessionData(),
   
   // 로그인 성공시
-  login: (data) => set({
-    member: data,
-  }),
+  login: (data) => {
+    sessionStorage.setItem(SESSION.ACCESS_DATA, JSON.stringify(data));
+    set( { member: data });
+  },
 
   // 로그아웃시
   logout: () => {

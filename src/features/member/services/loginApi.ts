@@ -1,13 +1,11 @@
+import { ENV } from "@/config/env";
 import axios from "axios";
-
-const BASE_URL = "http://localhost:8080/api";
-
 
 export const loginApi = async (memberId: string, memberPw: string) => {
 
 	try {
 		const response = await axios.post(
-			BASE_URL+"/member/login",
+			ENV.API_BASE_URL+"/member/login",
 			{
 				memberId,
 				memberPw
