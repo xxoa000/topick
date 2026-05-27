@@ -9,17 +9,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -38,6 +39,7 @@ import lombok.extern.log4j.Log4j2;
 
 
 @Log4j2
+@Getter
 @Component     // 컴포넌트 에너테이션 : 서버 흐름에 포함되지 않는 기타 Bean 객체들에 지정
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -59,6 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String bearerToken = request.getHeader("Authorization");
 		
 		if ( StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ") ) {
+			log.info(bearerToken);
 			return bearerToken.substring(7);
 		}
 		

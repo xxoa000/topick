@@ -103,8 +103,19 @@ public class MemberController {
 	
 	
 	// 로그아웃
-	@GetMapping("/logout")
-	public ResponseEntity<?> logout(@RequestBody MemberLoginRequestDTO requestDto) {
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(HttpServletResponse response) {
+		
+		ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+				.httpOnly(true)
+				.secure(false) // 로컬 http면 false
+				.path("/")
+				.maxAge(0)
+				.sameSite("Lax")
+				.build();
+
+			response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+			
 		return ResponseEntity.ok("로그아웃 되었습니다.");
 	}//logout
 
@@ -139,9 +150,8 @@ public class MemberController {
 	
 
 	// 계정 삭제
-	@DeleteMapping("/delete/{memberId}")
-	public void delete(@PathVariable String memberId, Member entity) {
-
+	@DeleteMapping("/resign/{memberId}")
+	public void resign(@PathVariable String memberId, Member entity) {
 	}// delete
 
 }// class
