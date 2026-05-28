@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { loginApi } from "../services/loginApi";
+import styles from "./_login-form.module.scss";
 import { NavLink, useNavigate } from "react-router-dom";
 import useCustomLogin from "@/hooks/useCustomLogin";
+import memberApi from "@member/services/memberApi";
 
 
 export default function LoginForm() {
@@ -14,50 +15,51 @@ export default function LoginForm() {
 		e.preventDefault();
 
 		try {
-			const data = await loginApi(memberId, memberPw);
-
-			// 로그인 성공시, 세션스토리지에 accessToken 저장
-			// 전역 상태관리 저장소에도 로그인 정보 저장
+			const data = await memberApi.login({memberId, memberPw});
+			// 로그인 성공시, 세션스토리지 & zustandStore 에 accessToken 저장
 			login(data);
-
 			// 로그인 성공시 홈으로 url 이동
 			navigate("/");
 
-		} catch(err) {
-			console.error(err);
+		} catch(error) {
+			console.error(error);
+			alert("로그인 실패");
 		}
 	} //handleSubmit
 
 
 	return (
-	<div>
-	<form onSubmit={handleSubmit}>
-		<table>
-		<tbody>
-			<tr>
-				<th>ID</th>
-				<td><input type="text" id="memberId" name="memberId" 
+	<section className={styles.loginSection}>
+		
+		<NavLink to="/" className={styles.logoLink}>
+			<img src="/logo.png" alt="오늘의 식당 로고" />
+  	</NavLink>
+
+		<form onSubmit={handleSubmit} className={styles.loginForm}>
+
+			<div className={styles.loginBox}>
+				<div className={styles.inputGroup}>
+					<label htmlFor="memberId">아이디</label>
+					<input type="text" id="memberId" name="memberId"
 						value={memberId} onChange={(e) => setMemberId(e.target.value)}/>
-				</td>
-			</tr>
-			<tr>
-				<th>PW</th>
-				<td><input type="password" id="memberPw" name="memberPw" 
+				</div>
+
+				<div className={styles.inputGroup}>
+					<label htmlFor="memberPw">비밀번호</label>
+					<input type="password" id="memberPw" name="memberPw"
 						value={memberPw} onChange={(e) => setMemberPw(e.target.value)}/>
-				</td>
-			</tr>
-			<tr>
-				<th></th>
-				<td><button type="submit">로그인</button></td>
-			</tr>
-		</tbody>
-		</table>
-		<ul>
+				</div>
+			</div>
+
+			<button type="submit" className={styles.loginButton}>로그인</button>
+		</form>
+	
+		<ul className={styles.linkList}>
 			<li><NavLink to="">아이디 찾기</NavLink></li>
 			<li><NavLink to="">PW 찾기</NavLink></li>
 			<li><NavLink to="/member/join">회원가입</NavLink></li>
 		</ul>
-	</form>
-	</div>
+
+	</section>
 	);
 };
