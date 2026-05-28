@@ -1,7 +1,7 @@
 import React, { useState } from 'react'; 
 import type { Review } from '../types/reviewType';
 import { REVIEW_ALERT_MESSAGES } from '../constants/reviewConstant';
-import styles from './_review-component.module.scss'; // 💡 프로젝트 표준 모듈 매핑
+import styles from './_review-component.module.scss'; 
 import useCustomLogin from '@/hooks/useCustomLogin';
 
 interface ReviewComponentProps {
