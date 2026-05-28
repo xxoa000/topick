@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ENV } from './env';
-import { API_TIMEOUT } from '@/config/constant';
+import { API_TIMEOUT, SESSION } from '@/config/constant';
 import { zustandAuthStore } from '@/hooks/useCustomLogin';
 
 /* ** axios 인스턴스 와 인터셉터 설정 
@@ -36,18 +36,18 @@ export const refreshApiClient = axios.create({
 
 
 // ==========================================
-// 2. 일반 인스턴스(accessApiClient)용 요청 인터셉터
+// 2. 일반 인스턴스(accessApiClient)용 request 인터셉터
 // ==========================================
 accessApiClient.interceptors.request.use(
   (config) => {
-    // 요청이 날아가는 바로 그 순간 세션스토리지를 뒤져서 최신 ID를 가져옵니다.
+    // 요청이 날아가는 바로 그 순간 세션스토리지를 뒤져서 최신 ID를 가져옴
     const member = zustandAuthStore.getState().member;
     console.log(`** [요청 인터셉터] accessApiClient, memberId=${member?.memberId}`);
 
-    // API 요청 보내기 전 로그인 정보(memberId)가 존재할 경우,
+    // API 요청 보내기 전, 로그인 정보(memberId)가 존재할 경우.
     // Header에 자동으로 추가하여 백엔드에서 인증할 수 있도록 함
     if (member?.accessToken) {
-      config.headers.Authorization = `Bearer ${member.accessToken}`; 
+      config.headers.Authorization = `Bearer ${member?.accessToken}`; 
     }
     return config;
   },
@@ -56,7 +56,7 @@ accessApiClient.interceptors.request.use(
 
 
 // ==========================================
-// 3. 일반 인스턴스(accessApiClient)용 응답 인터셉터
+// 3. 일반 인스턴스(accessApiClient)용 response 인터셉터
 // ==========================================
 let isRefreshing = false; // 현재 세션 리프레시(재발급) 요청이 날아가서 진행 중인지 체크
 
@@ -85,9 +85,9 @@ accessApiClient.interceptors.response.use(
              나중에 JWT 방식으로 고도화될 때 아래 주석을 풀고 백엔드 엔드포인트를 매핑하면 됩니다.
              인터셉터가 없는 refreshApiClient를 호출하므로 안전지대에서 통신합니다.
           */
-          // const response = await refreshApiClient.get('/auth/refresh');
-          // const newId = response.data.memberId;
-          // sessionStorage.setItem(SESSION_KEYS.MEMBER_ID, newId);
+          const response = await refreshApiClient.get('/auth/refresh');
+          const newData = response.data;
+          sessionStorage.setItem(SESSION.ACCESS_DATA, JSON.stringify(newData));
           
           // 원래 실패했던 요청의 헤더를 새 로그인 정보로 갱신한 후 다시 요청하여 살려내기
           // originalRequest.headers['X-USER-ID'] = newId;
