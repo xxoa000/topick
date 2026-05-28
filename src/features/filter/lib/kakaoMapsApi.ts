@@ -11,6 +11,8 @@ export interface KakaoLatLngBounds {
 export interface KakaoMap {
   getBounds(): KakaoLatLngBounds;
   panTo(latlng: KakaoLatLng): void;
+  setDraggable?(draggable: boolean): void;
+  setZoomable?(zoomable: boolean): void;
   relayout?: () => void;
 }
 

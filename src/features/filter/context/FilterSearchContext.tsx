@@ -3,26 +3,37 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
 } from 'react';
 import type { StoreItem } from '../../store/types';
+import { extractFoodType } from '../lib/categoryFoodType';
 import { getKakaoMaps } from '../lib/kakaoMapsApi';
 import { type KakaoMap, type KakaoMarker } from '../lib/loadKakaoMaps';
 import { fetchStoreMenus, fetchTags, searchByFilter, searchByKeyword } from '../services/filterApi';
 import type { Menu, SearchResponse, Tag } from '../types';
 
 type SearchMode = 'keyword' | 'filter';
+type DistanceOption = 100 | 500 | 1000 | null;
 
 type FilterSearchContextValue = {
   keyword: string;
   setKeyword: (value: string) => void;
+  /** API 원본 목록 (음식 종류 추출 기준) */
+  results: StoreItem[];
+  /** 선택한 음식 종류(두 번째 구간) 기준으로 필터된 목록 · 마커 표시용 */
+  displayedResults: StoreItem[];
+  foodTypesFromResults: string[];
+  selectedFoodType: string | null;
+  selectFoodType: (type: string | null) => void;
+  selectedDistance: DistanceOption;
+  setSelectedDistance: (distance: DistanceOption) => void;
   selectedTags: Set<string>;
   tags: Tag[];
   tagsLoading: boolean;
   tagsError: string;
-  results: StoreItem[];
   total: number;
   status: string;
   mapError: string;
@@ -67,6 +78,8 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
   const [tagsLoading, setTagsLoading] = useState(true);
   const [tagsError, setTagsError] = useState('');
   const [results, setResults] = useState<StoreItem[]>([]);
+  const [selectedFoodType, setSelectedFoodType] = useState<string | null>(null);
+  const [selectedDistance, setSelectedDistance] = useState<DistanceOption>(null);
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState('');
   const [mapError, setMapError] = useState('');
@@ -81,6 +94,76 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
   const setKeyword = useCallback((value: string) => {
     setKeywordState(value);
   }, []);
+
+  const selectFoodType = useCallback((type: string | null) => {
+    setSelectedFoodType((prev) => {
+      if (type === null) return null;
+      return prev === type ? null : type;
+    });
+  }, []);
+
+  const toDistanceOption = useCallback((value: DistanceOption) => {
+    setSelectedDistance(value);
+  }, []);
+
+  const calcDistanceMeters = useCallback(
+    (lat1: number, lng1: number, lat2: number, lng2: number) => {
+      const toRad = (deg: number) => (deg * Math.PI) / 180;
+      const radius = 6371000;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) *
+          Math.cos(toRad(lat2)) *
+          Math.sin(dLng / 2) *
+          Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return radius * c;
+    },
+    [],
+  );
+
+  const foodTypesFromResults = useMemo(() => {
+    const set = new Set<string>();
+    for (const s of results) {
+      const t = extractFoodType(s.categoryName);
+      if (t) set.add(t);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'ko'));
+  }, [results]);
+
+  const displayedResults = useMemo(() => {
+    const byFoodType =
+      selectedFoodType == null
+        ? results
+        : results.filter(
+            (s) => extractFoodType(s.categoryName) === selectedFoodType,
+          );
+
+    const map = mapRef.current;
+    if (!map) return byFoodType;
+
+    const bounds = map.getBounds();
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+    const centerLat = (sw.getLat() + ne.getLat()) / 2;
+    const centerLng = (sw.getLng() + ne.getLng()) / 2;
+
+    const withDistance = byFoodType
+      .filter((s) => s.y != null && s.x != null)
+      .map((s) => ({
+        store: s,
+        distance: calcDistanceMeters(centerLat, centerLng, s.y, s.x),
+      }));
+
+    const byDistance =
+      selectedDistance == null
+        ? withDistance
+        : withDistance.filter((d) => d.distance <= selectedDistance);
+
+    return byDistance.sort((a, b) => a.distance - b.distance).map((d) => d.store);
+  }, [results, selectedFoodType, selectedDistance, calcDistanceMeters]);
 
   const buildBounds = useCallback(() => {
     const map = mapRef.current;
@@ -170,22 +253,12 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     [clearMarkers],
   );
 
-  const renderResult = useCallback(
-    (data: SearchResponse) => {
-      const items = data.item ?? [];
-      setTotal(data.total ?? 0);
-      setResults(items);
-
-      if (!items.length) {
-        clearMarkers();
-        return;
-      }
-
-      drawMarkers(items);
-      setStatus(`지도에 ${items.length}개 마커를 표시했습니다.`);
-    },
-    [clearMarkers, drawMarkers],
-  );
+  const renderResult = useCallback((data: SearchResponse) => {
+    const items = data.item ?? [];
+    setTotal(data.total ?? 0);
+    setResults(items);
+    setSelectedFoodType(null);
+  }, []);
 
   const runKeywordSearch = useCallback(
     async (fromMapMove = false) => {
@@ -292,15 +365,9 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
 
   const handleResultClick = useCallback(
     (store: StoreItem) => {
-      const map = mapRef.current;
-      if (store.y != null && store.x != null && map) {
-        suppressIdle(900);
-        const maps = getKakaoMaps();
-        map.panTo(new maps.LatLng(store.y, store.x));
-      }
       void selectStore(store);
     },
-    [selectStore, suppressIdle],
+    [selectStore],
   );
 
   const runKeywordSearchRef = useRef(runKeywordSearch);
@@ -358,14 +425,47 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!mapRef.current) return;
+    drawMarkers(displayedResults);
+    if (results.length === 0) {
+      setStatus('');
+    } else {
+      const suffix = selectedFoodType ? ` · ${selectedFoodType}` : '';
+      const distanceSuffix =
+        selectedDistance == null ? '' : ` · ${selectedDistance}m 이내`;
+      setStatus(
+        `지도에 ${displayedResults.length}개 표시${suffix}${distanceSuffix}`,
+      );
+    }
+  }, [
+    displayedResults,
+    results.length,
+    selectedFoodType,
+    selectedDistance,
+    drawMarkers,
+  ]);
+
+  useEffect(() => {
+    if (!selectedStore) return;
+    const still = displayedResults.some((s) => s.id === selectedStore.id);
+    if (!still) clearStoreDetail();
+  }, [displayedResults, selectedStore, clearStoreDetail]);
+
   const value: FilterSearchContextValue = {
     keyword,
     setKeyword,
+    results,
+    displayedResults,
+    foodTypesFromResults,
+    selectedFoodType,
+    selectFoodType,
+    selectedDistance,
+    setSelectedDistance: toDistanceOption,
     selectedTags,
     tags,
     tagsLoading,
     tagsError,
-    results,
     total,
     status,
     mapError,

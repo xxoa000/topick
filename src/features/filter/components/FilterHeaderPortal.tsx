@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
-import KeywordSearchBar from './KeywordSearchBar';
+import FoodTypeFilterBar from './FoodTypeFilterBar';
 
 export default function FilterHeaderPortal() {
   const location = useLocation();
-  const [headerEl, setHeaderEl] = useState<HTMLElement | null>(null);
+  const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    setHeaderEl(document.querySelector('header'));
+    setSlotEl(document.getElementById('food-type-slot'));
   }, []);
 
-  if (location.pathname !== '/' || !headerEl) {
+  const isFilterPage =
+    location.pathname === '/filter' || location.pathname.startsWith('/filter/');
+
+  if (!isFilterPage || !slotEl) {
     return null;
   }
 
-  return createPortal(<KeywordSearchBar />, headerEl);
+  return createPortal(<FoodTypeFilterBar />, slotEl);
 }

@@ -8,7 +8,7 @@ import {
 import { fetchKakaoMapsJsKey } from '../services/filterApi';
 import { useFilterSearch } from '../context/FilterSearchContext';
 
-const DEFAULT_CENTER = { lat: 37.3943, lng: 127.111 };
+const DEFAULT_CENTER = { lat: 37.350106, lng: 127.109001 };
 
 function waitForElementSize(el: HTMLElement): Promise<void> {
   return new Promise((resolve) => {
@@ -30,6 +30,29 @@ function waitForElementSize(el: HTMLElement): Promise<void> {
     };
 
     check();
+  });
+}
+
+function getCurrentCenter(): Promise<{ lat: number; lng: number }> {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(DEFAULT_CENTER);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      () => resolve(DEFAULT_CENTER),
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+      },
+    );
   });
 }
 
@@ -57,11 +80,16 @@ export default function FilterMapView() {
         await loadKakaoMaps(jsKey);
         if (cancelled) return;
 
+        const center = await getCurrentCenter();
+        if (cancelled) return;
+
         const maps = getKakaoMaps();
         const map = new maps.Map(el, {
-          center: new maps.LatLng(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng),
+          center: new maps.LatLng(center.lat, center.lng),
           level: 5,
         });
+        map.setDraggable?.(false);
+        map.setZoomable?.(false);
         mapRef.current = map;
         relayoutMap(map);
         window.addEventListener('resize', handleResize);
