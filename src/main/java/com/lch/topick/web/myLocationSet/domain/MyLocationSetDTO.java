@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MyLocationSetDTO {
 	
-	private int addressNo;			
+	private long addressNo;			
 	private String memberId;		//사용자 고유ID (member table 참조)
 	private String addressPostcode;	//우편번호, API: zonecode
 	private String addressRoad;		//도로명, API: roadAddress
@@ -20,4 +20,5 @@ public class MyLocationSetDTO {
 	private String addressName;		//별칭, API: buildingName
 	private String addressX; 		//경도, API: longitude, 	
 	private String addressY; 		//위도, API: latitude, 
+	private char addressDefulat;	// 'Y', 'N'
 }
