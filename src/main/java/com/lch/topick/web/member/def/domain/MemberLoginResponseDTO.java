@@ -19,6 +19,10 @@ public class MemberLoginResponseDTO {
 	private final String memberName;
 	private final String accessToken;
 	
+	// 좌표 x, y 추가
+	private final String addressX;
+	private final String addressY;
+	
 	
 	@Builder.Default
 	private List<MemberRole> roleList = new ArrayList<>();

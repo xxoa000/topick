@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,9 @@ import com.lch.topick.web.member.def.domain.MemberRoleUpdateResponseDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
 import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.repository.MemberRepository;
+import com.lch.topick.web.myLocationSet.entity.MyLocationSet;
+import com.lch.topick.web.myLocationSet.repository.MyLocationSetRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -31,7 +33,8 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository repository;
 	private final PasswordEncoder pwEncoder;
 	private final TokenProvider tokenProvider;
-
+	// 주소 추가용
+	private final MyLocationSetRepository addrRepository;
 	
 	
 	
@@ -111,11 +114,18 @@ public class MemberServiceImpl implements MemberService {
 		entity.updateLastLoginAt();
 		updateToken(entity, refreshToken);
 		
-		// 2.2 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
+		// 2.2 클라이언트로 주소 추가 하여 전송
+		MyLocationSet addr = addrRepository
+							.findByMemberIdAndAddressDefault(entity.getMemberId(), 'Y');
+		
+		
+		// 2.3 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
 		MemberLoginResponseDTO responseDto = new MemberLoginResponseDTO(
 															entity.getMemberId(),
 															entity.getMemberName(),
 															accessToken,
+															addr.getAddressX(),
+															addr.getAddressY(),
 															entity.getRoleList()
 															);
 		
@@ -127,9 +137,8 @@ public class MemberServiceImpl implements MemberService {
 	
 	// Read) SELECT 로그아웃
 	@Override
-	public void logout(Authentication auth) {
+	public void logout(String memberId) {
 	
-		String memberId = auth.getName();
 		Member entity = repository.findById(memberId)
 		  		.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 		
