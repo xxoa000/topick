@@ -22,7 +22,7 @@ public enum ErrorCode {
 	// Success
 	JOIN_SUCCESS(HttpStatus.CREATED, "회웝가입 되었습니다. 로그인 후 사용해주세요."),				//201
 	LOGIN_SUCCESS(HttpStatus.OK, "정상적으로 로그인 되었습니다."),									//200
-	LOGOUT_SUCCESS(HttpStatus.OK, "정삭적으로 로그아웃 되었습니다."),												//200
+	LOGOUT_SUCCESS(HttpStatus.OK, "정삭적으로 로그아웃 되었습니다."),								//200
 
     // Common
 	INPUT_INVALID_VALUE(HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다."),						// 400

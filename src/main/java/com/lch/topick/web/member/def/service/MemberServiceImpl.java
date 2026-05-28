@@ -1,8 +1,10 @@
 package com.lch.topick.web.member.def.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,6 @@ import com.lch.topick.web.member.def.domain.MemberRoleUpdateResponseDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
 import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.repository.MemberRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -103,41 +104,39 @@ public class MemberServiceImpl implements MemberService {
 			Map.of(
 				"memberId", entity.getMemberId(),
 				"tokenType", "refresh"
-			);
+			     );
 		final String refreshToken = tokenProvider.createRefreshToken(refreshClaimList);
 		
-		// 2.1 DB 에 로그인 시각 update
+		// 2.1 DB 에 로그인 시각, refreshToken, refreshTokenExp update
 		entity.updateLastLoginAt();
+		updateToken(entity, refreshToken);
 		
 		// 2.2 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
 		MemberLoginResponseDTO responseDto = new MemberLoginResponseDTO(
-				entity.getMemberId(),
-				entity.getMemberName(),
-				accessToken,
-				entity.getRoleList()
-		);
+															entity.getMemberId(),
+															entity.getMemberName(),
+															accessToken,
+															entity.getRoleList()
+															);
 		
 		// 3. 응답DTO 와 refreshToken 반환 -> 컨트롤러에서 분리 처리하기 위함
 		return new MemberLoginResultDTO(responseDto, refreshToken);
-	}//login
+	} //login
 	
 	
 	
-	// Update 더미 데이터 계정에 전체 권한 부여 & 비밀번호 암호화 
+	// Read) SELECT 로그아웃
 	@Override
-	public int addDefaultRole() {
-		List<Member> entityList = repository.findAll();
-		int count = 0 ;
+	public void logout(Authentication auth) {
+	
+		String memberId = auth.getName();
+		Member entity = repository.findById(memberId)
+		  		.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 		
-		for ( Member entity : entityList ) {
-			entity.addDefaultRole();										 	 // 기본 권한 부여
-			String pw = entity.getMemberPw();
-			if (!isEncode(pw)) { entity.changePw(pwEncoder.encode(pw)); }  		 // 비밀번호 인코딩
-			count++; 
-		}		
-		return count;
-	}
-	private boolean isEncode(String pw) { return pw != null && pw.matches("^\\$2[aby]\\$\\d{2}\\$.{53}$"); }
+		entity.clearToken();
+	} //logout
+	
+	
 	
 	
 	// UPDATE 기존 계정 권한 수정
@@ -152,8 +151,8 @@ public class MemberServiceImpl implements MemberService {
 		return new MemberRoleUpdateResponseDTO(
 				entity.getMemberId(),
 				entity.getRoleList()
-		);	
-	}
+				);
+	} //updateRole
 	
 	
 	
@@ -171,19 +170,52 @@ public class MemberServiceImpl implements MemberService {
 						 requestDto.getMemberGender(),
 						 requestDto.getMemberBirthday());
 		return entity;
-	}//update
+	} //update
 
 	
 	
 	
 	
 	
-	// DELETE 계정 삭제
+	// UPDATE 계정 탈퇴
 	@Override
-	public void delete(String memberId) {
+	public void resign(String memberId) {
 		Member entity = repository.findById(memberId)
 				  		.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-		entity.delete();
-	}//delete
-
+		entity.resign();
+	} //resign
+	
+	
+	
+	// 개발용
+	// Update 더미 데이터 계정에 전체 권한 부여 & 비밀번호 암호화 
+	@Override
+	public int addDefaultRole() {
+		List<Member> entityList = repository.findAll();
+		int count = 0 ;
+		
+		for ( Member entity : entityList ) {
+			entity.addDefaultRole();										 	 // 기본 권한 부여
+			String pw = entity.getMemberPw();
+			if (!isEncode(pw)) { entity.changePw(pwEncoder.encode(pw)); }  		 // 비밀번호 인코딩
+			count++; 
+		}		
+		return count;
+	}
+	// 이미 암호화 된 password 는 건너뜀
+	private boolean isEncode(String pw) { return pw != null && pw.matches("^\\$2[aby]\\$\\d{2}\\$.{53}$"); }
+	
+	
+	
+	
+	// UPDATE 토큰 데이터 저장
+	private void updateToken(Member entity, String refreshToken) {
+		// refreshToken 암호화, 만료시간 계산
+		LocalDateTime exp = LocalDateTime.now().plusSeconds(tokenProvider.getRefreshTokenExp()/1000);		
+		// DB 에 저장
+		entity.updateToken(refreshToken, exp);
+	}
+		
+	
+	
 }// class
