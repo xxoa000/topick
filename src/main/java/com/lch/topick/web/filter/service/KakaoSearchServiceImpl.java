@@ -15,12 +15,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.lch.topick.web.filter.domain.FilterRequestDTO;
 import com.lch.topick.web.filter.domain.KeywordRequestDTO;
-import com.lch.topick.web.filter.domain.MenuDTO;
 import com.lch.topick.web.filter.domain.SearchResponseDTO;
 import com.lch.topick.web.store.let.domain.FilterStoreItemDTO;
 import com.lch.topick.web.store.let.domain.FilterStoreRequestDTO;
 import com.lch.topick.web.menu.def.entity.Menu;
 import com.lch.topick.web.menu.def.repository.MenuRepository;
+import com.lch.topick.web.menu.let.domain.MenuDTO;
 import com.lch.topick.web.store.let.entity.FilterStore;
 import com.lch.topick.web.store.let.repository.FilterStoreRepository;
 
@@ -44,6 +44,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     private final MenuRepository menuRepository;
 
     // 생성자
+    // Http 요청을 보내는 줄
     public KakaoSearchServiceImpl(
             @Value("${kakao.rest-api-key:}") String kakaoRestApiKey,
             FilterStoreRepository storeRepository,
@@ -57,7 +58,8 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     @Override
     // 키워드 검색 메서드 - 헤더 검색창에서 검색어 입력 시 사용
     public SearchResponseDTO searchByKeyword(KeywordRequestDTO req) {
-
+    	
+    	//유효성 검사
         vaildateKeyword(req);
 
         Map<String, FilterStoreItemDTO> merge = new LinkedHashMap<>();
@@ -123,7 +125,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
                 .fromHttpUrl("https://dapi.kakao.com/v2/local/search/keyword.json")
                 .queryParam("query", query)
                 .queryParam("category_group_code", "FD6")
-                .queryParam("rect", swX + "," + swY + "," + neX + "," + neY)
+                .queryParam("rect", swX + "," +swY + "," + neX + "," + neY)
                 .build()
                 .toUriString();
 
@@ -133,7 +135,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(JsonNode.class);
-
+        
         if (root == null || !root.path("documents").isArray()) {
             return;
         }
