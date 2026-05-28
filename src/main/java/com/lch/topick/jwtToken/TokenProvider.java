@@ -89,7 +89,7 @@ public class TokenProvider {
 	
 
 	// 5. Role을 Token에 포함한 검증
-	//    token 의 값을 디코딩 & 파싱 하여 위조여부 확인 -> Claims 타입으로 return
+	//    token 의 값을 디코딩 & 파싱 하여 위조여부 확인 -> 다시 복호화하여 Claims 타입으로 return
 	public Claims validateToken(String token) {
 		SecretKey key = getSigningKey();
 		

@@ -75,7 +75,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private void authenticateByToken(String token, HttpServletRequest request) {
 
 		Claims claims = tokenProvider.validateToken(token);
+		
 		String memberId = claims.get("memberId", String.class);
+		
 		List<String> roleList = objectMapper.convertValue(
 				claims.get("roleList"),
 				new TypeReference<List<String>>() {}
@@ -101,20 +103,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		 * - JWT 인증에서는 이미 토큰 검증이 끝났으므로 null 사용
 		 *
 		 * 세 번째 값: authorities
-		 * - 현재 사용자의 권한 목록 */
-		
+		 * - 현재 사용자의 권한 목록 
+		 */
 		AbstractAuthenticationToken authentication =
-				new UsernamePasswordAuthenticationToken(memberId, null, authorities);
+				new UsernamePasswordAuthenticationToken(
+						memberId, 
+						null,		//Password 를 의미, 보통은 null 로 둠 
+						authorities);
 
 		/* 인증 요청의 부가 정보 등록.
-		 * 예: IP, 세션 ID 같은 request 기반 정보. */
-		
+		 * 예: IP, 세션 ID 같은 request 기반 정보. 
+		 */
 		authentication.setDetails(
 				new WebAuthenticationDetailsSource().buildDetails(request)
 		);
 		
 		/* SecurityContextHolder에 인증 정보를 등록함.
-		 * 이 등록이 끝나야 Spring Security 가 현재 요청을 인증된 요청으로 취급함. */
+		 * 이 등록이 끝나야 Spring Security 가 현재 요청을 인증된 요청으로 취급함. 
+		 */
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	
 	} //authenticateByToken
@@ -127,11 +133,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	// 3. 헤더에서 accessToken 을 꺼내 검증 -> 검증 성공시 로그인 사용자, 검증 실패시 비로그인 사용자로 취급
 	@Override
-	protected void doFilterInternal(
-			HttpServletRequest request, 
-			HttpServletResponse response, 
-			FilterChain filterChain
-	) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
+									FilterChain filterChain) throws ServletException, IOException {
 		
 		try {
 			String token = parseBearerToken(request);
