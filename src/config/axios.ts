@@ -1,53 +1,69 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { ENV } from './env';
 import { API_TIMEOUT } from '@/config/constant';
-import useCustomLogin from '@/hooks/useCustomLogin';
-
-/* ** axios 인스턴스 와 인터셉터 설정 
-1) axios 인스턴스(Instance)
-   -> 공통설정(baseURL, headers, timeout 등)이 들어있는 axios 복사본
-   -> 매 요청마다 같은 설정을 반복하지 않고 재사용하기 위해 사용
-
-2) axios 인터셉터(Interceptor)
-   -> 요청이나 응답을 가로채는 기능 (브라우저 ↔ interceptor ↔ 서버)
-   -> 인스턴스별로 독립적으로 동작하므로 일반 요청과 재발급 요청 분리 운영 가능
-*/
+import { zustandAuthStore } from '@/hooks/useCustomLogin';
 
 // ==========================================
 // 1. 독립된 두 개의 인스턴스 정의
 // ==========================================
 
-// 🚀 일반 요청 인스턴스 (매 요청마다 자동으로 세션 ID/토큰을 챙겨감)
+//일반 요청 인스턴스 (매 요청마다 자동으로 Access Token을 헤더에 탑재)
 export const accessApiClient = axios.create({
-  baseURL: ENV.API_BASE_URL, // env.ts에서 관리하는 기본 API 주소
-  timeout: API_TIMEOUT,             // 5초 내에 응답 안 오면 timeout 에러 발생 (무한 로딩 방지)
+  baseURL: ENV.API_BASE_URL,
+  timeout: API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// 🔄 재발급 전용 인스턴스 (인터셉터를 거치지 않는 무풍지대 안전 무전기)
-// - 토큰 재발급 요청 시 만료된 accessToken이 헤더에 중복 탑재되어 무한 루프 도는 것을 원천 차단
+// 🔄 재발급 전용 인스턴스 (인터셉터 무풍지대)
 export const refreshApiClient = axios.create({
   baseURL: ENV.API_BASE_URL,
   timeout: API_TIMEOUT,
-  withCredentials: true,     // 쿠키 기반 인증(RefreshToken 쿠키 전송 등)을 위한 설정
+  withCredentials: true, // 쿠키 기반 인증(Refresh Token 쿠키 전송 등) 활성화
 });
+
+// ==========================================
+// 2. 토큰 재발급 중 동시 다발적 요청 제어를 위한 큐(Queue) 변수 및 타입 정의
+// ==========================================
+let isRefreshing = false; 
+
+// 대기열 큐에 저장할 객체의 구조 정의
+interface FailedRequest {
+  resolve: (token: string | null) => void;
+  reject: (error: AxiosError) => void;
+}
+
+let failedQueue: FailedRequest[] = []; 
+
+/**
+ * 대기 중인 요청들을 처리하거나 에러를 방출하는 헬퍼 함수
+ * @param error 발생한 Axios 에러 객체 (성공 시 null)
+ * @param token 재발급된 신규 Access Token (실패 시 null)
+ */
+const processQueue = (error: AxiosError | null, token: string | null = null): void => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
 
 
 // ==========================================
-// 2. 일반 인스턴스(accessApiClient)용 요청 인터셉터
+// 3. 일반 인스턴스(accessApiClient)용 request 인터셉터
 // ==========================================
 accessApiClient.interceptors.request.use(
   (config) => {
-    // 요청이 날아가는 바로 그 순간 세션스토리지를 뒤져서 최신 ID를 가져옵니다.
-    const { member } = useCustomLogin();
-    console.log(`** [요청 인터셉터] accessApiClient, memberId=${member?.memberId}`);
-
-    // API 요청 보내기 전 로그인 정보(memberId)가 존재할 경우,
-    // Header에 자동으로 추가하여 백엔드에서 인증할 수 있도록 함
+    // Zustand 스토어에서 실시간으로 최신 멤버 상태 꺼내기
+    const member = zustandAuthStore.getState().member;
+    
+    // API 요청 보내기 전 Access Token이 존재할 경우, Header에 Bearer 토큰 주입
     if (member?.accessToken) {
-      config.headers.Authorization = `Bearer ${member.accessToken}`; 
+      config.headers.Authorization = `Bearer ${member?.accessToken}`; 
     }
     return config;
   },
@@ -56,56 +72,81 @@ accessApiClient.interceptors.request.use(
 
 
 // ==========================================
-// 3. 일반 인스턴스(accessApiClient)용 응답 인터셉터
+// 4. 일반 인스턴스(accessApiClient)용 response 인터셉터
 // ==========================================
-let isRefreshing = false; // 현재 세션 리프레시(재발급) 요청이 날아가서 진행 중인지 체크
-
 accessApiClient.interceptors.response.use(
-  (response) => response, // 성공 응답(2xx)이면 그대로 통과
-  async (error) => {      // 에러 발생(4xx, 5xx) 시 가로채기 공통 처리
+  (response) => response, // 2xx 성공 응답은 그대로 통과
+  async (error) => {      // 4xx, 5xx 에러 가로채기
     
-    // 디버깅을 위한 에러 로그 확인
-    console.log("❌ 에러 발생 URL:", error.config?.url);
-    console.log("❌ 요청 method:", error.config?.method);
-    console.log("❌ 응답 status:", error.response?.status);
-
     const originalRequest = error.config;
 
-    // 👉 401(세션 만료)이 발생했고, 이 요청이 '이미 재시도했던 요청'이 아니라면 실행
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // _retry 속성을 true로 만들어 한 번만 실행되도록 락(Lock)을 걺 (무한루프 예방)
+    // 👉 401(인증 만료) 에러 발생 시 처리
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      
+      // 이미 다른 요청에 의해 토큰 재발급 프로세스가 진행 중인 경우 (동시 요청 방어)
+      if (isRefreshing) {
+        return new Promise<string | null>((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            // 재발급 완료된 새 토큰으로 원래 요청의 헤더를 갈아끼우고 재요청
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+            return accessApiClient(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
 
-      if (!isRefreshing) {
-        isRefreshing = true;
+      // 첫 번째 401 에러 진입 시 실행 락(Lock) 걸기
+      originalRequest._retry = true;
+      isRefreshing = true;
 
-        try {
-          console.log("🔄 세션 만료 감지: refreshApiClient를 통해 백엔드에 재인증을 요청합니다.");
-          
-          /* 💡 [토큰 재발급 로직 탑재 구역] 
-             나중에 JWT 방식으로 고도화될 때 아래 주석을 풀고 백엔드 엔드포인트를 매핑하면 됩니다.
-             인터셉터가 없는 refreshApiClient를 호출하므로 안전지대에서 통신합니다.
-          */
-          // const response = await refreshApiClient.get('/auth/refresh');
-          // const newId = response.data.memberId;
-          // sessionStorage.setItem(SESSION_KEYS.MEMBER_ID, newId);
-          
-          // 원래 실패했던 요청의 헤더를 새 로그인 정보로 갱신한 후 다시 요청하여 살려내기
-          // originalRequest.headers['X-USER-ID'] = newId;
-          // return accessApiClient(originalRequest);
-          
-        } catch (refreshError) {
-          console.log("🚨 세션 연장 실패: 완전히 만료되었거나 비정상적인 접근입니다.");
-          alert("🔒 세션이 만료되었습니다. 다시 로그인 하세요.");
-          sessionStorage.clear(); // 세션 비우기
-          
-          // 인터셉터 내부(일반 JS 환경)에서는 useNavigate()를 쓸 수 없으므로 강제 이동 처리
-          window.location.replace("/login"); 
-          
-          // Promise를 pending(보류) 상태로 만들어 뒤이어 화면단에서 에러 폭탄이 터지는 것을 방지
-          return Promise.reject(refreshError);
-        } finally {
-          isRefreshing = false; // 재발급 프로세스가 끝나면 상태 해제
+      try {
+        console.log("🔄 Access Token 만료 감지: 토큰 재발급을 요청합니다.");
+        
+        // 1. refreshApiClient로 백엔드에 토큰 재발급 요청 (일반적으로 결과로 새 accessToken이 내려옴)
+        const response = await refreshApiClient.post('/auth/refresh'); 
+        const newAccessToken = response.data.accessToken; 
+
+        // 2. Zustand Auth 스토어의 상태 갱신
+        const {member, login} = zustandAuthStore.getState();
+        if (member) {
+          login({
+            ...member,
+            accessToken : newAccessToken
+          })
         }
+
+        // 3. 대기열(Queue)에 있던 동시 요청들에게 새 토큰을 전달하며 전부 해제(resolve)
+        processQueue(null, newAccessToken);
+
+        // 4. 원래 실패했던 요청도 새 토큰으로 헤더를 교체하여 최종 생환시키기
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        }
+        return accessApiClient(originalRequest);
+        
+      } catch (refreshError) {
+        // 리프레시 토큰마저 만료되었거나 에러가 난 경우 -> 강제 로그아웃 
+        console.log("🚨 세션 연장 실패: 완전히 만료되었거나 비정상적인 접근입니다.");
+        
+        // 에러 타입을 AxiosError로 안전하게 가드하여 큐 처리
+        const axiosError = axios.isAxiosError(refreshError)
+          ? refreshError
+          : new AxiosError('토큰 재발급 실패');
+          
+        processQueue(axiosError, null); 
+        
+        alert("🔒 로그인 세션이 만료되었습니다. 다시 로그인해 주세요.");
+        
+        // 스토리지 및 세션 초기화 후 로그인 페이지로 튕구기
+        sessionStorage.clear();
+        window.location.replace("/member/login"); 
+        
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false; 
       }
     }
 
@@ -113,8 +154,7 @@ accessApiClient.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 403:
-          // 예: 남이 쓴 리뷰를 수정/삭제하려 할 때 백엔드에서 403을 뱉으면 작동
-          alert('🚨 접근 권한이 없습니다. (본인이 작성한 글이 아닙니다)');
+          alert('🚨 접근 권한이 없습니다.');
           break;
         case 404:
           alert('🔍 요청하신 데이터를 찾을 수 없습니다.');
@@ -125,9 +165,8 @@ accessApiClient.interceptors.response.use(
       }
     }
 
-    return Promise.reject(error); // 최종 반환하여 컴포넌트나 훅의 catch 블록으로 에러 전달
+    return Promise.reject(error);
   }
 );
 
-// 기본값으로 가장 많이 쓰일 일반 요청용 인스턴스를 내보냅니다.
 export default accessApiClient;

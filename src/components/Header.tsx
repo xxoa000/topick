@@ -17,6 +17,7 @@ export default function Header(){
       <div><NavLink to='/'>홈</NavLink></div>
       {isLogin ? <div><NavLink to='/my-location-set'>내 위치 설정</NavLink></div> 
                : <div><NavLink to='/member/login'>내 위치 설정</NavLink></div> }
+<<<<<<< HEAD
       {isFilterPage ? (
         <div id="food-type-slot" />
       ) : (
@@ -24,6 +25,9 @@ export default function Header(){
           <NavLink to="/filter">맛집찾기</NavLink>
         </div>
       )}
+=======
+      <div><NavLink to='/filter'>검색창</NavLink></div>
+>>>>>>> f99184af45f96881a9718db3d3c0732e0e25ab2f
       <LoginHeader />
     
     </header>
