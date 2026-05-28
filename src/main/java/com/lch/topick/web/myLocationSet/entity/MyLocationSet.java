@@ -21,7 +21,7 @@ public class MyLocationSet {
 	
 	@Id	//주식별자	
 	@GeneratedValue(strategy=GenerationType.IDENTITY )	//Auto_Increment
-	private int addressNo;			
+	private long addressNo;			
 	
 	private String memberId;		//사용자 고유ID (member table 참조)
 	private String addressPostcode;	//우편번호, API: zonecode
@@ -41,6 +41,9 @@ public class MyLocationSet {
 
 	@Column(length=30, nullable=true, name="address_y")
 	private String addressY; //위도, API: latitude, 
+	
+	@Column(length=5, nullable=false, columnDefinition = "varchar(5)")
+	private char addressDefault; // 'Y', 'N'
 	
 	
 }

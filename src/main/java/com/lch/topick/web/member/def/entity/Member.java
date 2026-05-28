@@ -81,6 +81,13 @@ public class Member {
 	@Column(name = "member_point", nullable = false)
 	private Integer memberPoint = 0;
 	
+	@Column(name = "member_refresh_token", length=1000)
+	private String memberRefreshToken;
+	
+	@Column(name = "member_refresh_token_exp")
+	private LocalDateTime memberRefreshTokenExp;
+	
+	
 	
 	
 	
@@ -166,8 +173,20 @@ public class Member {
 	
 	
 	// 4. 계정 삭제 (실제 데이터는 남기고 Status 값만 변경 : delete)
-	public void delete() {
+	public void resign() {
 		this.memberStatus = "delete";
+	}
+	
+	// 5. 토큰 데이터 저장
+	public void updateToken(String refreshToken, LocalDateTime exp) {
+		this.memberRefreshToken = refreshToken;
+		this.memberRefreshTokenExp = exp;
+	}
+	
+	// 6. 토큰 데이터 삭제
+	public void clearToken() {
+		this.memberRefreshToken = null;
+		this.memberRefreshTokenExp = null;
 	}
 	
 }// class
