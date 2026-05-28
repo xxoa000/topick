@@ -8,6 +8,7 @@ export default defineConfig({
     resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'), // @ : topick의 src 폴더 실제 주소
+      '@member': path.resolve(__dirname, './src/features/member')
     },
   },
   server: {
