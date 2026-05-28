@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { loginApi } from "../services/loginApi";
 import { NavLink, useNavigate } from "react-router-dom";
-import { SESSION } from "@/config/constant";
 import useCustomLogin from "@/hooks/useCustomLogin";
 
 
@@ -18,8 +17,6 @@ export default function LoginForm() {
 			const data = await loginApi(memberId, memberPw);
 
 			// 로그인 성공시, 세션스토리지에 accessToken 저장
-			sessionStorage.setItem(SESSION.ACCESS_DATA, JSON.stringify(data));
-
 			// 전역 상태관리 저장소에도 로그인 정보 저장
 			login(data);
 
