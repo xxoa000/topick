@@ -3,6 +3,7 @@ package com.lch.topick.web.member.def.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,9 @@ import com.lch.topick.web.member.def.domain.MemberRoleUpdateResponseDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
 import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.repository.MemberRepository;
+import com.lch.topick.web.myLocationSet.entity.MyLocationSet;
+import com.lch.topick.web.myLocationSet.repository.MyLocationSetRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,7 +34,7 @@ public class MemberServiceImpl implements MemberService {
 	private final PasswordEncoder pwEncoder;
 	private final TokenProvider tokenProvider;
 	// 주소 추가용
-	//private final MyLocaionSetReposiroty adressRepository;
+	private final MyLocationSetRepository addrRepository;
 	
 	
 	
@@ -110,20 +114,19 @@ public class MemberServiceImpl implements MemberService {
 		entity.updateLastLoginAt();
 		updateToken(entity, refreshToken);
 		
+		// 2.2 클라이언트로 주소 추가 하여 전송
+		MyLocationSet addr = addrRepository
+							.findByMemberIdAndAddressDefault(entity.getMemberId(), 'Y');
 		
 		
-		// MyLocaionSet address = addressRepository.findById(entity.getMemberId());
-		
-		
-		// 2.2 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
+		// 2.3 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
 		MemberLoginResponseDTO responseDto = new MemberLoginResponseDTO(
 															entity.getMemberId(),
 															entity.getMemberName(),
 															accessToken,
+															addr.getAddressX(),
+															addr.getAddressY(),
 															entity.getRoleList()
-															// 좌표 추가
-															// address.getAddressX(),
-															// address.getAddressY()
 															);
 		
 		// 3. 응답DTO 와 refreshToken 반환 -> 컨트롤러에서 분리 처리하기 위함

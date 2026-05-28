@@ -12,6 +12,7 @@ import com.lch.topick.web.myLocationSet.entity.MyLocationSet;
 public interface MyLocationSetRepository extends JpaRepository<MyLocationSet, Long>{
 
 	List<MyLocationSet> findByMemberIdOrderByAddressDefaultDesc(String memberId);
+	MyLocationSet findByMemberIdAndAddressDefault(String memberId, char addressDefault);
 	
 	// 🌟 특정 회원의 모든 기본 배송지 설정을 'N'으로 초기화하는 쿼리
     @Modifying
