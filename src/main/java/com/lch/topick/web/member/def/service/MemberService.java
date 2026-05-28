@@ -1,9 +1,6 @@
 package com.lch.topick.web.member.def.service;
 
 import java.util.List;
-
-import org.springframework.security.core.Authentication;
-
 import com.lch.topick.web.member.def.domain.MemberJoinRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginResultDTO;
@@ -32,7 +29,7 @@ public interface MemberService {
 	public MemberLoginResultDTO login(MemberLoginRequestDTO requestDto);
 	
 	// Read) SELECT 로그아웃
-	public void logout(Authentication auth);
+	public void logout(String memberId);
 	
 	
 	// Update) UPDATE 기존 계정 권한 수정

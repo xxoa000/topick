@@ -5,7 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -107,16 +107,16 @@ public class MemberController {
 	// 로그아웃
 	// Authentication : 필터가 헤더에서 accessToken을 꺼내 인증 통과된 객체
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(Authentication auth, HttpServletResponse response) {
+	public ResponseEntity<?> logout(@AuthenticationPrincipal String memberId, HttpServletResponse response) {
 		
 		// DB 에 저장된 refreshToken, exp 삭제
-		memberService.logout(auth);
+		memberService.logout(memberId);
 		
 		// 쿠키에 저장된 refreshToken 삭제
 		ResponseCookie deleteCookie = 
 				ResponseCookie.from("refreshToken", "")
 							  .httpOnly(true)
-							  .secure(false) 		// 로컬 http면 false
+							  .secure(false) 		// 주소가 http://localhost...면 false
 							  .path("/")
 							  .maxAge(0)
 							  .sameSite("Lax")

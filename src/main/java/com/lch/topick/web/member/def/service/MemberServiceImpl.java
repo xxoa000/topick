@@ -3,8 +3,6 @@ package com.lch.topick.web.member.def.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +29,8 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository repository;
 	private final PasswordEncoder pwEncoder;
 	private final TokenProvider tokenProvider;
-
+	// 주소 추가용
+	//private final MyLocaionSetReposiroty adressRepository;
 	
 	
 	
@@ -111,12 +110,20 @@ public class MemberServiceImpl implements MemberService {
 		entity.updateLastLoginAt();
 		updateToken(entity, refreshToken);
 		
+		
+		
+		// MyLocaionSet address = addressRepository.findById(entity.getMemberId());
+		
+		
 		// 2.2 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
 		MemberLoginResponseDTO responseDto = new MemberLoginResponseDTO(
 															entity.getMemberId(),
 															entity.getMemberName(),
 															accessToken,
 															entity.getRoleList()
+															// 좌표 추가
+															// address.getAddressX(),
+															// address.getAddressY()
 															);
 		
 		// 3. 응답DTO 와 refreshToken 반환 -> 컨트롤러에서 분리 처리하기 위함
@@ -127,9 +134,8 @@ public class MemberServiceImpl implements MemberService {
 	
 	// Read) SELECT 로그아웃
 	@Override
-	public void logout(Authentication auth) {
+	public void logout(String memberId) {
 	
-		String memberId = auth.getName();
 		Member entity = repository.findById(memberId)
 		  		.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 		

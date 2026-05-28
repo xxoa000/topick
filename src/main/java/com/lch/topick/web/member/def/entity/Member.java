@@ -119,8 +119,8 @@ public class Member {
 		roleList.clear(); 									// 기존 권한 초기화
 		
 		for (MemberRole memberRole : memberRoleList) {
-			if (!roleList.contains(memberRole)) 					// 중복 권한 방지
-				roleList.add(memberRole);							// 중복 없으면 권한 추가
+			if (!roleList.contains(memberRole)) 			// 중복 권한 방지
+				roleList.add(memberRole);					// 중복 없으면 권한 추가
 		}		
 	} //updateRole
 	
