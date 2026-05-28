@@ -1,9 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { ENV } from './env';
 import { API_TIMEOUT } from '@/config/constant';
-import { zustandAuthStore } from './../hooks/useCustomLogin';
-
-
+import { zustandAuthStore } from '@/hooks/useCustomLogin';
 
 // ==========================================
 // 1. 독립된 두 개의 인스턴스 정의
@@ -65,7 +63,7 @@ accessApiClient.interceptors.request.use(
     
     // API 요청 보내기 전 Access Token이 존재할 경우, Header에 Bearer 토큰 주입
     if (member?.accessToken) {
-      config.headers.Authorization = `Bearer ${member.accessToken}`; 
+      config.headers.Authorization = `Bearer ${member?.accessToken}`; 
     }
     return config;
   },
@@ -130,7 +128,7 @@ accessApiClient.interceptors.response.use(
         return accessApiClient(originalRequest);
         
       } catch (refreshError) {
-        // 🚨 리프레시 토큰마저 만료되었거나 에러가 난 경우 -> 강제 로그아웃 
+        // 리프레시 토큰마저 만료되었거나 에러가 난 경우 -> 강제 로그아웃 
         console.log("🚨 세션 연장 실패: 완전히 만료되었거나 비정상적인 접근입니다.");
         
         // 에러 타입을 AxiosError로 안전하게 가드하여 큐 처리
