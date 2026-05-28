@@ -42,5 +42,8 @@ public class MyLocationSet {
 	@Column(length=30, nullable=true, name="address_y")
 	private String addressY; //위도, API: latitude, 
 	
+	@Column(length=5, nullable=false, columnDefinition = "varchar(5)")
+	private char addressDefault; // 'Y', 'N'
+	
 	
 }

@@ -18,6 +18,5 @@ public interface MyLocationSetService {
 	//** delete
 	void deleteById(int id) throws Exception;
 	
-	//select: 경도, 위도 
-	Map<String, String> findCoordinateByAddress(String addressRoad);
+	public List<MyLocationSet> findByMemberId(String memberId);
 }

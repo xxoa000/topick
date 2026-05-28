@@ -18,9 +18,6 @@ public class MyLocationSetServiceImpl implements MyLocationSetService{
 
 	private final MyLocationSetRepository myLocationSetRepository;
 	
-	// 외부 API 통신용 레포지토리를 상수로 선언
-    private final KakaoAddressRepository kakaoAddressRepository;
-    
 	@Override
 	public List<MyLocationSet> selectList() {
 		return myLocationSetRepository.findAll();
@@ -47,10 +44,8 @@ public class MyLocationSetServiceImpl implements MyLocationSetService{
 		}
 	}//deleteById
 
-    @Override
-    public Map<String, String> findCoordinateByAddress(String roadAddress) {
-        // 비즈니스 로직 수행: 레포지토리에 주소 변환 요청 후 결과 그대로 반환
-        return kakaoAddressRepository.findCoordinateByAddress(roadAddress);
-    }
-	
+	@Override
+	public List<MyLocationSet> findByMemberId(String memberId) {
+		return myLocationSetRepository.findByMemberId(memberId);
+	}
 }

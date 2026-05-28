@@ -20,4 +20,5 @@ public class MyLocationSetDTO {
 	private String addressName;		//별칭, API: buildingName
 	private String addressX; 		//경도, API: longitude, 	
 	private String addressY; 		//위도, API: latitude, 
+	private char addressDefulat;	// 'Y', 'N'
 }
