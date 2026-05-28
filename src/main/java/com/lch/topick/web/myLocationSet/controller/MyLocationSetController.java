@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,5 +70,20 @@ public class MyLocationSetController {
 									.body("출력 오류");
 	    
 	}//selecte
+	
+	@PatchMapping("/default/{addressNo}")
+	public ResponseEntity<?> changeAddressDefault(@PathVariable("addressNo") long addressNo) {
+		try {
+			// 서비스에 비즈니스 로직 위임
+			myLocationSetService.changeDefaultAddress(addressNo);
+			
+			log.info(" MyLocationSet 기본 배송지 변경 성공 => addressNo: " + addressNo);
+			return ResponseEntity.ok("기본 배송지 변경 성공");
+		} catch (Exception e) {
+			log.error("** 기본 배송지 변경 실패 => " + e.toString());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+										.body("변경 실패: " + e.getMessage());
+		}
+	}
 	
 }

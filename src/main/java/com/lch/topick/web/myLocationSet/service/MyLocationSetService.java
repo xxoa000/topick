@@ -10,13 +10,15 @@ public interface MyLocationSetService {
 	List<MyLocationSet> selectList();
 
 	//** selectOne
-	MyLocationSet selectOne(int addressNo);
+	MyLocationSet selectOne(long addressNo);
 
 	//** insert & update
 	MyLocationSet save(MyLocationSet entity);
 
 	//** delete
-	void deleteById(int id) throws Exception;
+	void deleteById(long id) throws Exception;
 	
 	public List<MyLocationSet> findByMemberId(String memberId);
+
+	void changeDefaultAddress(long addressNo);
 }
