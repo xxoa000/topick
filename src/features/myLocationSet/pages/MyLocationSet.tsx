@@ -2,18 +2,14 @@ import DaumPostcode from 'react-daum-postcode';
 import { useMyLocation } from '../hooks/useMyLocation';
 import styles from './_my-location-set.module.scss';
 
-// 디자인 확인을 위한 임시 데이터 배열
-const mockAddresses = [
-  { id: 1, name: '우리집 🏠', address: '서울특별시 강남구 테헤란로 123', detail: '101동 202호' },
-  { id: 2, name: '회사 🏢', address: '경기도 성남시 분당구 판교역로 234', detail: 'H스퀘어 N동 5층' },
-];
-
 const MyLocationSet = () => {
+
   // Hook에서 필요한 데이터와 함수만 구조분해할당으로 가져옵니다.
   const {
     step, setStep, address, addressData, addressName, setAddressName,
     addressDetail, setAddressDetail, mapContainerRef,
     handleClose, handleComplete, sendToServer, handleConfirmCurrentLocation
+    , addressList, isLoading
   } = useMyLocation();
 
   return (
@@ -33,35 +29,38 @@ const MyLocationSet = () => {
                 + 위치 추가하기
               </button>
 
-              {/* 저장된 위치 목록 표시 영역 */}
-              {mockAddresses && mockAddresses.length > 0 ? (
-                // 1. 저장된 위치 목록이 있을 때
-                <div className={styles.addressListContainer}>
-                  {mockAddresses.map((item) => (
-                    <div key={item.id} className={styles.addressCard}>
-                      <div className={styles.cardContent}>
-                        <div className={styles.cardName}>{item.name}</div>
-                        <div className={styles.cardAddress}>{item.address}</div>
-                        <div className={styles.cardDetail}>{item.detail}</div>
-                      </div>
+              {/* 🌟 로딩 중 처리 및 실제 DB 데이터 매핑 */}
+              {
+                isLoading ? (
+                  <div className={styles.emptyState} >
+                    <p className={styles.emptyText}> 주소록을 불러오는 중입니다...</p>
+                  </div>
+                ) : addressList && addressList.length > 0 ? (
+                  <div className={styles.addressListContainer} >
+                    {
+                      addressList.map((item) => (
+                        <div key={item.addressId} className={styles.addressCard} >
+                          <div className={styles.cardContent} >
+                            < div className={styles.cardName} > {item.addressName} </div>
+                            < div className={styles.cardAddress} > {item.addressRoad} {item.addressDetail} </div>
+                          </div>
 
-                      <button onClick={() => alert('수정 기능 준비 중')} className={styles.editBtn}>
-                        수정
-                      </button>
-                      <button onClick={() => alert('삭제 기능 준비 중')} className={styles.deleteBtn}>
-                        삭제
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                // 2. 저장된 위치 목록이 없을 때 (Empty State)
-                <div className={styles.emptyState}>
-                  <div className={styles.emptyIcon}>📍</div>
-                  <p className={styles.emptyText}>사용 가능한 위치가 없습니다.</p>
-                  <p className={styles.emptySubText}>위치 추가하기를 눌러<br />주소를 입력해주세요!</p>
-                </div>
-              )}
+                          < button onClick={() => alert('수정 기능 준비 중')} className={styles.editBtn} >
+                            수정
+                          </button>
+                          < button onClick={() => alert('삭제 기능 준비 중')} className={styles.deleteBtn} >
+                            삭제
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <div className={styles.emptyState} >
+                    <div className={styles.emptyIcon}>📍</div>
+                    < p className={styles.emptyText} > 등록된 위치가 없습니다.</p>
+                    < p className={styles.emptySubText} > 위치 추가하기를 눌러 < br /> 주소를 입력해주세요! </p>
+                  </div>
+                )}
             </div>
           </>
         )}
@@ -146,7 +145,7 @@ const MyLocationSet = () => {
               <button onClick={handleClose} className={styles.closeBtn}>✕</button>
             </div>
 
-            <div className={styles.modalBody} style={{overflow: 'hidden', position: 'relative' }}>
+            <div className={styles.modalBody} style={{ overflow: 'hidden', position: 'relative' }}>
               {/* 실제 카카오 지도가 그려지는 영역 */}
               <div ref={mapContainerRef} style={{ width: '100%', height: '82%', borderRadius: '8px' }}></div>
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ENV } from './env';
 import { API_TIMEOUT } from '@/config/constant';
-import useCustomLogin from '@/hooks/useCustomLogin';
+import { zustandAuthStore } from '@/hooks/useCustomLogin';
 
 /* ** axios 인스턴스 와 인터셉터 설정 
 1) axios 인스턴스(Instance)
@@ -41,7 +41,7 @@ export const refreshApiClient = axios.create({
 accessApiClient.interceptors.request.use(
   (config) => {
     // 요청이 날아가는 바로 그 순간 세션스토리지를 뒤져서 최신 ID를 가져옵니다.
-    const { member } = useCustomLogin();
+    const member = zustandAuthStore.getState().member;
     console.log(`** [요청 인터셉터] accessApiClient, memberId=${member?.memberId}`);
 
     // API 요청 보내기 전 로그인 정보(memberId)가 존재할 경우,
