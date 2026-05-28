@@ -1,0 +1,232 @@
+// 🎨 변수 선언 (프로젝트 메인 컬러에 맞게 수정하셔도 됩니다)
+$primary-color: #ff9f43;    // 상단 오렌지/주황 테마 색상
+$background-light: #f9f9f9; // 선택 안 된 버튼 배경색
+$border-color: #e0e0e0;     // 경계선 색상
+$text-main: #333333;        // 메인 글자색
+$text-sub: #777777;         // 서브 설명글 색상
+
+.pickContainer {
+  background-color: #ffffff;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  min-height: 480px; // 카드 최소 높이 고정으로 덜컹거림 방지
+  justify-content: space-between;
+}
+
+/* 📊 상단 진행 바 (Progress Bar) 구역 */
+.progressHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+
+  .stepIndicator {
+    font-size: 14px;
+    font-weight: 700;
+    color: $primary-color;
+  }
+
+  .progressBarWrapper {
+    width: 100%;
+    height: 6px;
+    background-color: #eceff1;
+    border-radius: 3px;
+    overflow: hidden;
+
+    .progressBar {
+      height: 100%;
+      background-color: $primary-color;
+      border-radius: 3px;
+      transition: width 0.3s ease; // 단계 넘어갈 때 슥 늘어나는 애니메이션
+    }
+  }
+}
+
+/* ❓ 질문 타이틀 구역 */
+.questionSection {
+  margin-bottom: 32px;
+
+  .mainQuestion {
+    font-size: 22px;
+    font-weight: 700;
+    color: $text-main;
+    line-height: 1.4;
+    margin: 0 0 8px 0;
+    word-break: keep-all; // 한글 단어 예쁘게 줄바꿈
+  }
+
+  .subText {
+    font-size: 14px;
+    color: $text-sub;
+    margin: 0;
+  }
+}
+
+/* 🔘 선택지 버튼 리스트 구역 */
+.choiceList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1; // 버튼 영역이 중간 공간을 다 차지하도록 설정
+
+  .choiceButton {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    background-color: #ffffff;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    color: $text-main;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: rgba($primary-color, 0.03);
+      border-color: lighten($primary-color, 10%);
+    }
+
+    /* 💡 클릭되어 활성화(active) 되었을 때의 스타일 */
+    &.active {
+      background-color: rgba($primary-color, 0.08);
+      border-color: $primary-color;
+      color: $primary-color;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba($primary-color, 0.15);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Footer 내비게이션 바 (이전 / 다음) */
+.navigationFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #f5f5f5;
+
+  .prevButton {
+    background: none;
+    border: none;
+    color: $text-sub;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px;
+
+    &:hover {
+      color: $text-main;
+    }
+  }
+
+  .nextButton {
+    background-color: $primary-color;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: darkne($primary-color, 5%);
+    }
+
+    &:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* 🎉 7단계: 최종 추천 결과 뷰 스타일 */
+.resultSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 0;
+
+  .resultTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: $text-main;
+    margin: 0 0 8px 0;
+  }
+
+  .resultSub {
+    font-size: 14px;
+    color: $text-sub;
+    margin-bottom: 32px;
+  }
+
+  .loadingSpinner {
+    font-size: 16px;
+    color: $primary-color;
+    font-weight: 600;
+    margin: 40px 0;
+  }
+
+  .menuResultList {
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .menuItem {
+      display: flex;
+      align-items: center;
+      background-color: #fff9f4;
+      border: 1px solid rgba($primary-color, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      
+      .rankBadge {
+        background-color: $primary-color;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin-right: 16px;
+      }
+
+      .foodNameText {
+        font-size: 18px;
+        color: $text-main;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .resetButton {
+    background: none;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: $text-sub;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: #f5f5f5;
+      color: $text-main;
+    }
+  }
+}

@@ -10,7 +10,6 @@ import OrderPage from "@/features/order/pages/OrderPage";
 import PaymentPage from "@/features/payment/pages/PaymentPage";
 import MyInfoPage from "@/features/myInfo/pages/MyInfoPage";
 
-
 export default function Section(){
   return (
     <section className="section-root">
