@@ -2,10 +2,10 @@ package com.lch.topick.web.member.def.controller;
 
 
 import org.springframework.http.HttpHeaders;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -87,14 +87,14 @@ public class MemberController {
 		MemberLoginResultDTO resultDto = memberService.login(requestDto);
 		
 		// 쿠키 객체에 refreshToken 저장
-		ResponseCookie cookie = ResponseCookie.from("refreshToken", resultDto.getRefreshToken())
-		.httpOnly(true) 		// js 가 refreshToken 에 접근 못하게 함
-		.path("/")				// 사이트 어디서든 쿠키 사용 가능
-		.secure(false)
-		.sameSite("Lax")		// 대부분의 같은 사이트 요청에 쿠키 전송
-		.maxAge( tokenProvider.getRefreshTokenExp()/1000 ) // 만료시간
-		.build();
-		
+		ResponseCookie cookie = 
+				ResponseCookie.from("refreshToken", resultDto.getRefreshToken())
+							  .httpOnly(true) 			// js 가 refreshToken 에 접근 못하게 함
+							  .path("/")				// 사이트 어디서든 쿠키 사용 가능
+							  .secure(false)
+						  	  .sameSite("Lax")			// 대부분의 같은 사이트 요청에 쿠키 전송
+							  .maxAge( tokenProvider.getRefreshTokenExp()/1000 ) // 만료시간
+							  .build();
 		// 쿠키를 응답 헤더에 추가하여 클라이언트로 전송
 		response.addHeader(HttpHeaders.SET_COOKIE , cookie.toString());
 		
@@ -102,23 +102,32 @@ public class MemberController {
 	}// login
 	
 	
+	
+	
 	// 로그아웃
+	// Authentication : 필터가 헤더에서 accessToken을 꺼내 인증 통과된 객체
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(HttpServletResponse response) {
+	public ResponseEntity<?> logout(Authentication auth, HttpServletResponse response) {
 		
-		ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
-				.httpOnly(true)
-				.secure(false) // 로컬 http면 false
-				.path("/")
-				.maxAge(0)
-				.sameSite("Lax")
-				.build();
-
-			response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
-			
-		return ResponseEntity.ok("로그아웃 되었습니다.");
+		// DB 에 저장된 refreshToken, exp 삭제
+		memberService.logout(auth);
+		
+		// 쿠키에 저장된 refreshToken 삭제
+		ResponseCookie deleteCookie = 
+				ResponseCookie.from("refreshToken", "")
+							  .httpOnly(true)
+							  .secure(false) 		// 로컬 http면 false
+							  .path("/")
+							  .maxAge(0)
+							  .sameSite("Lax")
+							  .build();
+		response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+		
+		return ResponseEntity.ok("로그아웃 되었습니다");
 	}//logout
 
+	
+	
 	
 	
 	
