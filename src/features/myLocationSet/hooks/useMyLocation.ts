@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Address } from 'react-daum-postcode';
 import { useNavigate } from 'react-router-dom';
 import useCustomLogin from '@/hooks/useCustomLogin';
-import { getCoordsByAddress, saveMyLocationApi, getMyLocationListApi } from '../services/locationService'
-import type { AddressItem } from '../types/location'; // 타입 추가
+import { getCoordsByAddress, saveMyLocationApi, getMyLocationListApi, changeAddressDefaultApi } from '../services/locationService'
+import type { AddressItem, LocationSaveRequest } from '../types/location'; // 타입 추가
 
 export const useMyLocation = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export const useMyLocation = () => {
   const [addressName, setAddressName] = useState<string>('');
   const [addressDetail, setAddressDetail] = useState<string>('');
 
-  //@@@@@@@@@@@@@@2 🌟 백엔드에서 받아온 주소록 리스트 상태 추가
+  //2 🌟 백엔드에서 받아온 주소록 리스트 상태 추가
   const [addressList, setAddressList] = useState<AddressItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -29,7 +29,7 @@ export const useMyLocation = () => {
   //주소록 목록을 불러오는 함수 (재사용을 위해 useCallback 처리)
   const fetchAddressList = useCallback(async () => { //useEffect 안에서 지정된 값이 변경되는 경우에만 재실행 (useCallback)
     if (!member?.memberId) return;
-    
+
     try {
       setIsLoading(true);
       const list = await getMyLocationListApi(member.memberId);
@@ -94,8 +94,8 @@ export const useMyLocation = () => {
       alert("서버에 주소가 성공적으로 저장되었습니다");
 
       // 🌟 주소 저장 성공 후 리스트 동기화
-      await fetchAddressList(); 
-      
+      await fetchAddressList();
+
       // 폼 초기화
       setAddress('');
       setAddressData(null);
@@ -104,6 +104,29 @@ export const useMyLocation = () => {
 
     } catch (err) {
       alert(`저장 실패: ${err}`);
+    }
+  };
+
+  // 🌟 컴포넌트에서 주소를 클릭했을 때 실행될 기본 주소 변경 함수
+  const changeAdderssDefault = async (addressNo: number) => {
+    // 이미 로딩 중이거나 ID가 없다면 중복 방지
+    console.log(addressNo);
+    if (!addressNo || isLoading) return;
+
+    try {
+      setIsLoading(true);
+
+      // 1. 서버에 변경 요청 (addressId 전달)
+      await changeAddressDefaultApi(addressNo);
+
+      // 2. 백엔드에서 N -> Y 업데이트가 끝났으므로, 최신 주소록 리스트를 다시 불러옴
+      await fetchAddressList();
+
+    } catch (err) {
+      console.error("기본 주소 변경 실패:", err);
+      alert("기본 주소 설정 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -196,7 +219,7 @@ export const useMyLocation = () => {
   return {
     step, setStep, address, addressData, addressName, setAddressName,
     addressDetail, setAddressDetail, mapContainerRef,
-    handleClose, handleComplete, sendToServer, handleConfirmCurrentLocation
+    handleClose, handleComplete, sendToServer, changeAdderssDefault, handleConfirmCurrentLocation
     , addressList, isLoading
   };
 };

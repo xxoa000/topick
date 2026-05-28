@@ -8,7 +8,7 @@ const MyLocationSet = () => {
   const {
     step, setStep, address, addressData, addressName, setAddressName,
     addressDetail, setAddressDetail, mapContainerRef,
-    handleClose, handleComplete, sendToServer, handleConfirmCurrentLocation
+    handleClose, handleComplete, sendToServer, changeAdderssDefault, handleConfirmCurrentLocation
     , addressList, isLoading
   } = useMyLocation();
 
@@ -39,7 +39,7 @@ const MyLocationSet = () => {
                   <div className={styles.addressListContainer} >
                     {
                       addressList.map((item) => (
-                        <div key={item.addressId} className={styles.addressCard} >
+                        <div key={item.addressNo} className={item.addressDefault ==='Y' ? styles.addressDefaultCard : styles.addressCard} onClick={() => changeAdderssDefault(item.addressNo)}>
                           <div className={styles.cardContent} >
                             < div className={styles.cardName} > {item.addressName} </div>
                             < div className={styles.cardAddress} > {item.addressRoad} {item.addressDetail} </div>

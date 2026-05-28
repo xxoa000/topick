@@ -22,7 +22,7 @@ export interface LocationSaveRequest {
 
 // 백엔드에서 받아올 주소 객체 타입
 export interface AddressItem {
-    addressId: number; // 혹은 주소 고유 식별자 키
+    addressNo: number; // 혹은 주소 고유 식별자 키
     memberId: string | number;
     addressPostcode: string;
     addressRoad: string;
@@ -31,5 +31,5 @@ export interface AddressItem {
     addressName: string;
     addressX: string;
     addressY: string;
-    addressDegault: string;
+    addressDefault: string;
 }

@@ -163,6 +163,22 @@
                     padding: 0;
                 }
             }
+
+            .addressDefaultCard {
+                // 1. 위 .addressCard의 모든 레이아웃과 자식 스타일(.editBtn 등)을 통째로 그대로 복사해옵니다.
+                @extend .addressCard;
+
+                border: 2px solid #FF8A14;
+                background-color: #fafdF6;
+
+                .cardName {
+                    color: #FF9D14; 
+                }
+
+                .editBtn {
+                    font-weight: bold;
+                }
+            }
         }
 
         // 내역이 비었을 때
