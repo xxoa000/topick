@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ENV } from './env';
 import { API_TIMEOUT, SESSION } from '@/config/constant';
+import { API_TIMEOUT } from '@/config/constant';
 import { zustandAuthStore } from '@/hooks/useCustomLogin';
 
 /* ** axios 인스턴스 와 인터셉터 설정 
@@ -37,15 +38,18 @@ export const refreshApiClient = axios.create({
 
 // ==========================================
 // 2. 일반 인스턴스(accessApiClient)용 request 인터셉터
+// 3. 일반 인스턴스(accessApiClient)용 request 인터셉터
 // ==========================================
 accessApiClient.interceptors.request.use(
   (config) => {
     // 요청이 날아가는 바로 그 순간 세션스토리지를 뒤져서 최신 ID를 가져옴
+
     const member = zustandAuthStore.getState().member;
     console.log(`** [요청 인터셉터] accessApiClient, memberId=${member?.memberId}`);
 
     // API 요청 보내기 전, 로그인 정보(memberId)가 존재할 경우.
     // Header에 자동으로 추가하여 백엔드에서 인증할 수 있도록 함
+    
     if (member?.accessToken) {
       config.headers.Authorization = `Bearer ${member?.accessToken}`; 
     }
@@ -57,6 +61,7 @@ accessApiClient.interceptors.request.use(
 
 // ==========================================
 // 3. 일반 인스턴스(accessApiClient)용 response 인터셉터
+// 4. 일반 인스턴스(accessApiClient)용 response 인터셉터
 // ==========================================
 let isRefreshing = false; // 현재 세션 리프레시(재발급) 요청이 날아가서 진행 중인지 체크
 
@@ -88,10 +93,24 @@ accessApiClient.interceptors.response.use(
           const response = await refreshApiClient.get('/auth/refresh');
           const newData = response.data;
           sessionStorage.setItem(SESSION.ACCESS_DATA, JSON.stringify(newData));
+          const response = await refreshApiClient.post('/auth/refresh');
+          const newAccessToken = response.data.accessToken;
+          const { member, login } = zustandAuthStore.getState();
+          if (member) {
+            login ({
+              ...member,
+              accessToken : newAccessToken
+            })
+          }
           
           // 원래 실패했던 요청의 헤더를 새 로그인 정보로 갱신한 후 다시 요청하여 살려내기
           // originalRequest.headers['X-USER-ID'] = newId;
           // return accessApiClient(originalRequest);
+          // 4. 원래 실패했던 요청의 헤더를 새 로그인 정보로 갱신한 후 다시 요청하여 살려내기
+          if (originalRequest.header) {
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          }
+          return accessApiClient(originalRequest);
           
         } catch (refreshError) {
           console.log("🚨 세션 연장 실패: 완전히 만료되었거나 비정상적인 접근입니다.");
@@ -100,6 +119,7 @@ accessApiClient.interceptors.response.use(
           
           // 인터셉터 내부(일반 JS 환경)에서는 useNavigate()를 쓸 수 없으므로 강제 이동 처리
           window.location.replace("/login"); 
+          window.location.replace("/member/login"); 
           
           // Promise를 pending(보류) 상태로 만들어 뒤이어 화면단에서 에러 폭탄이 터지는 것을 방지
           return Promise.reject(refreshError);
