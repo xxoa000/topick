@@ -75,12 +75,12 @@ public class MyLocationSetController {
 	public ResponseEntity<?> changeAddressDefault(@PathVariable("addressNo") long addressNo) {
 		try {
 			// 서비스에 비즈니스 로직 위임
-			myLocationSetService.changeDefaultAddress(addressNo);
+//			myLocationSetService.changeDefaultAddress(addressNo);
 			
-			log.info(" MyLocationSet 기본 배송지 변경 성공 => addressNo: " + addressNo);
-			return ResponseEntity.ok("기본 배송지 변경 성공");
+			log.info(" MyLocationSet 기본 위치 변경 성공 => addressNo: " + addressNo);
+			return ResponseEntity.ok(myLocationSetService.changeDefaultAddress(addressNo));
 		} catch (Exception e) {
-			log.error("** 기본 배송지 변경 실패 => " + e.toString());
+			log.error("** 기본 위치 변경 실패 => " + e.toString());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 										.body("변경 실패: " + e.getMessage());
 		}
