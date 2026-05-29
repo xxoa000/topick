@@ -9,21 +9,35 @@ function escapeHtml(text: string): string {
 }
 
 export default function SearchResultsPanel() {
-  const { results, total, status, mapError, handleResultClick, selectedStore } =
-    useFilterSearch();
+  const {
+    displayedResults,
+    selectedFoodType,
+    total,
+    status,
+    mapError,
+    handleResultClick,
+    selectedStore,
+  } = useFilterSearch();
 
   return (
     <aside className="filter-results-panel">
       <h2 className="filter-panel-title">
-        검색 결과 <span className="filter-count">({total}개)</span>
+        검색 결과{' '}
+        <span className="filter-count">
+          ({displayedResults.length}/{total}개)
+        </span>
       </h2>
+
+      {selectedFoodType && (
+        <p className="filter-selected-tags">선택한 음식 종류: {selectedFoodType}</p>
+      )}
 
       <div className="filter-results-list">
         {mapError && <p className="filter-empty">{escapeHtml(mapError)}</p>}
-        {!mapError && results.length === 0 && (
-          <p className="filter-empty">검색 결과가 없습니다.</p>
+        {!mapError && displayedResults.length === 0 && (
+          <p className="filter-empty">조건에 맞는 검색 결과가 없습니다.</p>
         )}
-        {results.map((store) => (
+        {displayedResults.map((store) => (
           <div
             key={store.id}
             className={`filter-result-item${selectedStore?.id === store.id ? ' selected' : ''}`}

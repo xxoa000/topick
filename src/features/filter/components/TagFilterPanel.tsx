@@ -14,6 +14,8 @@ function groupTagsByType(tags: Tag[]): Record<string, Tag[]> {
 export default function TagFilterPanel() {
   const {
     selectedTags,
+    selectedDistance,
+    setSelectedDistance,
     tags,
     tagsLoading,
     tagsError,
@@ -31,6 +33,25 @@ export default function TagFilterPanel() {
     <aside className="filter-tags-panel">
       <h2 className="filter-panel-title">태그 필터</h2>
       <p className="filter-selected-tags">{selectedTagsText}</p>
+      <div>
+        <label htmlFor="distance-filter-select">거리순 정렬</label>
+        <select
+          id="distance-filter-select"
+          value={selectedDistance == null ? '' : String(selectedDistance)}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value === '100') setSelectedDistance(100);
+            else if (value === '500') setSelectedDistance(500);
+            else if (value === '1000') setSelectedDistance(1000);
+            else setSelectedDistance(null);
+          }}
+        >
+          <option value="">전체</option>
+          <option value="100">100m</option>
+          <option value="500">500m</option>
+          <option value="1000">1km</option>
+        </select>
+      </div>
 
       <div className="filter-tag-container">
         {tagsLoading && <span className="filter-empty">태그 로딩 중...</span>}

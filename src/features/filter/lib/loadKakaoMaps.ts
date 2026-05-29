@@ -1,4 +1,9 @@
-import { type KakaoMapsApi, type KakaoMap, type KakaoMarker } from './kakaoMapsApi';
+import {
+  type KakaoMapsApi,
+  type KakaoMap,
+  type KakaoInfoWindow,
+  type KakaoMarker,
+} from './kakaoMapsApi';
 
 const KAKAO_SDK_URL = 'https://dapi.kakao.com/v2/maps/sdk.js';
 
@@ -93,4 +98,4 @@ export function relayoutMap(map: KakaoMap) {
   setTimeout(() => map.relayout?.(), 300);
 }
 
-export type { KakaoMap, KakaoMarker };
+export type { KakaoMap, KakaoInfoWindow, KakaoMarker };
