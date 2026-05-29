@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -15,12 +14,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.lch.topick.web.filter.domain.FilterRequestDTO;
 import com.lch.topick.web.filter.domain.KeywordRequestDTO;
-import com.lch.topick.web.filter.domain.MenuDTO;
 import com.lch.topick.web.filter.domain.SearchResponseDTO;
 import com.lch.topick.web.store.let.domain.FilterStoreItemDTO;
 import com.lch.topick.web.store.let.domain.FilterStoreRequestDTO;
 import com.lch.topick.web.menu.def.entity.Menu;
 import com.lch.topick.web.menu.def.repository.MenuRepository;
+import com.lch.topick.web.menu.let.domain.MenuDTO;
 import com.lch.topick.web.store.let.entity.FilterStore;
 import com.lch.topick.web.store.let.repository.FilterStoreRepository;
 
@@ -44,6 +43,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     private final MenuRepository menuRepository;
 
     // 생성자
+    // Http 요청을 보내는 줄
     public KakaoSearchServiceImpl(
             @Value("${kakao.rest-api-key:}") String kakaoRestApiKey,
             FilterStoreRepository storeRepository,
@@ -57,7 +57,8 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     @Override
     // 키워드 검색 메서드 - 헤더 검색창에서 검색어 입력 시 사용
     public SearchResponseDTO searchByKeyword(KeywordRequestDTO req) {
-
+    	
+    	//유효성 검사
         vaildateKeyword(req);
 
         Map<String, FilterStoreItemDTO> merge = new LinkedHashMap<>();
@@ -69,6 +70,8 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
         fetchByQuery(req.getSwX(), req.getSwY(), req.getNeX(), req.getNeY(), keyword, merge);
 
         List<FilterStoreItemDTO> item = new ArrayList<>(merge.values());
+        saveStoresFromSearchResults(item);
+        enrichStoreNumbers(item);
 
         return new SearchResponseDTO(item.size(), item);
     }
@@ -88,23 +91,19 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
         }
 
         List<FilterStoreItemDTO> item = new ArrayList<>(merge.values());
+        saveStoresFromSearchResults(item);
+        enrichStoreNumbers(item);
 
         return new SearchResponseDTO(item.size(), item);
     }
 
     @Override
-    // 마커 클릭 시 가게 저장 및 메뉴 조회
+    // 저장된 가게의 메뉴 조회 (가게 저장은 검색 결과 반환 시 수행)
     public List<MenuDTO> menuList(FilterStoreRequestDTO req) {
 
-        // 1. kakaoId 로 store 조회
-    	FilterStore store = storeRepository.findByKakaoId(req.getKakaoId());
-
+    	FilterStore store = resolveStore(req);
     	if (store == null) {
-    	    // 새로 저장
-    	    FilterStore newStore = new FilterStore();
-    	    newStore.setKakaoId(req.getKakaoId());
-    	    newStore.setStoreName(req.getStoreName());
-    	    store = storeRepository.save(newStore);
+    	    return List.of();
     	}
 
         return menuRepository.findByStoreNo(store.getStoreNo()).stream()
@@ -123,7 +122,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
                 .fromHttpUrl("https://dapi.kakao.com/v2/local/search/keyword.json")
                 .queryParam("query", query)
                 .queryParam("category_group_code", "FD6")
-                .queryParam("rect", swX + "," + swY + "," + neX + "," + neY)
+                .queryParam("rect", swX + "," +swY + "," + neX + "," + neY)
                 .build()
                 .toUriString();
 
@@ -133,7 +132,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(JsonNode.class);
-
+        
         if (root == null || !root.path("documents").isArray()) {
             return;
         }
@@ -152,12 +151,60 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
 
             merge.putIfAbsent(id, new FilterStoreItemDTO(
                     id,
+                    null,
                     placeName,
                     placeUrl,
                     categoryName,
                     x,
                     y,
                     addressName));
+        }
+    }
+
+    private FilterStore resolveStore(FilterStoreRequestDTO req) {
+        if (req == null) {
+            return null;
+        }
+        if (req.getStoreNo() != null) {
+            return storeRepository.findById(req.getStoreNo()).orElse(null);
+        }
+        String kakaoId = req.getKakaoId();
+        if (kakaoId == null || kakaoId.isBlank()) {
+            return null;
+        }
+        return storeRepository.findByKakaoId(kakaoId.trim());
+    }
+
+    // 검색 응답 DTO에 DB store_no 매핑
+    private void enrichStoreNumbers(List<FilterStoreItemDTO> items) {
+        for (FilterStoreItemDTO item : items) {
+            if (item.getId() == null || item.getId().isBlank()) {
+                continue;
+            }
+            FilterStore store = storeRepository.findByKakaoId(item.getId().trim());
+            if (store != null) {
+                item.setStoreNo(store.getStoreNo());
+            }
+        }
+    }
+
+    // 검색 결과에 포함된 가게를 DB에 저장 (이미 있으면 스킵)
+    private void saveStoresFromSearchResults(List<FilterStoreItemDTO> items) {
+        for (FilterStoreItemDTO item : items) {
+            if (item.getId() == null || item.getId().isBlank()) {
+                continue;
+            }
+            String name = item.getPlaceName();
+            if (name == null || name.isBlank()) {
+                continue;
+            }
+            if (storeRepository.findByKakaoId(item.getId()) != null) {
+                continue;
+            }
+            FilterStore newStore = new FilterStore();
+            newStore.setKakaoId(item.getId());
+            newStore.setStoreName(name);
+            storeRepository.save(newStore);
         }
     }
 

@@ -54,9 +54,11 @@ public class MemberServiceImpl implements MemberService {
 	// 회원가입 - ID 중복 확인
 	@Override
 	public Boolean exist(String memberId) {
-		if ( repository.existsById(memberId)) throw new CustomException(ErrorCode.MEMBER_ID_EXIST);
+		// id 가 제대로 들어오지 않은 경우 오류 출력
+		if (memberId == null) throw new CustomException(ErrorCode.MEMBER_ID_EXIST);
+		if ( repository.existsById(memberId)) return false; // 이미 존재하는 아이디
 		
-		return false; // 사용가능 아이디
+		return true; // 사용가능 아이디
 	}//exist
 	
 
