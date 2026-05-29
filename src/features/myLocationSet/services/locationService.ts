@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { apiCall } from './apiService'; // src/config/에 위치한 공통 apiCall 임포트
 import type { AddressItem, KakaoAddressResponse, LocationSaveRequest } from '../types/location';
-import accessApiClient, { refreshApiClient } from '@/config/axios';
+import accessApiClient from '@/config/axios';
+import { zustandAuthStore } from '@/hooks/useCustomLogin';
+import { SESSION } from '@/config/constant';
 
 // 1. 카카오 API: 주소를 좌표로 변환
 export async function getCoordsByAddress(address: string) {
@@ -43,6 +45,23 @@ export async function getMyLocationListApi(memberId: string) {
 // 4. 기본 배송지 변경 API 호출 (addressId만 서버로 전달)
 export async function changeAddressDefaultApi(addressNo: number) {
   // 💡 백엔드 Controller의 URL 매핑에 맞춰 주소를 수정해주세요. (예: @PatchMapping("/default/{addressId}"))
-  const response = await refreshApiClient.patch(`/myLocationSet/default/${addressNo}`);
+  const response = await accessApiClient.patch(`/myLocationSet/default/${addressNo}`);
+  
+  const { member } = zustandAuthStore.getState();
+  const newMemberData = {
+    ...member!,
+    addressX: response.data.addressX, 
+    addressY: response.data.addressY
+  };
+
+  sessionStorage.setItem(
+    SESSION.ACCESS_DATA,
+    JSON.stringify(newMemberData)
+  );
+
+  zustandAuthStore.setState({
+    member: newMemberData,
+  });
+
   return response.data;
 }
