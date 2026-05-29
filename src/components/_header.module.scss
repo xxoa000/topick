@@ -1,0 +1,14 @@
+.logoLink {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  
+  padding: 5px 0;
+  line-height: 0; // img 아래 미세 공백 제거
+
+  img {
+    display: block;
+    min-height: 30px;
+    height: 60px;
+  }
+}

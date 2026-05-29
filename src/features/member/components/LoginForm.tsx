@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./_login-form.module.scss";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useCustomLogin from "@/hooks/useCustomLogin";
 import memberApi from "@member/services/memberApi";
 
@@ -29,11 +29,7 @@ export default function LoginForm() {
 
 
 	return (
-	<section className={styles.loginSection}>
-		
-		<NavLink to="/" className={styles.logoLink}>
-			<img src="/logo.png" alt="오늘의 식당 로고" />
-  	</NavLink>
+	<>
 
 		<form onSubmit={handleSubmit} className={styles.loginForm}>
 
@@ -54,12 +50,6 @@ export default function LoginForm() {
 			<button type="submit" className={styles.loginButton}>로그인</button>
 		</form>
 	
-		<ul className={styles.linkList}>
-			<li><NavLink to="">아이디 찾기</NavLink></li>
-			<li><NavLink to="">PW 찾기</NavLink></li>
-			<li><NavLink to="/member/join">회원가입</NavLink></li>
-		</ul>
-
-	</section>
+	</>
 	);
 };
