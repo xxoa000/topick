@@ -10,13 +10,18 @@ import {
 } from 'react';
 import type { StoreItem } from '../../store/types';
 import { extractFoodType } from '../lib/categoryFoodType';
+import { buildStoreInfoWindowHtml } from '../lib/buildStoreInfoWindowHtml';
 import { getKakaoMaps } from '../lib/kakaoMapsApi';
-import { type KakaoMap, type KakaoMarker } from '../lib/loadKakaoMaps';
+import { type KakaoInfoWindow, type KakaoMap, type KakaoMarker } from '../lib/loadKakaoMaps';
 import { fetchStoreMenus, fetchTags, searchByFilter, searchByKeyword } from '../services/filterApi';
 import type { Menu, SearchResponse, Tag } from '../types';
 
 type SearchMode = 'keyword' | 'filter';
 type DistanceOption = 100 | 500 | 1000 | null;
+
+type SelectStoreOptions = {
+  marker?: KakaoMarker;
+};
 
 type FilterSearchContextValue = {
   keyword: string;
@@ -45,7 +50,7 @@ type FilterSearchContextValue = {
   storeMenus: Menu[];
   storeDetailLoading: boolean;
   storeDetailError: string;
-  selectStore: (store: StoreItem) => Promise<void>;
+  selectStore: (store: StoreItem, options?: SelectStoreOptions) => Promise<void>;
   clearStoreDetail: () => void;
   attachMap: (map: KakaoMap | null) => Promise<void>;
   reportMapError: (message: string) => void;
@@ -64,6 +69,9 @@ export function useFilterSearch() {
 export function FilterSearchProvider({ children }: { children: ReactNode }) {
   const mapRef = useRef<KakaoMap | null>(null);
   const markersRef = useRef<KakaoMarker[]>([]);
+  const infoWindowRef = useRef<KakaoInfoWindow | null>(null);
+  const selectedMarkerRef = useRef<KakaoMarker | null>(null);
+  const markerByStoreIdRef = useRef<Map<string, KakaoMarker>>(new Map());
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suppressIdleUntilRef = useRef(0);
   const lastFetchedBoundsKeyRef = useRef('');
@@ -195,43 +203,84 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const closeInfoWindow = useCallback(() => {
+    infoWindowRef.current?.close();
+    selectedMarkerRef.current = null;
+  }, []);
+
   const clearMarkers = useCallback(() => {
+    closeInfoWindow();
     markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current = [];
-  }, []);
+    markerByStoreIdRef.current.clear();
+  }, [closeInfoWindow]);
 
-  const selectStoreRef = useRef<(store: StoreItem) => void>(() => {});
+  const openInfoWindow = useCallback(
+    (marker: KakaoMarker, store: StoreItem, menus: Menu[], loading: boolean, error: string) => {
+      const map = mapRef.current;
+      if (!map) return;
 
-  const selectStore = useCallback(async (store: StoreItem) => {
-    setSelectedStore(store);
-    setStoreMenus([]);
-    setStoreDetailError('');
-    setStoreDetailLoading(true);
+      const maps = getKakaoMaps();
+      const content = buildStoreInfoWindowHtml(store, menus, loading, error);
 
-    try {
-      const menus = await fetchStoreMenus({
-        kakaoId: store.id,
-        storeName: store.placeName,
-      });
-      setStoreMenus(menus);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : '메뉴 조회 실패';
-      setStoreDetailError(message);
-    } finally {
-      setStoreDetailLoading(false);
-    }
-  }, []);
+      if (!infoWindowRef.current) {
+        infoWindowRef.current = new maps.InfoWindow({ removable: true });
+      }
+      infoWindowRef.current.setContent(content);
+      infoWindowRef.current.open(map, marker);
+      selectedMarkerRef.current = marker;
+    },
+    [],
+  );
 
-  selectStoreRef.current = (store: StoreItem) => {
-    void selectStore(store);
+  const selectStoreRef = useRef<(store: StoreItem, marker: KakaoMarker) => void>(() => {});
+
+  const selectStore = useCallback(
+    async (store: StoreItem, options?: SelectStoreOptions) => {
+      setSelectedStore(store);
+      setStoreMenus([]);
+      setStoreDetailError('');
+      setStoreDetailLoading(true);
+
+      const marker =
+        options?.marker ?? markerByStoreIdRef.current.get(store.id) ?? null;
+      const map = mapRef.current;
+      if (marker && map) {
+        if (store.y != null && store.x != null) {
+          const maps = getKakaoMaps();
+          map.panTo(new maps.LatLng(store.y, store.x));
+        }
+        openInfoWindow(marker, store, [], true, '');
+      }
+
+      try {
+        const menus = await fetchStoreMenus({
+          storeNo: store.storeNo,
+          kakaoId: store.id,
+          storeName: store.placeName,
+        });
+        setStoreMenus(menus);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : '메뉴 조회 실패';
+        setStoreDetailError(message);
+      } finally {
+        setStoreDetailLoading(false);
+      }
+    },
+    [closeInfoWindow, openInfoWindow],
+  );
+
+  selectStoreRef.current = (store: StoreItem, marker: KakaoMarker) => {
+    void selectStore(store, { marker });
   };
 
   const clearStoreDetail = useCallback(() => {
+    closeInfoWindow();
     setSelectedStore(null);
     setStoreMenus([]);
     setStoreDetailError('');
     setStoreDetailLoading(false);
-  }, []);
+  }, [closeInfoWindow]);
 
   const drawMarkers = useCallback(
     (items: StoreItem[]) => {
@@ -239,16 +288,19 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
       if (!map) return;
 
       clearMarkers();
+      const markerMap = new Map<string, KakaoMarker>();
       items.forEach((item) => {
         if (item.y == null || item.x == null) return;
         const maps = getKakaoMaps();
         const position = new maps.LatLng(item.y, item.x);
         const marker = new maps.Marker({ map, position });
+        markerMap.set(item.id, marker);
         maps.event.addListener(marker, 'click', () => {
-          selectStoreRef.current(item);
+          selectStoreRef.current(item, marker);
         });
         markersRef.current.push(marker);
       });
+      markerByStoreIdRef.current = markerMap;
     },
     [clearMarkers],
   );
@@ -369,6 +421,19 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     },
     [selectStore],
   );
+
+  useEffect(() => {
+    if (!selectedStore || !selectedMarkerRef.current) {
+      return;
+    }
+    openInfoWindow(
+      selectedMarkerRef.current,
+      selectedStore,
+      storeMenus,
+      storeDetailLoading,
+      storeDetailError,
+    );
+  }, [selectedStore, storeMenus, storeDetailLoading, storeDetailError, openInfoWindow]);
 
   const runKeywordSearchRef = useRef(runKeywordSearch);
   const rerunLastSearchRef = useRef(rerunLastSearch);

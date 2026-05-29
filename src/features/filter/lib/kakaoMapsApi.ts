@@ -20,6 +20,12 @@ export interface KakaoMarker {
   setMap(map: KakaoMap | null): void;
 }
 
+export interface KakaoInfoWindow {
+  open(map: KakaoMap, marker: KakaoMarker): void;
+  close(): void;
+  setContent(content: string | HTMLElement): void;
+}
+
 export interface KakaoMapsApi {
   LatLng: new (lat: number, lng: number) => KakaoLatLng;
   Map: new (
@@ -27,6 +33,10 @@ export interface KakaoMapsApi {
     options: { center: KakaoLatLng; level: number },
   ) => KakaoMap;
   Marker: new (options: { map: KakaoMap; position: KakaoLatLng }) => KakaoMarker;
+  InfoWindow: new (options: {
+    content?: string | HTMLElement;
+    removable?: boolean;
+  }) => KakaoInfoWindow;
   event: {
     addListener(
       target: KakaoMap | KakaoMarker,

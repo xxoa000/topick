@@ -7,9 +7,19 @@ import {
 } from '../lib/loadKakaoMaps';
 import { fetchKakaoMapsJsKey } from '../services/filterApi';
 import { useFilterSearch } from '../context/FilterSearchContext';
+// import useCustomLogin from '@/hooks/useCustomLogin';
+// const { member } = useCustomLogin();
 
 const DEFAULT_CENTER = { lat: 37.350106, lng: 127.109001 };
-
+// if (member?.addressX && member.addressY) {
+//   const DEFAULT_CENTER = {
+//     lat: member.addressX,
+//     lng: member.addressY
+//   }
+// } else {
+//   const DEFAULT_CENTER = { lat: 37.350106, lng: 127.109001 };
+// }
+  
 function waitForElementSize(el: HTMLElement): Promise<void> {
   return new Promise((resolve) => {
     let attempts = 0;

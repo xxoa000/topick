@@ -1,7 +1,6 @@
 import FilterHeaderPortal from '../components/FilterHeaderPortal'; //React Portal로 다른 DOM 위치(예: 헤더 영역)에 꽂아 넣는 구조
 import FilterMapView from '../components/FilterMapView'; //지도(카카오맵 등)를 실제로 그리는 컴포넌트
 import SearchResultsPanel from '../components/SearchResultsPanel'; //검색된 가게 리스트(결과 목록 패널) 컴포넌트
-import StoreDetailPanel from '../components/StoreDetailPanel'; //목록/마커에서 특정 가게를 선택했을 때 상세정보를 보여주는 패널
 import TagFilterPanel from '../components/TagFilterPanel'; //태그 기반 필터 UI(예: 매운맛, 혼밥, 주차 등)를 보여주는 컴포넌트 / 결과 목록을 좁히는 제어부 역할
 import { FilterSearchProvider } from '../context/FilterSearchContext'; //Context Provider를 가져와서, 하위 컴포넌트들이 공통 상태(키워드, 선택 태그, 결과, 선택 매장, 지도 상태 등)를 공유
 import '../styles/filterHome.scss';
@@ -16,7 +15,6 @@ export default function FilterHomePage() { //이 파일의 기본(default) expor
           <TagFilterPanel />
           <div className="filter-map-column">
             <FilterMapView />
-            <StoreDetailPanel />
           </div>
         </div>
       </div>
