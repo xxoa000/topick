@@ -52,20 +52,19 @@ footer {
   background-color: gray;
 }
 
-table {
-  border-collapse: collapse;
-  border: 1px solid #ccc;
-}
-
-th,
-td {
-  border: 1px solid #ccc;
-  padding: 10px;
-}
-
 button {
   padding: 10px 16px;
   border: 1px solid #ccc;
   background-color: white;
   cursor: pointer;
 }
+
+ a {
+    color: #666;
+    font-size: 14px;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }

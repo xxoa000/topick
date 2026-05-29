@@ -17,7 +17,8 @@
 
     /* 절대 경로 설정 */
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@member/*": ["./src/features/member/*"]
     },
 
     /* Linting */

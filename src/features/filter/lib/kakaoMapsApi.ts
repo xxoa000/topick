@@ -11,11 +11,19 @@ export interface KakaoLatLngBounds {
 export interface KakaoMap {
   getBounds(): KakaoLatLngBounds;
   panTo(latlng: KakaoLatLng): void;
+  setDraggable?(draggable: boolean): void;
+  setZoomable?(zoomable: boolean): void;
   relayout?: () => void;
 }
 
 export interface KakaoMarker {
   setMap(map: KakaoMap | null): void;
+}
+
+export interface KakaoInfoWindow {
+  open(map: KakaoMap, marker: KakaoMarker): void;
+  close(): void;
+  setContent(content: string | HTMLElement): void;
 }
 
 export interface KakaoMapsApi {
@@ -25,6 +33,10 @@ export interface KakaoMapsApi {
     options: { center: KakaoLatLng; level: number },
   ) => KakaoMap;
   Marker: new (options: { map: KakaoMap; position: KakaoLatLng }) => KakaoMarker;
+  InfoWindow: new (options: {
+    content?: string | HTMLElement;
+    removable?: boolean;
+  }) => KakaoInfoWindow;
   event: {
     addListener(
       target: KakaoMap | KakaoMarker,
