@@ -20,5 +20,5 @@ public interface MyLocationSetService {
 	
 	public List<MyLocationSet> findByMemberId(String memberId);
 
-	void changeDefaultAddress(long addressNo);
+	Map<String, String> changeDefaultAddress(long addressNo);
 }
