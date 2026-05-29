@@ -55,9 +55,6 @@ public class MyLocationSetServiceImpl implements MyLocationSetService{
         // 1. 수정 요청이 들어온 주소가 존재하는지 먼저 확인 및 조회
         MyLocationSet targetAddress = myLocationSetRepository.findById(addressNo)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주소 ID입니다: " + addressNo));
-        if(targetAddress.getAddressDefault()=='Y') {
-            return;
-        }
         
         if(targetAddress.getAddressDefault()=='Y') {
         	return null;
