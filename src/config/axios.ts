@@ -107,7 +107,7 @@ accessApiClient.interceptors.response.use(
         
         // 1. refreshApiClient로 백엔드에 토큰 재발급 요청 (일반적으로 결과로 새 accessToken이 내려옴)
         const response = await refreshApiClient.post('/auth/refresh'); 
-        const newAccessToken = response.data.accessToken; 
+        const newAccessToken = response.data.accessToken;
 
         // 2. Zustand Auth 스토어의 상태 갱신
         const {member, login} = zustandAuthStore.getState();

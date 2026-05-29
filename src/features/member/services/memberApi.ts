@@ -1,12 +1,25 @@
 import accessApiClient, { refreshApiClient } from "@/config/axios";
 import type { LoginRequestDTO } from "@member/types/loginDTO";
+import type { JoinRequestDTO } from "../types/joinDTO";
 
 
 const memberApi = {
 
+	// 아이디 중복 확인
+	idCheck: async(memberId:string) => {
+		const response = await refreshApiClient.post( "/member/idCheck", memberId );
+		return response.data;
+	},
+
+	// 회원가입
+	join: async(joinReqDto : JoinRequestDTO) => {
+		const response = await refreshApiClient.post( "/member/join", joinReqDto );
+		return response.data;
+	},
+
 	// 로그인
-	login: async(requestDto: LoginRequestDTO) => {
-		const response = await refreshApiClient.post( "/member/login", requestDto );
+	login: async(loginReqDto: LoginRequestDTO) => {
+		const response = await refreshApiClient.post( "/member/login", loginReqDto );
 		return response.data;
 	},
 	// 로그아웃
