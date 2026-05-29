@@ -60,12 +60,13 @@ public class MemberController {
 	
 	// 회원가입 - Id 중복 확인
 	@GetMapping("/idCheck/{memberId}")
-	public ResponseEntity<String> idCheck(@PathVariable("memberId") String memberId) {
+	public ResponseEntity<Boolean> idCheck(@PathVariable("memberId") String memberId) {
 		
 		boolean exist = memberService.exist(memberId);
-		if (!exist) return ResponseEntity.ok("사용 가능한 ID 입니다.");
-		return ResponseEntity.ok("이미 존재하는 ID 입니다.");
-		
+		//if (exist) return null;
+		log.info(exist);
+			
+		return ResponseEntity.ok(exist);
 	}//duplicateId
 	
 	

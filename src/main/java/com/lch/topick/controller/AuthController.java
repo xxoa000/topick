@@ -15,6 +15,8 @@ import com.lch.topick.jwtToken.TokenProvider;
 import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.repository.MemberRepository;
 import com.lch.topick.web.member.def.service.MemberService;
+import com.lch.topick.web.myLocationSet.entity.MyLocationSet;
+import com.lch.topick.web.myLocationSet.repository.MyLocationSetRepository;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +33,7 @@ public class AuthController {
 	
 	private final TokenProvider tokenProvider;
 	private final MemberRepository memberRepository;
+	private final MyLocationSetRepository addrRepository;
 	private final MemberService memberService;
 	
 	// accessToken 만료 유무 확인
@@ -74,7 +77,11 @@ public class AuthController {
 		String newAccessToken = tokenProvider.createAccessToken(claims);
 		
 		// 클라이언트로 전달
-		return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+		return ResponseEntity.ok(
+				Map.of(
+						"accessToken", newAccessToken
+						)
+				);
 	} //newAccesssToken
 	
 	
