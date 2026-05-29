@@ -51,15 +51,21 @@ public class MyLocationSetServiceImpl implements MyLocationSetService{
 	}
 	
 	@Transactional // 🌟 데이터 정성 확보를 위해 꼭 붙여주세요!
-    public void changeDefaultAddress(long addressNo) {
+    public Map<String, String> changeDefaultAddress(long addressNo) {
         // 1. 수정 요청이 들어온 주소가 존재하는지 먼저 확인 및 조회
         MyLocationSet targetAddress = myLocationSetRepository.findById(addressNo)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주소 ID입니다: " + addressNo));
         
+        if(targetAddress.getAddressDefault()=='Y') {
+        	return null;
+        }
+    	
         // 2. 해당 회원의 모든 주소록의 addressDefault를 먼저 'N'으로 초기화
         myLocationSetRepository.resetDefaultAddress(targetAddress.getMemberId());
         
         // 3. 선택된 주소만 'Y'로 변경 (JPA Dirty Checking에 의해 자동 update)
-        targetAddress.setAddressDefault('Y'); 
+        targetAddress.setAddressDefault('Y');
+        
+        return Map.of("addressX", targetAddress.getAddressX(), "addressY", targetAddress.getAddressY());
     }
 }
