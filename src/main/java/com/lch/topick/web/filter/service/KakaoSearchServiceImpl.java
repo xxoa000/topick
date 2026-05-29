@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -71,6 +70,8 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
         fetchByQuery(req.getSwX(), req.getSwY(), req.getNeX(), req.getNeY(), keyword, merge);
 
         List<FilterStoreItemDTO> item = new ArrayList<>(merge.values());
+        saveStoresFromSearchResults(item);
+        enrichStoreNumbers(item);
 
         return new SearchResponseDTO(item.size(), item);
     }
@@ -90,23 +91,19 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
         }
 
         List<FilterStoreItemDTO> item = new ArrayList<>(merge.values());
+        saveStoresFromSearchResults(item);
+        enrichStoreNumbers(item);
 
         return new SearchResponseDTO(item.size(), item);
     }
 
     @Override
-    // 마커 클릭 시 가게 저장 및 메뉴 조회
+    // 저장된 가게의 메뉴 조회 (가게 저장은 검색 결과 반환 시 수행)
     public List<MenuDTO> menuList(FilterStoreRequestDTO req) {
 
-        // 1. kakaoId 로 store 조회
-    	FilterStore store = storeRepository.findByKakaoId(req.getKakaoId());
-
+    	FilterStore store = resolveStore(req);
     	if (store == null) {
-    	    // 새로 저장
-    	    FilterStore newStore = new FilterStore();
-    	    newStore.setKakaoId(req.getKakaoId());
-    	    newStore.setStoreName(req.getStoreName());
-    	    store = storeRepository.save(newStore);
+    	    return List.of();
     	}
 
         return menuRepository.findByStoreNo(store.getStoreNo()).stream()
@@ -154,12 +151,60 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
 
             merge.putIfAbsent(id, new FilterStoreItemDTO(
                     id,
+                    null,
                     placeName,
                     placeUrl,
                     categoryName,
                     x,
                     y,
                     addressName));
+        }
+    }
+
+    private FilterStore resolveStore(FilterStoreRequestDTO req) {
+        if (req == null) {
+            return null;
+        }
+        if (req.getStoreNo() != null) {
+            return storeRepository.findById(req.getStoreNo()).orElse(null);
+        }
+        String kakaoId = req.getKakaoId();
+        if (kakaoId == null || kakaoId.isBlank()) {
+            return null;
+        }
+        return storeRepository.findByKakaoId(kakaoId.trim());
+    }
+
+    // 검색 응답 DTO에 DB store_no 매핑
+    private void enrichStoreNumbers(List<FilterStoreItemDTO> items) {
+        for (FilterStoreItemDTO item : items) {
+            if (item.getId() == null || item.getId().isBlank()) {
+                continue;
+            }
+            FilterStore store = storeRepository.findByKakaoId(item.getId().trim());
+            if (store != null) {
+                item.setStoreNo(store.getStoreNo());
+            }
+        }
+    }
+
+    // 검색 결과에 포함된 가게를 DB에 저장 (이미 있으면 스킵)
+    private void saveStoresFromSearchResults(List<FilterStoreItemDTO> items) {
+        for (FilterStoreItemDTO item : items) {
+            if (item.getId() == null || item.getId().isBlank()) {
+                continue;
+            }
+            String name = item.getPlaceName();
+            if (name == null || name.isBlank()) {
+                continue;
+            }
+            if (storeRepository.findByKakaoId(item.getId()) != null) {
+                continue;
+            }
+            FilterStore newStore = new FilterStore();
+            newStore.setKakaoId(item.getId());
+            newStore.setStoreName(name);
+            storeRepository.save(newStore);
         }
     }
 

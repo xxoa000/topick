@@ -11,6 +11,8 @@ public class FilterStoreItemDTO {
 	
 	
 	private String id;
+	/** DB store 테이블 PK (검색 응답 시 채움) */
+	private Long storeNo;
     private String placeName;    // 카카오 "place_name"
     private String placeUrl;     // 카카오 "place_url"
     private String categoryName;     // 카카오 "category_name"
