@@ -7,7 +7,7 @@ export interface LoginResponseDTO {
 	memberId: string;
 	memberName: string;
 	accessToken: string;
-	addressX : string;
-	addressY : string;
+	addressX? : string;
+	addressY? : string;
 	roleList: string[]; 
 }
