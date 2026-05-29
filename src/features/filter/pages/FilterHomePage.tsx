@@ -8,7 +8,7 @@ import '../styles/filterHome.scss';
 
 export default function FilterHomePage() { //이 파일의 기본(default) export인 페이지 컴포넌트 선언
   return ( //JSX 트리를 반환 시작. "페이지 화면 구성도"
-    <FilterSearchProvider> // 이 페이지의 모든 자식 컴포넌트를 Provider로 감쌉니다
+    <FilterSearchProvider> 
       <FilterHeaderPortal />
       <div className="filter-home">
         <div className="filter-layout">
