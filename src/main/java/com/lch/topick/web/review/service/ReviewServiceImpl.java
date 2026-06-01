@@ -6,117 +6,142 @@ import com.lch.topick.web.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
 
+    // 💡 프로젝트 내부의 static 폴더 하위에 이미지가 저장되도록 설정된 경로입니다.
+    private final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/reviews/";
+
     /**
-     * 새로운 리뷰 등록
+     * 1. 리뷰 등록 (파일 업로드 + 실제 DB 저장 구현 완료)
      */
     @Override
-    @Transactional
-    public ReviewDomain registerReview(ReviewDomain domain) {
+    public ReviewDomain registerReview(ReviewDomain domain, List<MultipartFile> files) {
+        
+        String savedFileName = null;
+
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    try {
+                        File folder = new File(uploadDir);
+                        if (!folder.exists()) {
+                            folder.mkdirs();
+                        }
+
+                        String originalName = file.getOriginalFilename();
+                        String uuid = UUID.randomUUID().toString();
+                        String extension = originalName.substring(originalName.lastIndexOf("."));
+                        savedFileName = uuid + extension;
+
+                        File targetFile = new File(uploadDir + savedFileName);
+                        file.transferTo(targetFile);
+
+                        break; 
+                    } catch (IOException e) {
+                        System.err.println("❌ 백엔드 파일 서버 저장 중 오류 발생: " + e.getMessage());
+                        throw new RuntimeException("파일 업로드 실패", e);
+                    }
+                }
+            }
+        }
+
         ReviewEntity entity = ReviewEntity.builder()
                 .memberId(domain.getMemberId())
                 .storeNo(domain.getStoreNo())
                 .reviewStar(domain.getReviewStar())
                 .reviewContent(domain.getReviewContent())
-                .reviewImage(domain.getReviewImage())
+                .reviewImage(savedFileName) 
                 .build();
 
         ReviewEntity savedEntity = reviewRepository.save(entity);
-        return convertToDomain(savedEntity);
+        
+        return convertToDomain(savedEntity); 
     }
 
     /**
-     * 리뷰 수정
-     * - 작성자만 리뷰 수정 가능
+     * 2. 리뷰 수정 구현 완료
      */
     @Override
-    @Transactional
-    public String modifyReview(ReviewDomain domain, String currentMemberId) {
+    public String modifyReview(ReviewDomain domain, List<MultipartFile> files, String currentMemberId) {
         ReviewEntity entity = reviewRepository.findById(domain.getReviewNo()).orElse(null);
         
-        //수정하려는 글이 존재하지 않는 경우
-        if (entity == null) {
-            return "NOT_FOUND: 해당 리뷰가 존재하지 않습니다.";
-        }
-        
-        //요청한 사람과 작성자가 다른 경우
-        if (!entity.getMemberId().equals(currentMemberId)) {
-            return "FORBIDDEN: 작성자가 아니므로 권한이 없습니다.";
-        }
-        
-        //데이터 수정 (JPA 변경 감지로 자동 UPDATE)
+        if (entity == null) return "NOT_FOUND";
+        if (!entity.getMemberId().equals(currentMemberId)) return "FORBIDDEN";
+
         entity.setReviewStar(domain.getReviewStar());
         entity.setReviewContent(domain.getReviewContent());
-        entity.setReviewImage(domain.getReviewImage());
-        
-        return "SUCCESS: 리뷰가 수정되었습니다.";
+
+        if (files != null && !files.isEmpty() && !files.get(0).isEmpty()) {
+            try {
+                // 기존 이미지가 존재했다면 디스크에서 먼저 삭제 처리하여 낭비 방지
+                if (entity.getReviewImage() != null) {
+                    File oldFile = new File(uploadDir + entity.getReviewImage());
+                    if (oldFile.exists()) oldFile.delete();
+                }
+
+                String originalName = files.get(0).getOriginalFilename();
+                String savedFileName = UUID.randomUUID().toString() + originalName.substring(originalName.lastIndexOf("."));
+                files.get(0).transferTo(new File(uploadDir + savedFileName));
+                entity.setReviewImage(savedFileName);
+            } catch (IOException e) {
+                throw new RuntimeException("수정 중 파일 업로드 실패", e);
+            }
+        }
+
+        return "SUCCESS";
     }
+
     /**
-     * 리뷰 삭제
-     * - 작성자만 리뷰 삭제 가능
+     * 3. 리뷰 삭제 구현 완료
      */
     @Override
-    @Transactional
     public String removeReview(Long reviewNo, String currentMemberId) {
         ReviewEntity entity = reviewRepository.findById(reviewNo).orElse(null);
-        
-        //삭제하려는 글이 존재하지 않는 경우
-        if (entity == null) {
-            return "NOT_FOUND: 해당 리뷰가 존재하지 않습니다.";
+        if (entity == null) return "NOT_FOUND";
+        if (!entity.getMemberId().equals(currentMemberId)) return "FORBIDDEN";
+
+        if (entity.getReviewImage() != null) {
+            File file = new File(uploadDir + entity.getReviewImage());
+            if (file.exists()) file.delete();
         }
-        
-        //요청한 사람과 작성자가 다른 경우
-        if (!entity.getMemberId().equals(currentMemberId)) {
-            return "FORBIDDEN: 작성자가 아니므로 권한이 없습니다.";
-        }
-        
-        //진짜 DB에서 삭제
+
         reviewRepository.delete(entity);
-        return "SUCCESS: 리뷰가 삭제되었습니다.";
+        return "SUCCESS";
     }
 
-    /**
-     * 특정 가게의 모든 리뷰 모아보기
-     */
     @Override
+    @Transactional(readOnly = true)
     public List<ReviewDomain> getReviewListByStore(Long storeNo) {
-        return reviewRepository.findByStoreNo(storeNo).stream()
-                .map(this::convertToDomain)
-                .collect(Collectors.toList());
+        List<ReviewEntity> entities = reviewRepository.findByStoreNo(storeNo);
+        return entities.stream().map(this::convertToDomain).toList();
     }
 
-    /**
-     * 내 리뷰 모아보기
-     */
     @Override
+    @Transactional(readOnly = true)
     public List<ReviewDomain> getMyReviewList(String memberId) {
-        return reviewRepository.findByMemberId(memberId).stream()
-                .map(this::convertToDomain)
-                .collect(Collectors.toList());
+        List<ReviewEntity> entities = reviewRepository.findByMemberId(memberId);
+        return entities.stream().map(this::convertToDomain).toList();
     }
 
-    /**
-     * 특정 가게의 포토 리뷰 모아보기
-     */
     @Override
+    @Transactional(readOnly = true)
     public List<ReviewDomain> getPhotoReviewList(Long storeNo) {
-        return reviewRepository.findByStoreNoAndReviewImageIsNotNull(storeNo).stream()
-                .map(this::convertToDomain)
-                .collect(Collectors.toList());
+        List<ReviewEntity> entities = reviewRepository.findByStoreNoAndReviewImageIsNotNull(storeNo);
+        return entities.stream().map(this::convertToDomain).toList();
     }
 
-    //Entity → Domain
     private ReviewDomain convertToDomain(ReviewEntity entity) {
         return ReviewDomain.builder()
                 .reviewNo(entity.getReviewNo())
