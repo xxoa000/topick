@@ -65,7 +65,8 @@ out/
 ### VS Code ###
 .vscode/
 
-
+# 이미지 파일 무시 설정
+**/src/main/resources/static/uploads/reviews/**
 
 # --- OS 별 임시 파일 (Mac/Windows 충돌 방지) ---
 .DS_Store
