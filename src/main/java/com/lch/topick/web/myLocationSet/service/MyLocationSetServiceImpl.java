@@ -50,6 +50,26 @@ public class MyLocationSetServiceImpl implements MyLocationSetService{
 		return myLocationSetRepository.findByMemberIdOrderByAddressDefaultDesc(memberId);
 	}
 	
+	@Override
+	public MyLocationSet findByMemberIdAndAddressDefault(String memberId, char addressDefault) {
+		Optional<MyLocationSet> addrOpt = myLocationSetRepository.findByMemberIdAndAddressDefault(memberId, addressDefault);
+		
+		// 1. 데이터베이스에 값이 존재하면 조회된 객체를 꺼내서 즉시 반환
+	    if (addrOpt.isPresent()) {
+	        return addrOpt.get();
+	    }
+	    
+	    // 2. 값이 없으면(null이면) 실행되는 블록: 기본값 세팅 후 반환
+	    MyLocationSet addr = new MyLocationSet();
+	    
+	    addr.setAddressX("127.108932846326"); 
+	    addr.setAddressY("37.3500951835995");
+	    addr.setMemberId(memberId);
+	    addr.setAddressDefault(addressDefault);
+	    
+	    return addr;
+	}
+	
 	@Transactional // 🌟 데이터 정성 확보를 위해 꼭 붙여주세요!
     public Map<String, String> changeDefaultAddress(long addressNo) {
         // 1. 수정 요청이 들어온 주소가 존재하는지 먼저 확인 및 조회

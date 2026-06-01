@@ -21,7 +21,7 @@ import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
 import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.repository.MemberRepository;
 import com.lch.topick.web.myLocationSet.entity.MyLocationSet;
-import com.lch.topick.web.myLocationSet.repository.MyLocationSetRepository;
+import com.lch.topick.web.myLocationSet.service.MyLocationSetService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +34,7 @@ public class MemberServiceImpl implements MemberService {
 	private final PasswordEncoder pwEncoder;
 	private final TokenProvider tokenProvider;
 	// 주소 추가용
-	private final MyLocationSetRepository addrRepository;
+	private final MyLocationSetService addrService;
 	
 	
 	
@@ -117,9 +117,8 @@ public class MemberServiceImpl implements MemberService {
 		updateToken(entity, refreshToken);
 		
 		// 2.2 클라이언트로 주소 추가 하여 전송
-		MyLocationSet addr = addrRepository
+		MyLocationSet addr = addrService
 							.findByMemberIdAndAddressDefault(entity.getMemberId(), 'Y');
-		
 		
 		// 2.3 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
 		MemberLoginResponseDTO responseDto = new MemberLoginResponseDTO(
