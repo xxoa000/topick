@@ -66,6 +66,8 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public Member insert(MemberJoinRequestDTO requestDto) {
 		if (repository.existsById(requestDto.getMemberId())) throw new CustomException(ErrorCode.MEMBER_ID_EXIST);
+		if (repository.existsByMemberEmail(requestDto.getMemberEmail())) throw new CustomException(ErrorCode.MEMBER_EMAIL_EXIST);
+		if (repository.existsByMemberPhone(requestDto.getMemberPhone())) throw new CustomException(ErrorCode.MEMBER_PHONE_EXIST);
 		
 		Member entity = Member.builder()
 							.memberId(requestDto.getMemberId())
@@ -120,14 +122,22 @@ public class MemberServiceImpl implements MemberService {
 		MyLocationSet addr = addrRepository
 							.findByMemberIdAndAddressDefault(entity.getMemberId(), 'Y');
 		
+		// 2.3 주소값 null 일 경우 로그인실패 방지 코드
+		String addressX = null;
+		String addressY = null;
+		if (addr !=null) { //값이 있으면 값 보내고, 없으면 null return
+			addressX = addr.getAddressX();
+			addressY = addr.getAddressY();
+		}
 		
-		// 2.3 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
+		
+		// 2.4 클라이언트로 필요한 데이터만 보내기 위한 응답DTO
 		MemberLoginResponseDTO responseDto = new MemberLoginResponseDTO(
 															entity.getMemberId(),
 															entity.getMemberName(),
 															accessToken,
-															addr.getAddressX(),
-															addr.getAddressY(),
+															addressX,
+															addressY,
 															entity.getRoleList()
 															);
 		
