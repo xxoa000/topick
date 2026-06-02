@@ -307,6 +307,7 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
 
   const renderResult = useCallback((data: SearchResponse) => {
     const items = data.item ?? [];
+    console.log(data.item);
     setTotal(data.total ?? 0);
     setResults(items);
     setSelectedFoodType(null);

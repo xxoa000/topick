@@ -18,7 +18,7 @@ export default function SearchResultsPanel() {
     handleResultClick,
     selectedStore,
   } = useFilterSearch();
-
+  
   return (
     <aside className="filter-results-panel">
       <h2 className="filter-panel-title">
