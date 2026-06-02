@@ -9,14 +9,14 @@
   max-width: 420px;
 }
 
-.filter-keyword-search {
+:global(.filter-keyword-search) {
   display: flex;
   align-items: center;
   gap: 6px;
   width: 100%;
 }
 
-.filter-keyword-search__input {
+:global(.filter-keyword-search__input) {
   flex: 1;
   min-width: 0;
   height: 36px;
@@ -37,8 +37,8 @@
   }
 }
 
-.filter-keyword-search__submit,
-.filter-keyword-search__clear {
+:global(.filter-keyword-search__submit),
+:global(.filter-keyword-search__clear) {
   flex-shrink: 0;
   height: 36px;
   padding: 0 12px;
@@ -48,7 +48,7 @@
   white-space: nowrap;
 }
 
-.filter-keyword-search__submit {
+:global(.filter-keyword-search__submit) {
   border: none;
   background: #ff6b00;
   color: #fff;
@@ -63,7 +63,7 @@
   }
 }
 
-.filter-keyword-search__clear {
+:global(.filter-keyword-search__clear) {
   border: 1px solid #ddd;
   background: #fff;
   color: #666;

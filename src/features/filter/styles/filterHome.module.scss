@@ -6,27 +6,29 @@
   text-align: left;
 }
 
-@import './filterKeywordSearch.scss';
+/* filter-home은 fixed로 띄우는데, 페이지(body) 스크롤까지 허용하면
+   지도는 그대로 보이고 header/footer만 스크롤되어 어긋나 보일 수 있습니다.
+   panel 내부는 overflow: auto로 스크롤되므로, 바깥 스크롤만 막습니다. */
+:global(body:has(.filter-home)) {
+  overflow: hidden;
+}
 
-.filter-home {
-  position: fixed;
-  top: 80px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
+@import './filterKeywordSearch.module.scss';
+
+:global(.filter-home) {
+  width: 100%;
+  height: calc(100vh - 180px);
   font-family: 'Pretendard', 'Malgun Gothic', Arial, sans-serif;
   color: #222;
 }
 
-.filter-layout {
+:global(.filter-layout) {
   display: grid;
   grid-template-columns: minmax(240px, 300px) minmax(240px, 300px) minmax(0, 1fr);
   height: 100%;
-  min-height: 0;
 }
 
-.filter-map-wrap {
+:global(.filter-map-wrap) {
   position: relative;
   min-width: 0;
   min-height: 0;
@@ -35,7 +37,7 @@
   background: #e9ecef;
 }
 
-.filter-map-column {
+:global(.filter-map-column) {
   position: relative;
   min-width: 0;
   min-height: 0;
@@ -43,8 +45,8 @@
   overflow: hidden;
 }
 
-.filter-results-panel,
-.filter-tags-panel {
+:global(.filter-results-panel),
+:global(.filter-tags-panel) {
   padding: 18px;
   overflow: auto;
   background: #fff;
@@ -52,32 +54,32 @@
   min-height: 0;
 }
 
-.filter-panel-title {
+:global(.filter-panel-title) {
   margin: 0 0 12px;
   font-size: 15px;
   color: #ff6b00;
 }
 
-.filter-count {
+:global(.filter-count) {
   font-weight: normal;
   color: #888;
   font-size: 14px;
 }
 
-.filter-selected-tags {
+:global(.filter-selected-tags) {
   font-size: 12px;
   color: #ff6b00;
   min-height: 18px;
   margin: 0 0 10px;
 }
 
-.filter-chips {
+:global(.filter-chips) {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.filter-chip {
+:global(.filter-chip) {
   padding: 7px 14px;
   border-radius: 20px;
   border: 2px solid #ff6b00;
@@ -93,18 +95,18 @@
   }
 }
 
-.filter-tag-group {
+:global(.filter-tag-group) {
   margin-bottom: 12px;
 }
 
-.filter-tag-type {
+:global(.filter-tag-type) {
   margin: 0 0 6px;
   font-size: 12px;
   font-weight: 600;
   color: #999;
 }
 
-.filter-result-item {
+:global(.filter-result-item) {
   border: 1px solid #e8e8e8;
   border-radius: 10px;
   padding: 12px;
@@ -137,19 +139,19 @@
   }
 }
 
-.filter-result-item.selected {
+:global(.filter-result-item.selected) {
   border-color: #ff6b00;
   box-shadow: 0 0 0 1px #ff6b00;
 }
 
-.filter-map {
+:global(.filter-map) {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
 
-.filter-map-zoom {
+:global(.filter-map-zoom) {
   position: absolute;
   right: 16px;
   bottom: 16px;
@@ -161,7 +163,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.filter-map-zoom-btn {
+:global(.filter-map-zoom-btn) {
   width: 36px;
   height: 36px;
   border: none;
@@ -184,20 +186,20 @@
   }
 }
 
-.filter-status {
+:global(.filter-status) {
   font-size: 12px;
   color: #999;
   margin-top: 8px;
 }
 
-.filter-empty {
+:global(.filter-empty) {
   color: #aaa;
   font-size: 14px;
   padding: 12px 0;
 }
 
 // 카카오맵 InfoWindow (마커·목록 클릭 시)
-.filter-iw {
+:global(.filter-iw) {
   width: 260px;
   max-height: 280px;
   overflow: auto;
@@ -206,20 +208,20 @@
   line-height: 1.4;
 }
 
-.filter-iw-title {
+:global(.filter-iw-title) {
   margin: 0 0 6px;
   font-size: 15px;
   font-weight: 700;
   color: #222;
 }
 
-.filter-iw-meta {
+:global(.filter-iw-meta) {
   margin: 2px 0;
   font-size: 12px;
   color: #666;
 }
 
-.filter-iw-link {
+:global(.filter-iw-link) {
   display: inline-block;
   margin-top: 6px;
   font-size: 12px;
@@ -227,39 +229,39 @@
   text-decoration: none;
 }
 
-.filter-iw-menus {
+:global(.filter-iw-menus) {
   margin-top: 10px;
   padding-top: 8px;
   border-top: 1px solid #eee;
 }
 
-.filter-iw-menus-title {
+:global(.filter-iw-menus-title) {
   margin: 0 0 6px;
   font-size: 13px;
   font-weight: 600;
   color: #333;
 }
 
-.filter-iw-status,
-.filter-iw-empty {
+:global(.filter-iw-status),
+:global(.filter-iw-empty) {
   margin: 0;
   font-size: 12px;
   color: #888;
 }
 
-.filter-iw-error {
+:global(.filter-iw-error) {
   margin: 0;
   font-size: 12px;
   color: #c62828;
 }
 
-.filter-iw-menu-list {
+:global(.filter-iw-menu-list) {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.filter-iw-menu-item {
+:global(.filter-iw-menu-item) {
   display: flex;
   justify-content: space-between;
   gap: 8px;
@@ -268,7 +270,7 @@
   font-size: 12px;
 }
 
-.filter-iw-menu-price {
+:global(.filter-iw-menu-price) {
   font-weight: 600;
   color: #ff6b00;
   white-space: nowrap;

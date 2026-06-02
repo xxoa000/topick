@@ -28,6 +28,7 @@ type FilterSearchContextValue = {
   results: StoreItem[];
   /** 거리·지도 bounds 기준으로 정렬·필터된 목록 · 마커 표시용 */
   displayedResults: StoreItem[];
+
   /** 카카오 키워드 API에 전달 중인 검색어 (빈 문자열이면 기본 '음식점') */
   searchKeyword: string;
   submitKeywordSearch: (keyword: string) => Promise<void>;
@@ -81,7 +82,9 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
   const [tags, setTags] = useState<Tag[]>([]);
   const [tagsLoading, setTagsLoading] = useState(true);
   const [tagsError, setTagsError] = useState('');
+
   const [results, setResults] = useState<StoreItem[]>([]);
+
   const [searchKeyword, setSearchKeyword] = useState('');
   const searchKeywordRef = useRef('');
   const [selectedDistance, setSelectedDistance] = useState<DistanceOption>(null);
