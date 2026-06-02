@@ -6,45 +6,9 @@
   text-align: left;
 }
 
-:global(header:has(.filter-keyword-search)) {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 16px;
-}
-
-.filter-keyword-search {
-  display: flex;
-  flex: 1;
-  min-width: 220px;
-  max-width: 420px;
-  gap: 8px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.filter-keyword-input {
-  flex: 1;
-  padding: 8px 12px;
-  border: 2px solid #ff6b00;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.filter-keyword-btn {
-  padding: 8px 16px;
-  background: #ff6b00;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  white-space: nowrap;
-
-  &:hover {
-    background: #e65c00;
-  }
+:global(header:has(#food-type-slot)) {
+  position: relative;
+  z-index: 10;
 }
 
 .filter-home {
@@ -158,14 +122,14 @@
   h4 {
     margin: 0 0 6px;
     font-size: 15px;
+  }
 
-    a {
-      color: #222;
-      text-decoration: none;
+  a {
+    color: #222;
+    text-decoration: none;
 
-      &:hover {
-        color: #ff6b00;
-      }
+    &:hover {
+      color: #ff6b00;
     }
   }
 
@@ -174,6 +138,11 @@
     font-size: 13px;
     color: #666;
   }
+}
+
+.filter-result-item.selected {
+  border-color: #ff6b00;
+  box-shadow: 0 0 0 1px #ff6b00;
 }
 
 .filter-btn {
@@ -194,10 +163,6 @@
     background: #fff;
     color: #ff6b00;
     border: 2px solid #ff6b00;
-
-    &:hover {
-      background: #fff5ee;
-    }
   }
 }
 
@@ -218,11 +183,6 @@
   color: #aaa;
   font-size: 14px;
   padding: 12px 0;
-}
-
-.filter-result-item.selected {
-  border-color: #ff6b00;
-  box-shadow: 0 0 0 1px #ff6b00;
 }
 
 .filter-store-detail {
@@ -254,7 +214,6 @@
 }
 
 .filter-store-detail-close {
-  flex-shrink: 0;
   width: 28px;
   height: 28px;
   border: none;
@@ -264,10 +223,6 @@
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
-
-  &:hover {
-    background: #e0e0e0;
-  }
 }
 
 .filter-store-detail-address,
@@ -283,40 +238,12 @@
   font-size: 13px;
   color: #ff6b00;
   text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 .filter-store-detail-menus {
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid #eee;
-
-  h4 {
-    margin: 0 0 10px;
-    font-size: 14px;
-    color: #ff6b00;
-  }
-}
-
-.filter-store-detail-status {
-  margin: 0;
-  font-size: 13px;
-  color: #999;
-}
-
-.filter-store-detail-error {
-  margin: 0;
-  font-size: 13px;
-  color: #d32f2f;
-}
-
-.filter-store-detail-empty {
-  margin: 0;
-  font-size: 13px;
-  color: #aaa;
 }
 
 .filter-store-menu-list {
@@ -328,23 +255,90 @@
 .filter-store-menu-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   gap: 12px;
   padding: 8px 0;
   border-bottom: 1px solid #f3f3f3;
-  font-size: 14px;
-
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.filter-store-menu-name {
-  color: #333;
 }
 
 .filter-store-menu-price {
-  flex-shrink: 0;
   font-weight: 600;
   color: #ff6b00;
+}
+
+// 카카오맵 InfoWindow (마커 클릭 시)
+.filter-iw {
+  width: 260px;
+  max-height: 280px;
+  overflow: auto;
+  padding: 4px 2px;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.filter-iw-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.filter-iw-meta {
+  margin: 2px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.filter-iw-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ff6b00;
+  text-decoration: none;
+}
+
+.filter-iw-menus {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.filter-iw-menus-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.filter-iw-status,
+.filter-iw-empty {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.filter-iw-error {
+  margin: 0;
+  font-size: 12px;
+  color: #c62828;
+}
+
+.filter-iw-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.filter-iw-menu-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f3f3;
+  font-size: 12px;
+}
+
+.filter-iw-menu-price {
+  font-weight: 600;
+  color: #ff6b00;
+  white-space: nowrap;
 }
