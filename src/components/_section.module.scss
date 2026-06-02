@@ -1,0 +1,11 @@
+.section {
+  width: 100%;
+  min-height: 700px;
+  background-color: lightblue;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+}
