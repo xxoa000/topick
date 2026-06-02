@@ -1,3 +1,13 @@
+.header {
+  width: 100%;
+  min-height: 50px;
+  background-color: rgb(255, 197, 232);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
 .logoLink {
   display: flex;
   justify-content: center;

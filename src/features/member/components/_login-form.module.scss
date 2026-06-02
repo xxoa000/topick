@@ -3,7 +3,7 @@
   width: 100%;
 }
 
-.inputBox {
+.formBox {
   overflow: hidden;
 
   border: 1px solid #c6c6c6;
@@ -11,7 +11,7 @@
   background-color: #fff;
 }
 
-.inputGroup {
+.inputBox {
   display: flex;
   align-items: center;
 
@@ -31,6 +31,7 @@
 
   label {
     width: 90px;
+    text-align: center;
 
     color: #666;
     font-size: 16px;
