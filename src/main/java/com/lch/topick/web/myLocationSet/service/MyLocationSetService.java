@@ -18,7 +18,9 @@ public interface MyLocationSetService {
 	//** delete
 	void deleteById(long id) throws Exception;
 	
-	public List<MyLocationSet> findByMemberId(String memberId);
+	List<MyLocationSet> findByMemberId(String memberId);
 
+	MyLocationSet findByMemberIdAndAddressDefault(String memberId, char addressDefault);
+	
 	Map<String, String> changeDefaultAddress(long addressNo);
 }

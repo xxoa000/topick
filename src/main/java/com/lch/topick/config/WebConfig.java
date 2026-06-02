@@ -2,6 +2,7 @@ package com.lch.topick.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -27,4 +28,11 @@ public class WebConfig implements WebMvcConfigurer {
 				.maxAge(MAX_AGE_SECS);
 	}//addCorsMappings
 
+	@Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 실제 이미지가 저장된 로컬 경로로 매핑되도록
+        registry.addResourceHandler("/uploads/reviews/**")
+        .addResourceLocations("file:///D:/kdt/topick/back/src/main/resources/static/uploads/reviews/");
+    }
+	
 }//class
