@@ -7,7 +7,7 @@ const memberApi = {
 
 
 	// 아이디 중복 확인
-	idCheck: async(memberId: string ) => {
+	idCheck: async(memberId: string):Promise<boolean> => {
 		const response = await refreshApiClient.get( `/member/idCheck/${memberId}`);
 		return response.data;
 	},
@@ -15,6 +15,7 @@ const memberApi = {
 	// 회원가입
 	join: async(joinReqDto : JoinRequestDTO) => {
 		const response = await refreshApiClient.post( "/member/join", joinReqDto );
+		console.log(`response.data: ${response.data}`);
 		alert(response.data);
 		return response.data;
 	},
