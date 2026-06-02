@@ -6,6 +6,7 @@ import memberApi from "../services/memberApi";
 import type { JoinRequestDTO } from "../types/joinDTO";
 import { useForm } from "react-hook-form";
 import styles from "@member/components/_join-form.module.scss";
+import JoinPwCheckForm from "./JoinPwCheckForm";
 
 
 export default function JoinForm() {
@@ -43,7 +44,12 @@ export default function JoinForm() {
 	{/* 비밀번호 확인 */}
   {/* 이메일 인증 */}
   {/* 선택 정보 입력 */}
-	{ step === 2 && <JoinIdCheckForm /> }
+	{ step === 2 &&
+		<>
+		<JoinIdCheckForm />
+		<JoinPwCheckForm />
+		</>
+	}
 
 
 	{/* 회원가입 완료 */}

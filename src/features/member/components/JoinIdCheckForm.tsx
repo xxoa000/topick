@@ -1,18 +1,19 @@
 import { useForm } from "react-hook-form";
 import type { JoinRequestDTO } from "../types/joinDTO";
 import memberApi from "../services/memberApi";
-import { useJoinStepStore } from "../hooks/joinStepStore";
 import styles from "@member/components/_join-form.module.scss";
 
 export default function JoinIdCheckForm() {
   // 전역 단계 관리
-  const setStep = useJoinStepStore((state) => state.setStep);
+  //const setStep = useJoinStepStore((state) => state.setStep);
 
   const {
     register,
     handleSubmit,
     formState : { errors },
-  } = useForm<JoinRequestDTO>();
+  } = useForm<JoinRequestDTO>({
+    mode: "onChange"
+  });
 
   // Id 무결성 검사
   const idCheckRegister = register(
@@ -41,7 +42,6 @@ export default function JoinIdCheckForm() {
         return;
       }
       alert ("사용가능한 아이디 입니다.");
-      setStep(3);
 
     } catch (error) {
       console.error(error);
@@ -56,10 +56,9 @@ export default function JoinIdCheckForm() {
   <div className={styles.formBox}>
 
     <section className={styles.formRow}>
+      <label htmlFor="memberId">아이디</label>
       <div className={styles.inputBox}>
-        <label htmlFor="memberId">아이디
-          <input id="memberId" type="text" {...idCheckRegister}/>
-        </label>
+        <input id="memberId" type="text" {...idCheckRegister}/>
       </div>
       <button type="submit" className={styles.idCheckBtn}>중복확인</button>
       <span className={styles.message}>{errors.memberId?.message}</span>
