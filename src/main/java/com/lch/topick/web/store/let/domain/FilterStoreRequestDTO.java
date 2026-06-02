@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FilterStoreRequestDTO {
 
+    private Long storeNo;
+
     private String kakaoId;
 
     private String storeName;

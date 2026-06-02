@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lch.topick.web.filter.domain.FilterRequestDTO;
-import com.lch.topick.web.filter.domain.MenuDTO;
 import com.lch.topick.web.filter.domain.SearchResponseDTO;
 import com.lch.topick.web.filter.service.KakaoSearchService;
+import com.lch.topick.web.menu.let.domain.MenuDTO;
 import com.lch.topick.web.store.let.domain.FilterStoreRequestDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class FilterController {
         return kakaoSearchService.searchByFilter(req);
     }
 
-    // 마커 클릭 시 가게 저장 및 메뉴 조회
+    // 저장된 가게 메뉴 조회 (가게 저장은 키워드/태그 검색 결과 반환 시 수행)
     @ResponseBody
     @PostMapping("/menu/store")
     public List<MenuDTO> menuList(@RequestBody FilterStoreRequestDTO req) {

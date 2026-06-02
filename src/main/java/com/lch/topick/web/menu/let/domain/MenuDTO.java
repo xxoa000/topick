@@ -1,4 +1,4 @@
-package com.lch.topick.web.filter.domain;
+package com.lch.topick.web.menu.let.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
