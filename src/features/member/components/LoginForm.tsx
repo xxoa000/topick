@@ -33,14 +33,14 @@ export default function LoginForm() {
 
 		<form onSubmit={handleSubmit} className={styles.loginForm}>
 
-			<div className={styles.loginBox}>
-				<div className={styles.inputGroup}>
+			<div className={styles.formBox}>
+				<div className={styles.inputBox}>
 					<label htmlFor="memberId">아이디</label>
 					<input type="text" id="memberId" name="memberId"
 						value={memberId} onChange={(e) => setMemberId(e.target.value)}/>
 				</div>
 
-				<div className={styles.inputGroup}>
+				<div className={styles.inputBox}>
 					<label htmlFor="memberPw">비밀번호</label>
 					<input type="password" id="memberPw" name="memberPw"
 						value={memberPw} onChange={(e) => setMemberPw(e.target.value)}/>

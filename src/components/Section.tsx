@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import styles from "@/components/_section.module.scss";
 import {FilterHomePage } from '../features/filter';
 import MyLocationSet from '../features/myLocationSet/pages/MyLocationSet'
 
@@ -12,7 +13,7 @@ import MyInfoPage from "@/features/myInfo/pages/MyInfoPage";
 
 export default function Section(){
   return (
-    <section className="section-root">
+    <section className={styles.section}>
       <Routes>
 
         <Route path="/" element={<Home />}/>

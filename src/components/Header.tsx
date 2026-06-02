@@ -10,7 +10,7 @@ export default function Header(){
   console.log(`isLogin: ${isLogin}`);
 
   return (
-    <header>
+    <header className={styles.header}>
       <NavLink to="/" className={styles.logoLink}>
         <img src="/logo.png" alt="오늘의 식당 로고" />
   	  </NavLink>
