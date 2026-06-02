@@ -9,3 +9,13 @@
   justify-content: center;
   align-items: center;
 }
+
+/* /filter 페이지일 때 section 기본 레이아웃을 해제 */
+:global(section:has(.filter-home)) {
+  padding: 0;
+  /* topBanner(30) + header(50) + footer(100) 높이를 제외한 본문 영역을 확보 */
+  min-height: calc(100vh - 180px);
+  display: block;
+  background: none;
+  text-align: left;
+}
