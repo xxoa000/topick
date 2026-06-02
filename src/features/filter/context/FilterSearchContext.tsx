@@ -8,8 +8,9 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import type { FilterNavigateState } from '../types/navigate';
 import type { StoreItem } from '../../store/types';
-import { extractFoodType } from '../lib/categoryFoodType';
 import { buildStoreInfoWindowHtml } from '../lib/buildStoreInfoWindowHtml';
 import { getKakaoMaps } from '../lib/kakaoMapsApi';
 import { type KakaoInfoWindow, type KakaoMap, type KakaoMarker } from '../lib/loadKakaoMaps';
@@ -24,15 +25,13 @@ type SelectStoreOptions = {
 };
 
 type FilterSearchContextValue = {
-  keyword: string;
-  setKeyword: (value: string) => void;
-  /** API 원본 목록 (음식 종류 추출 기준) */
   results: StoreItem[];
-  /** 선택한 음식 종류(두 번째 구간) 기준으로 필터된 목록 · 마커 표시용 */
+  /** 거리·지도 bounds 기준으로 정렬·필터된 목록 · 마커 표시용 */
   displayedResults: StoreItem[];
-  foodTypesFromResults: string[];
-  selectedFoodType: string | null;
-  selectFoodType: (type: string | null) => void;
+
+  /** 카카오 키워드 API에 전달 중인 검색어 (빈 문자열이면 기본 '음식점') */
+  searchKeyword: string;
+  submitKeywordSearch: (keyword: string) => Promise<void>;
   selectedDistance: DistanceOption;
   setSelectedDistance: (distance: DistanceOption) => void;
   selectedTags: Set<string>;
@@ -42,8 +41,6 @@ type FilterSearchContextValue = {
   total: number;
   status: string;
   mapError: string;
-  runKeywordSearch: (fromMapMove?: boolean) => Promise<void>;
-  runFilterSearch: (fromMapMove?: boolean) => Promise<void>;
   handleToggleTag: (tagName: string) => void;
   handleResultClick: (store: StoreItem) => void;
   selectedStore: StoreItem | null;
@@ -67,6 +64,9 @@ export function useFilterSearch() {
 }
 
 export function FilterSearchProvider({ children }: { children: ReactNode }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const pendingKeywordRef = useRef<string | null>(null);
   const mapRef = useRef<KakaoMap | null>(null);
   const markersRef = useRef<KakaoMarker[]>([]);
   const infoWindowRef = useRef<KakaoInfoWindow | null>(null);
@@ -78,15 +78,15 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
   const searchInFlightRef = useRef(false);
   const lastModeRef = useRef<SearchMode>('keyword');
   const selectedTagsRef = useRef<Set<string>>(new Set());
-  const keywordRef = useRef('');
-
-  const [keyword, setKeywordState] = useState('');
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [tags, setTags] = useState<Tag[]>([]);
   const [tagsLoading, setTagsLoading] = useState(true);
   const [tagsError, setTagsError] = useState('');
+
   const [results, setResults] = useState<StoreItem[]>([]);
-  const [selectedFoodType, setSelectedFoodType] = useState<string | null>(null);
+
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const searchKeywordRef = useRef('');
   const [selectedDistance, setSelectedDistance] = useState<DistanceOption>(null);
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState('');
@@ -97,18 +97,19 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
   const [storeDetailError, setStoreDetailError] = useState('');
 
   selectedTagsRef.current = selectedTags;
-  keywordRef.current = keyword;
+  searchKeywordRef.current = searchKeyword;
 
-  const setKeyword = useCallback((value: string) => {
-    setKeywordState(value);
-  }, []);
+  useEffect(() => {
+    const isFilterPage =
+      location.pathname === '/filter' ||
+      location.pathname.startsWith('/filter/');
+    if (!isFilterPage) return;
 
-  const selectFoodType = useCallback((type: string | null) => {
-    setSelectedFoodType((prev) => {
-      if (type === null) return null;
-      return prev === type ? null : type;
-    });
-  }, []);
+    const state = location.state as FilterNavigateState | null;
+    if (state && 'keyword' in state) {
+      pendingKeywordRef.current = state.keyword ?? '';
+    }
+  }, [location.pathname, location.state]);
 
   const toDistanceOption = useCallback((value: DistanceOption) => {
     setSelectedDistance(value);
@@ -132,25 +133,9 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const foodTypesFromResults = useMemo(() => {
-    const set = new Set<string>();
-    for (const s of results) {
-      const t = extractFoodType(s.categoryName);
-      if (t) set.add(t);
-    }
-    return Array.from(set).sort((a, b) => a.localeCompare(b, 'ko'));
-  }, [results]);
-
   const displayedResults = useMemo(() => {
-    const byFoodType =
-      selectedFoodType == null
-        ? results
-        : results.filter(
-            (s) => extractFoodType(s.categoryName) === selectedFoodType,
-          );
-
     const map = mapRef.current;
-    if (!map) return byFoodType;
+    if (!map) return results;
 
     const bounds = map.getBounds();
     const sw = bounds.getSouthWest();
@@ -158,7 +143,7 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     const centerLat = (sw.getLat() + ne.getLat()) / 2;
     const centerLng = (sw.getLng() + ne.getLng()) / 2;
 
-    const withDistance = byFoodType
+    const withDistance = results
       .filter((s) => s.y != null && s.x != null)
       .map((s) => ({
         store: s,
@@ -171,7 +156,7 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
         : withDistance.filter((d) => d.distance <= selectedDistance);
 
     return byDistance.sort((a, b) => a.distance - b.distance).map((d) => d.store);
-  }, [results, selectedFoodType, selectedDistance, calcDistanceMeters]);
+  }, [results, selectedDistance, calcDistanceMeters]);
 
   const buildBounds = useCallback(() => {
     const map = mapRef.current;
@@ -247,6 +232,7 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
       const map = mapRef.current;
       if (marker && map) {
         if (store.y != null && store.x != null) {
+          suppressIdle(600);
           const maps = getKakaoMaps();
           map.panTo(new maps.LatLng(store.y, store.x));
         }
@@ -267,7 +253,7 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
         setStoreDetailLoading(false);
       }
     },
-    [closeInfoWindow, openInfoWindow],
+    [closeInfoWindow, openInfoWindow, suppressIdle],
   );
 
   selectStoreRef.current = (store: StoreItem, marker: KakaoMarker) => {
@@ -309,7 +295,6 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     const items = data.item ?? [];
     setTotal(data.total ?? 0);
     setResults(items);
-    setSelectedFoodType(null);
   }, []);
 
   const runKeywordSearch = useCallback(
@@ -319,13 +304,18 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
 
       lastModeRef.current = 'keyword';
       const boundsKey = currentBoundsKey();
-      setStatus(fromMapMove ? '이 지역 검색 중...' : '키워드 검색 중...');
+      const keywordLabel = searchKeywordRef.current.trim() || '음식점';
+      setStatus(
+        fromMapMove
+          ? `이 지역 "${keywordLabel}" 검색 중...`
+          : `"${keywordLabel}" 검색 중...`,
+      );
       searchInFlightRef.current = true;
 
       try {
         const data = await searchByKeyword({
           ...buildBounds(),
-          keyword: keywordRef.current.trim(),
+          keyword: searchKeywordRef.current,
         });
         lastFetchedBoundsKeyRef.current = boundsKey;
         renderResult(data);
@@ -337,6 +327,20 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
       }
     },
     [buildBounds, currentBoundsKey, renderResult],
+  );
+
+  const submitKeywordSearch = useCallback(
+    async (keyword: string) => {
+      const trimmed = keyword.trim();
+      setSearchKeyword(trimmed);
+      searchKeywordRef.current = trimmed;
+      selectedTagsRef.current = new Set();
+      setSelectedTags(new Set());
+      lastModeRef.current = 'keyword';
+      lastFetchedBoundsKeyRef.current = '';
+      await runKeywordSearch(false);
+    },
+    [runKeywordSearch],
   );
 
   const runFilterSearch = useCallback(
@@ -456,12 +460,25 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
       setMapError('');
       const maps = getKakaoMaps();
       maps.event.addListener(map, 'idle', () => {
-        rerunLastSearchRef.current();
+        rerunLastSearchRef.current(); // ref 처럼 실시간
       });
-      suppressIdle(300);
+      suppressIdle(300); // 0.3초 재검색 막기
+
+      const pending = pendingKeywordRef.current;
+      if (pending !== null) {
+        pendingKeywordRef.current = null;
+        setSearchKeyword(pending);
+        searchKeywordRef.current = pending;
+        selectedTagsRef.current = new Set();
+        setSelectedTags(new Set());
+        lastModeRef.current = 'keyword';
+        lastFetchedBoundsKeyRef.current = '';
+        navigate(location.pathname, { replace: true, state: null });
+      }
+
       await runKeywordSearchRef.current(false);
     },
-    [clearMarkers, suppressIdle],
+    [clearMarkers, suppressIdle, navigate, location.pathname],
   );
 
   useEffect(() => {
@@ -496,17 +513,19 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     if (results.length === 0) {
       setStatus('');
     } else {
-      const suffix = selectedFoodType ? ` · ${selectedFoodType}` : '';
+      const keywordSuffix = searchKeyword.trim()
+        ? ` · "${searchKeyword.trim()}"`
+        : '';
       const distanceSuffix =
         selectedDistance == null ? '' : ` · ${selectedDistance}m 이내`;
       setStatus(
-        `지도에 ${displayedResults.length}개 표시${suffix}${distanceSuffix}`,
+        `지도에 ${displayedResults.length}개 표시${keywordSuffix}${distanceSuffix}`,
       );
     }
   }, [
     displayedResults,
     results.length,
-    selectedFoodType,
+    searchKeyword,
     selectedDistance,
     drawMarkers,
   ]);
@@ -518,13 +537,10 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
   }, [displayedResults, selectedStore, clearStoreDetail]);
 
   const value: FilterSearchContextValue = {
-    keyword,
-    setKeyword,
     results,
     displayedResults,
-    foodTypesFromResults,
-    selectedFoodType,
-    selectFoodType,
+    searchKeyword,
+    submitKeywordSearch,
     selectedDistance,
     setSelectedDistance: toDistanceOption,
     selectedTags,
@@ -534,8 +550,6 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     total,
     status,
     mapError,
-    runKeywordSearch,
-    runFilterSearch,
     handleToggleTag,
     handleResultClick,
     selectedStore,

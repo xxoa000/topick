@@ -20,7 +20,6 @@ export default function TagFilterPanel() {
     tagsLoading,
     tagsError,
     handleToggleTag,
-    runFilterSearch,
   } = useFilterSearch();
 
   const groupedTags = groupTagsByType(tags);
@@ -85,14 +84,6 @@ export default function TagFilterPanel() {
               </div>
             ))}
       </div>
-
-      <button
-        type="button"
-        className="filter-btn secondary"
-        onClick={() => void runFilterSearch(false)}
-      >
-        태그로 검색
-      </button>
     </aside>
   );
 }
