@@ -22,6 +22,7 @@ import com.lch.topick.web.menu.def.repository.MenuRepository;
 import com.lch.topick.web.menu.let.domain.MenuDTO;
 import com.lch.topick.web.store.let.entity.FilterStore;
 import com.lch.topick.web.store.let.repository.FilterStoreRepository;
+import com.lch.topick.web.store.let.service.FilterStoreService;
 
 
 @Service
@@ -39,6 +40,9 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     // Store DB 접근
     private final FilterStoreRepository storeRepository;
 
+    // Store 저장·태그 연결
+    private final FilterStoreService filterStoreService;
+
     // Menu DB 접근
     private final MenuRepository menuRepository;
 
@@ -47,10 +51,12 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     public KakaoSearchServiceImpl(
             @Value("${kakao.rest-api-key:}") String kakaoRestApiKey,
             FilterStoreRepository storeRepository,
+            FilterStoreService filterStoreService,
             MenuRepository menuRepository) {
         this.kakaoRestApiKey = kakaoRestApiKey;
         this.restClient = RestClient.builder().build();
         this.storeRepository = storeRepository;
+        this.filterStoreService = filterStoreService;
         this.menuRepository = menuRepository;
     }
 
@@ -61,7 +67,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     	//유효성 검사
         vaildateKeyword(req);
 
-        Map<String, FilterStoreItemDTO> merge = new LinkedHashMap<>();
+        Map<String, FilterStoreItemDTO> merge = new LinkedHashMap<>(); //임시저장소	
 
         String keyword = (req.getKeyword() == null || req.getKeyword().isBlank())
                 ? DEFAULT_QUERY
@@ -70,8 +76,8 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
         fetchByQuery(req.getSwX(), req.getSwY(), req.getNeX(), req.getNeY(), keyword, merge);
 
         List<FilterStoreItemDTO> item = new ArrayList<>(merge.values());
-        saveStoresFromSearchResults(item);
-        enrichStoreNumbers(item);
+        filterStoreService.saveStoresIfAbsent(item);
+        filterStoreService.enrichStoreNumbers(item);
 
         return new SearchResponseDTO(item.size(), item);
     }
@@ -91,8 +97,9 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
         }
 
         List<FilterStoreItemDTO> item = new ArrayList<>(merge.values());
-        saveStoresFromSearchResults(item);
-        enrichStoreNumbers(item);
+        filterStoreService.saveStoresIfAbsent(item);
+        filterStoreService.enrichStoreNumbers(item);
+        filterStoreService.linkStoresToTags(item, req.getTagName());
 
         return new SearchResponseDTO(item.size(), item);
     }
@@ -173,39 +180,6 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
             return null;
         }
         return storeRepository.findByKakaoId(kakaoId.trim());
-    }
-
-    // 검색 응답 DTO에 DB store_no 매핑
-    private void enrichStoreNumbers(List<FilterStoreItemDTO> items) {
-        for (FilterStoreItemDTO item : items) {
-            if (item.getId() == null || item.getId().isBlank()) {
-                continue;
-            }
-            FilterStore store = storeRepository.findByKakaoId(item.getId().trim());
-            if (store != null) {
-                item.setStoreNo(store.getStoreNo());
-            }
-        }
-    }
-
-    // 검색 결과에 포함된 가게를 DB에 저장 (이미 있으면 스킵)
-    private void saveStoresFromSearchResults(List<FilterStoreItemDTO> items) {
-        for (FilterStoreItemDTO item : items) {
-            if (item.getId() == null || item.getId().isBlank()) {
-                continue;
-            }
-            String name = item.getPlaceName();
-            if (name == null || name.isBlank()) {
-                continue;
-            }
-            if (storeRepository.findByKakaoId(item.getId()) != null) {
-                continue;
-            }
-            FilterStore newStore = new FilterStore();
-            newStore.setKakaoId(item.getId());
-            newStore.setStoreName(name);
-            storeRepository.save(newStore);
-        }
     }
 
     // 도로명 주소 우선, 없으면 지번 주소 반환
