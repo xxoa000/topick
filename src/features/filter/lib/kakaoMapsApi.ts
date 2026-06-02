@@ -10,8 +10,10 @@ export interface KakaoLatLngBounds {
 
 export interface KakaoMap {
   getBounds(): KakaoLatLngBounds;
+  getLevel?(): number;
   panTo(latlng: KakaoLatLng): void;
   setDraggable?(draggable: boolean): void;
+  setLevel?(level: number, options?: { animate?: boolean }): void;
   setZoomable?(zoomable: boolean): void;
   relayout?: () => void;
 }

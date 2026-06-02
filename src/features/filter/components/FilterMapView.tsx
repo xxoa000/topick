@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { getKakaoMaps } from '../lib/kakaoMapsApi';
 import {
   loadKakaoMaps,
@@ -7,6 +7,7 @@ import {
 } from '../lib/loadKakaoMaps';
 import { fetchKakaoMapsJsKey } from '../services/filterApi';
 import { useFilterSearch } from '../context/FilterSearchContext';
+import MapZoomControls from './MapZoomControls';
 // import useCustomLogin from '@/hooks/useCustomLogin';
 // const { member } = useCustomLogin();
 
@@ -70,6 +71,7 @@ export default function FilterMapView() {
   const { attachMap, reportMapError } = useFilterSearch();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<KakaoMap | null>(null);
+  const [mapInstance, setMapInstance] = useState<KakaoMap | null>(null);
 
   useLayoutEffect(() => {
     const el = containerRef.current;
@@ -99,8 +101,9 @@ export default function FilterMapView() {
           level: 5,
         });
         map.setDraggable?.(false);
-        map.setZoomable?.(false);
+        map.setZoomable?.(true);
         mapRef.current = map;
+        setMapInstance(map);
         relayoutMap(map);
         window.addEventListener('resize', handleResize);
         await attachMap(map);
@@ -116,6 +119,7 @@ export default function FilterMapView() {
       cancelled = true;
       window.removeEventListener('resize', handleResize);
       mapRef.current = null;
+      setMapInstance(null);
       void attachMap(null);
     };
   }, [attachMap, reportMapError]);
@@ -123,6 +127,7 @@ export default function FilterMapView() {
   return (
     <div className="filter-map-wrap">
       <div ref={containerRef} className="filter-map" />
+      <MapZoomControls map={mapInstance} />
     </div>
   );
 }

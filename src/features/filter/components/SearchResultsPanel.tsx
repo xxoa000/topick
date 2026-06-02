@@ -11,7 +11,7 @@ function escapeHtml(text: string): string {
 export default function SearchResultsPanel() {
   const {
     displayedResults,
-    selectedFoodType,
+    searchKeyword,
     total,
     status,
     mapError,
@@ -28,8 +28,8 @@ export default function SearchResultsPanel() {
         </span>
       </h2>
 
-      {selectedFoodType && (
-        <p className="filter-selected-tags">선택한 음식 종류: {selectedFoodType}</p>
+      {searchKeyword.trim() !== '' && (
+        <p className="filter-selected-tags">검색어: {searchKeyword.trim()}</p>
       )}
 
       <div className="filter-results-list">
@@ -45,7 +45,7 @@ export default function SearchResultsPanel() {
           >
             <h4>
               <a
-                href={store.placeUrl || '#'}
+                href={store.placeUrl || '#'} // 클릭 시 
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
