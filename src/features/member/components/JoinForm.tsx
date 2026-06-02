@@ -42,7 +42,6 @@ export default function JoinForm() {
 		//fromData 지만 서버론 보내지 않는다는 의미, 단계 이동시에도 값 저장됨
 		shouldUnregister : false,
 		defaultValues : {
-			//memberGender: "none",
 			isAgree : false,
 			isPrivacyAgree : false,
 			ageCheck : false
@@ -68,6 +67,7 @@ export default function JoinForm() {
 		const requestData = {
 			...joinData,
 			memberPhone : joinData.memberPhone?.trim() ? joinData.memberPhone : null,
+			memberGender : joinData.memberGender || "none",
 			memberBirthday : joinData.memberBirthday || null,
 		}
 
