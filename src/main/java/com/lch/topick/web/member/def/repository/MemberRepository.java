@@ -9,5 +9,8 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 	
 	// 예시: SELECT 로그인
 	//public Member findById(String memberId);
+	
+	public boolean existsByMemberPhone(String memberPhone);
+	public boolean existsByMemberEmail(String memberEmail);
 
 }//interface
