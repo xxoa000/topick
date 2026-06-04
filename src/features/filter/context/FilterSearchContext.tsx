@@ -16,6 +16,7 @@ import { getKakaoMaps } from '../lib/kakaoMapsApi';
 import { type KakaoInfoWindow, type KakaoMap, type KakaoMarker } from '../lib/loadKakaoMaps';
 import { fetchStoreMenus, fetchTags, searchByFilter, searchByKeyword } from '../services/filterApi';
 import type { Menu, SearchResponse, Tag } from '../types';
+import useCustomLogin from '@/hooks/useCustomLogin';
 
 type SearchMode = 'keyword' | 'filter';
 type DistanceOption = 100 | 500 | 1000 | null;
@@ -96,6 +97,8 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
   const [storeDetailLoading, setStoreDetailLoading] = useState(false);
   const [storeDetailError, setStoreDetailError] = useState('');
 
+  const { member } = useCustomLogin();
+
   selectedTagsRef.current = selectedTags;
   searchKeywordRef.current = searchKeyword;
 
@@ -115,62 +118,35 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     setSelectedDistance(value);
   }, []);
 
-  const calcDistanceMeters = useCallback(
-    (lat1: number, lng1: number, lat2: number, lng2: number) => {
-      const toRad = (deg: number) => (deg * Math.PI) / 180;
-      const radius = 6371000;
-      const dLat = toRad(lat2 - lat1);
-      const dLng = toRad(lng2 - lng1);
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(lat1)) *
-          Math.cos(toRad(lat2)) *
-          Math.sin(dLng / 2) *
-          Math.sin(dLng / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return radius * c;
-    },
-    [],
-  );
-
   const displayedResults = useMemo(() => {
     const map = mapRef.current;
     if (!map) return results;
 
-    const bounds = map.getBounds();
-    const sw = bounds.getSouthWest();
-    const ne = bounds.getNorthEast();
-    const centerLat = (sw.getLat() + ne.getLat()) / 2;
-    const centerLng = (sw.getLng() + ne.getLng()) / 2;
-
-    const withDistance = results
-      .filter((s) => s.y != null && s.x != null)
-      .map((s) => ({
-        store: s,
-        distance: calcDistanceMeters(centerLat, centerLng, s.y, s.x),
-      }));
-
-    const byDistance =
-      selectedDistance == null
-        ? withDistance
-        : withDistance.filter((d) => d.distance <= selectedDistance);
-
-    return byDistance.sort((a, b) => a.distance - b.distance).map((d) => d.store);
-  }, [results, selectedDistance, calcDistanceMeters]);
+    return results
+    .filter((s) => selectedDistance == null || Number(s.distance) <= selectedDistance)
+    .sort((a, b) => Number(a.distance) - Number(b.distance));
+  }, [results, selectedDistance]);
 
   const buildBounds = useCallback(() => {
     const map = mapRef.current;
     if (!map) {
-      return { swX: 0, swY: 0, neX: 0, neY: 0 };
+      return { swX: 0, swY: 0, neX: 0, neY: 0, x: 0, y: 0 };
     }
     const bounds = map.getBounds();
     const sw = bounds.getSouthWest();
     const ne = bounds.getNorthEast();
+
+    // 문자열로 저장되어 있는 member 좌표를 숫자로 변환합니다. (값이 없으면 undefined)
+    const memberX = member?.addressX ? Number(member.addressX) : 127.108932846326; //하드코딩 추후 변수로 지정
+    const memberY = member?.addressY ? Number(member.addressY) : 37.3500951835995;
+
     return {
       swX: sw.getLng(),
       swY: sw.getLat(),
       neX: ne.getLng(),
       neY: ne.getLat(),
+      x: memberX,
+      y: memberY,
     };
   }, []);
 
@@ -218,7 +194,7 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const selectStoreRef = useRef<(store: StoreItem, marker: KakaoMarker) => void>(() => {});
+  const selectStoreRef = useRef<(store: StoreItem, marker: KakaoMarker) => void>(() => { });
 
   const selectStore = useCallback(
     async (store: StoreItem, options?: SelectStoreOptions) => {
@@ -311,7 +287,6 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
           : `"${keywordLabel}" 검색 중...`,
       );
       searchInFlightRef.current = true;
-
       try {
         const data = await searchByKeyword({
           ...buildBounds(),

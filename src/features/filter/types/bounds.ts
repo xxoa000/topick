@@ -3,4 +3,6 @@ export type Bounds = {
   swY: number;
   neX: number;
   neY: number;
+  x: number;
+  y: number;
 };

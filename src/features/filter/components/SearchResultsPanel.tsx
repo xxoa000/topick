@@ -1,3 +1,4 @@
+import { NavLink } from 'react-router-dom';
 import { useFilterSearch } from '../context/FilterSearchContext';
 
 function escapeHtml(text: string): string {
@@ -18,7 +19,6 @@ export default function SearchResultsPanel() {
     handleResultClick,
     selectedStore,
   } = useFilterSearch();
-
   return (
     <aside className="filter-results-panel">
       <h2 className="filter-panel-title">
@@ -44,14 +44,13 @@ export default function SearchResultsPanel() {
             onClick={() => handleResultClick(store)}
           >
             <h4>
-              <a
-                href={store.placeUrl || '#'} // 클릭 시 
-                target="_blank"
-                rel="noopener noreferrer"
+              <NavLink
+                to={`/store/${store.storeNo}`}
+                state={{ store }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {store.placeName}
-              </a>
+              </NavLink>
             </h4>
             <p>📍 {store.addressName}</p>
             <p>🍽️ {store.categoryName}</p>
