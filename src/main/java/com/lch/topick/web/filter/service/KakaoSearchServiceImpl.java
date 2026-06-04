@@ -78,7 +78,6 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
         List<FilterStoreItemDTO> item = new ArrayList<>(merge.values());
         filterStoreService.saveStoresIfAbsent(item);
         filterStoreService.enrichStoreNumbers(item);
-
         return new SearchResponseDTO(item.size(), item);
     }
 
@@ -135,14 +134,12 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
                 .queryParam("y", centerY)
                 .build()
                 .toUriString();
-
         JsonNode root = restClient.get()
                 .uri(url)
                 .headers(h -> h.set("Authorization", "KakaoAK " + kakaoRestApiKey))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(JsonNode.class);
-        
         if (root == null || !root.path("documents").isArray()) {
             return;
         }
@@ -151,6 +148,8 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
 
         for (JsonNode d : docs) {
 
+            System.out.println("@@@@@@@@@@@@@@@@@@!!@@@@!");
+            System.out.println(d);
             String placeName = d.path("place_name").asText();
             String placeUrl = d.path("place_url").asText();
             String categoryName = d.path("category_name").asText();
