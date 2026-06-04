@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
 // 기본적인 Bean 설정용
 @Configuration
@@ -17,5 +18,10 @@ public class BeanConfig {
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+	
+	@Bean // for StoreProxy
+    RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
 }//class

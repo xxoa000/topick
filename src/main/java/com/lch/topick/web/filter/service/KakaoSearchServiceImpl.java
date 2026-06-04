@@ -73,12 +73,11 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
                 ? DEFAULT_QUERY
                 : req.getKeyword();
 
-        fetchByQuery(req.getSwX(), req.getSwY(), req.getNeX(), req.getNeY(), keyword, merge);
+        fetchByQuery(req.getSwX(), req.getSwY(), req.getNeX(), req.getNeY(), req.getX(), req.getY(), keyword, merge);
 
         List<FilterStoreItemDTO> item = new ArrayList<>(merge.values());
         filterStoreService.saveStoresIfAbsent(item);
         filterStoreService.enrichStoreNumbers(item);
-
         return new SearchResponseDTO(item.size(), item);
     }
 
@@ -93,10 +92,11 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
         List<String> input = buildInput(req.getTagName());
 
         for (String i : input) {
-            fetchByQuery(req.getSwX(), req.getSwY(), req.getNeX(), req.getNeY(), i, merge);
+            fetchByQuery(req.getSwX(), req.getSwY(), req.getNeX(), req.getNeY(), req.getX(), req.getY(), i, merge);
         }
 
         List<FilterStoreItemDTO> item = new ArrayList<>(merge.values());
+
         filterStoreService.saveStoresIfAbsent(item);
         filterStoreService.enrichStoreNumbers(item);
         filterStoreService.linkStoresToTags(item, req.getTagName());
@@ -122,7 +122,7 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
     }
 
     // 하나의 검색어(query) 로 카카오 API 를 호출해서 결과를 merge 에 저장하는 메서드
-    private void fetchByQuery(Double swX, Double swY, Double neX, Double neY,
+    private void fetchByQuery(Double swX, Double swY, Double neX, Double neY, Double centerX, Double centerY,
                               String query, Map<String, FilterStoreItemDTO> merge) {
 
         String url = UriComponentsBuilder
@@ -130,16 +130,16 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
                 .queryParam("query", query)
                 .queryParam("category_group_code", "FD6")
                 .queryParam("rect", swX + "," +swY + "," + neX + "," + neY)
+                .queryParam("x", centerX)
+                .queryParam("y", centerY)
                 .build()
                 .toUriString();
-
         JsonNode root = restClient.get()
                 .uri(url)
                 .headers(h -> h.set("Authorization", "KakaoAK " + kakaoRestApiKey))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(JsonNode.class);
-        
         if (root == null || !root.path("documents").isArray()) {
             return;
         }
@@ -148,6 +148,8 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
 
         for (JsonNode d : docs) {
 
+            System.out.println("@@@@@@@@@@@@@@@@@@!!@@@@!");
+            System.out.println(d);
             String placeName = d.path("place_name").asText();
             String placeUrl = d.path("place_url").asText();
             String categoryName = d.path("category_name").asText();
@@ -155,6 +157,8 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
             Double x = Double.parseDouble(d.path("x").asText("0"));
             Double y = Double.parseDouble(d.path("y").asText("0"));
             String id = d.path("id").asText(null);
+            String phone = d.path("phone").asText();
+            String distance = d.path("distance").asText();
 
             merge.putIfAbsent(id, new FilterStoreItemDTO(
                     id,
@@ -164,7 +168,9 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
                     categoryName,
                     x,
                     y,
-                    addressName));
+                    addressName,
+                    phone,
+                    distance));
         }
     }
 

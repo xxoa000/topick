@@ -16,4 +16,7 @@ public class FilterRequestDTO {
     private Double swX;
     
     private List<String> tagName;  // 태그만
+    
+    private Double x;
+    private Double y;
 }
