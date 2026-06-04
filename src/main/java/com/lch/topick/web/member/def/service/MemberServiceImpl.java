@@ -65,7 +65,11 @@ public class MemberServiceImpl implements MemberService {
 	// INSERT 새 계정 생성
 	@Override
 	public Member insert(MemberJoinRequestDTO requestDto) {
-		if (repository.existsById(requestDto.getMemberId())) throw new CustomException(ErrorCode.MEMBER_ID_EXIST);
+		if ( repository.existsById(requestDto.getMemberId()) ) throw new CustomException(ErrorCode.MEMBER_ID_EXIST);
+		if ( repository.existsByMemberEmail(requestDto.getMemberEmail()) ) throw new CustomException(ErrorCode.MEMBER_EMAIL_EXIST);
+		if ( requestDto.getMemberPhone()!=null ) {			
+			if (repository.existsByMemberPhone(requestDto.getMemberPhone()) ) throw new CustomException(ErrorCode.MEMBER_PHONE_EXIST);
+		}
 		
 		Member entity = Member.builder()
 							.memberId(requestDto.getMemberId())

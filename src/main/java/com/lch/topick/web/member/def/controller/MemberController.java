@@ -73,6 +73,16 @@ public class MemberController {
 	// 회원가입
 	@PostMapping("/join")
 	public ResponseEntity<?> join(@RequestBody MemberJoinRequestDTO requestDto) {
+		log.info("DTO:"+requestDto);
+		log.info("id:"+requestDto.getMemberId());
+		log.info("pw:"+requestDto.getMemberPw());
+		log.info("name:"+requestDto.getMemberName());
+		log.info("email:"+requestDto.getMemberEmail());
+		log.info("phone:"+requestDto.getMemberPhone());
+		log.info("gender:"+requestDto.getMemberGender());
+		log.info("birth:"+requestDto.getMemberBirthday());
+		
+		memberService.insert(requestDto);
 		
 		return ResponseEntity.status(HttpStatus.CREATED)
 							 .body("회원가입 성공했습니다. 로그인 후 사용해주세요."); //성공시 코드 201
