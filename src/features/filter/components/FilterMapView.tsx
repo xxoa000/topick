@@ -8,7 +8,11 @@ import {
 import { fetchKakaoMapsJsKey } from '../services/filterApi';
 import { useFilterSearch } from '../context/FilterSearchContext';
 import MapZoomControls from './MapZoomControls';
+<<<<<<< HEAD
 
+=======
+import useCustomLogin from '@/hooks/useCustomLogin';
+>>>>>>> cfeed80c893db6def9a35326b72d3efa7dcd7fb6
 
 const DEFAULT_CENTER = { lat: 37.350106, lng: 127.109001 };
 
@@ -64,6 +68,8 @@ export default function FilterMapView() {
   const mapRef = useRef<KakaoMap | null>(null);
   const [mapInstance, setMapInstance] = useState<KakaoMap | null>(null);
 
+  const { member } = useCustomLogin();
+
   useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el || mapRef.current) return;
@@ -82,8 +88,15 @@ export default function FilterMapView() {
         const jsKey = await fetchKakaoMapsJsKey();
         await loadKakaoMaps(jsKey);
         if (cancelled) return;
-
-        const center = await getCurrentCenter();
+        let center;
+        if (member?.addressX != null && member?.addressY != null) {
+          center = {
+            lat: Number(member.addressY), // 위도 = Y
+            lng: Number(member.addressX), // 경도 = X
+          };
+        } else {
+          center = await getCurrentCenter(); // 로그인 토큰이 없는 경우 (위치권한 | 기본 좌표 사용)
+        }
         if (cancelled) return;
 
         const maps = getKakaoMaps();

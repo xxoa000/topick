@@ -1,17 +1,16 @@
 import { useEffect } from "react";
 import JoinForm from "../components/JoinForm";
-import { useJoinStepStore } from "../hooks/joinStepStore";
+import { useCustomJoin } from "../hooks/joinStepStore";
 import styles from "@member/pages/_join-page.module.scss";
 
     
 export default function JoinPage() {
-  const step = useJoinStepStore((state) => state.step);
-  const resetStep = useJoinStepStore((state) => state.resetStep);
+  const { step, resetState } = useCustomJoin();
 
   // 회원가입 page 를 벗어나는 경우 step:1 로 초기화
   useEffect(() => {
-    return () => { resetStep(); }
-    }, [resetStep]
+    return () => { resetState(); }
+    }, [resetState]
   );
 
   return (

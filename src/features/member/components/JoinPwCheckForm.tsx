@@ -1,19 +1,15 @@
-import { useForm } from "react-hook-form";
-import type { JoinRequestDTO } from "../types/joinDTO";
+import { useFormContext } from "react-hook-form";
+import type { JoinFormDTO } from "../types/joinDTO";
 import styles from "@member/components/_join-form.module.scss";
 
 export default function JoinPwCheckForm() {
-  // 전역 단계 관리
-  //const setStep = useJoinStepStore((state) => state.setStep);
   
   //react-hook-form
   const {
     register,
     watch,
     formState : { errors },
-  } = useForm<JoinRequestDTO>({
-    mode: "onChange"
-  });
+  } = useFormContext<JoinFormDTO>();
 
   // react-hook-form 라이브러리에서 watch() 사용시 종종 뜨는 경고, 무시 가능
   // 이후 확장성 -> useWatch 를 써서 경고메세지를 없앨 수도 있음
@@ -39,15 +35,14 @@ export default function JoinPwCheckForm() {
 
   // pw 확인 무결성 검사
   const pwCheckRegister = register(
-    "memberPwCheck", {
+    "pwCheck", {
       validate: (value) => value===pw || "비밀번호가 일치하지 않습니다."
     });
 
 
 
   return (
-  <div className={styles.formBox}>
-
+  <>
     {/* 비밀번호 */}
     <section className={styles.formRow}>
       <label htmlFor="memberPw">비밀번호</label>
@@ -63,13 +58,9 @@ export default function JoinPwCheckForm() {
       <div className={styles.inputBox}>
         <input id="memberPwCheck" type="password" {...pwCheckRegister}></input>
       </div>
-      <span className={styles.message}>{errors.memberPwCheck?.message}</span>
+      <span className={styles.message}>{errors.pwCheck?.message}</span>
     </section>
 
-    
-    
-
-
-  </div>
+  </>
   );
 }
