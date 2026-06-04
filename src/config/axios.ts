@@ -138,9 +138,15 @@ accessApiClient.interceptors.response.use(
           
         processQueue(axiosError, null); 
         
+        // 강제 로그아웃 후 쿠키에 담긴 refreshToken 도 삭제
+        try {
+          await refreshApiClient.post("/member/logout");
+        } catch(logoutError) {
+          console.warn("로그아웃 실패, sessionStorage 데이터만 삭제 됩니다.",logoutError);
+        }
         alert("🔒 로그인 세션이 만료되었습니다. 다시 로그인해 주세요.");
         
-        // 스토리지 및 세션 초기화 후 로그인 페이지로 튕구기
+        // 세션 스토리지 초기화 후 로그인 페이지로 튕구기
         sessionStorage.clear();
         window.location.replace("/member/login"); 
         
