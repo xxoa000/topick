@@ -7,4 +7,5 @@ export type StoreItem = {
   x: number;
   y: number;
   addressName: string;
+  distance: string;
 };
