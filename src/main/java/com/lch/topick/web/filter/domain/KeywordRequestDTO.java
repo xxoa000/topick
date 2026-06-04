@@ -13,4 +13,6 @@ public class KeywordRequestDTO {
     private Double swY;
     private Double swX;
     private String keyword;   // 검색어만
+    private Double x;
+    private Double y;
 }

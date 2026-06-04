@@ -19,4 +19,6 @@ public class FilterStoreItemDTO {
     private Double x;       // 카카오 "x" (경도)
     private Double y;       // 카카오 "y" (위도)
     private String addressName;      // 카카오 "road_address_name"
+    private String phone; // 카카오 "phone"
+    private String distance; //내 위치로부터 식당 거리
 }
