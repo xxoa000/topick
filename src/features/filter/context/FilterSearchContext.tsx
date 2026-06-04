@@ -118,49 +118,14 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     setSelectedDistance(value);
   }, []);
 
-  const calcDistanceMeters = useCallback(
-    (lat1: number, lng1: number, lat2: number, lng2: number) => {
-      const toRad = (deg: number) => (deg * Math.PI) / 180;
-      const radius = 6371000;
-      const dLat = toRad(lat2 - lat1);
-      const dLng = toRad(lng2 - lng1);
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLng / 2) *
-        Math.sin(dLng / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return radius * c;
-    },
-    [],
-  );
-
   const displayedResults = useMemo(() => {
     const map = mapRef.current;
     if (!map) return results;
 
-    const bounds = map.getBounds();
-    const sw = bounds.getSouthWest();
-    const ne = bounds.getNorthEast();
-    const centerLat = (sw.getLat() + ne.getLat()) / 2;
-    const centerLng = (sw.getLng() + ne.getLng()) / 2;
-
-    const withDistance = results
-      .filter((s) => s.y != null && s.x != null)
-      .map((s) => ({
-        store: s,
-        distance: calcDistanceMeters(centerLat, centerLng, s.y, s.x),
-      }));
-
-    const byDistance =
-      selectedDistance == null
-        ? withDistance
-        : withDistance.filter((d) => d.distance <= selectedDistance);
-    console.log("@@@@@@@@@@@@@@@@@@@@@11@@@@@@@@@@@@@@@@@@@@");
-    console.log(byDistance.sort((a, b) => a.distance - b.distance).map((d) => d.store));
-    return byDistance.sort((a, b) => a.distance - b.distance).map((d) => d.store);
-  }, [results, selectedDistance, calcDistanceMeters]);
+    return results
+    .filter((s) => selectedDistance == null || Number(s.distance) <= selectedDistance)
+    .sort((a, b) => Number(a.distance) - Number(b.distance));
+  }, [results, selectedDistance]);
 
   const buildBounds = useCallback(() => {
     const map = mapRef.current;
@@ -304,7 +269,6 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
 
   const renderResult = useCallback((data: SearchResponse) => {
     const items = data.item ?? [];
-    console.log(data.item);
     setTotal(data.total ?? 0);
     setResults(items);
   }, []);
@@ -323,8 +287,6 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
           : `"${keywordLabel}" 검색 중...`,
       );
       searchInFlightRef.current = true;
-      console.log("@@@@@@@@@buildBounds()@@@@@@@@@@@@@@@@@@@@@");
-      console.log(buildBounds());
       try {
         const data = await searchByKeyword({
           ...buildBounds(),

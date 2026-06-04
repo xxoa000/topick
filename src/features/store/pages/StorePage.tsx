@@ -1,9 +1,11 @@
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
+import { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 
 interface StoreData {
 	addressName: string;
 	categoryName: string;
+	distance: string;
 	id: string;
 	placeName: string;
 	placeUrl: string;
@@ -13,18 +15,33 @@ interface StoreData {
 	phone: string;
 }
 
+
 export default function StorePage() {
 	const location = useLocation();
+
+	const [storeData, setStoreData] = useState<any>(null);
 
 	// location.state 안에 우리가 보낸 store가 들어있습니다.
 	// TypeScript를 사용 중이시라면 아래와 같이 타입을 지정해 줄 수 있습니다.
 	const state = location.state as { store: StoreData } | null;
 	const store = state?.store;
 
+	useEffect(() => {
+		// 우리가 만든 스프링 부트 API 호출
+		fetch(`http://localhost:8080/api/store/${store?.id}`)
+			.then(res => res.json())
+			.then(data => setStoreData(data));
+	}, []);
+
+	console.log(storeData);
+
+
 	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
-	if (!store) {
+	if (!store || !storeData) {
 		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
 	}
+	const photos = storeData.menu?.menus?.photos || [];
+	const allPhotos = storeData.photos.photos || [];
 	return (
 		<div style={{ maxWidth: '850px', margin: '20px auto', fontFamily: 'sans-serif', color: '#333' }}>
 
@@ -40,18 +57,50 @@ export default function StorePage() {
 					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>정보</button>
 				</div>
 
-				{/* 대표 이미지 배너 (반반 분할) */}
-				<div style={{ display: 'flex', height: '220px', overflow: 'hidden', backgroundColor: '#f5f5f5' }}>
-					<div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '2px solid #fff' }}>
-						{/* <img src="떡볶이_이미지_주소" alt="메인메뉴1" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> */}
-						<span style={{ color: '#999' }}>[메인 이미지 1]</span>
+				{/* 대표 이미지 배너 (첨부 이미지와 동일한 격자 배치, 5개 사진만 표시) */}
+				<div style={{ display: 'flex', height: '250px', backgroundColor: '#f5f5f5', borderRadius: '12px', overflow: 'hidden', gap: '4px' }}>
+					{/* 왼쪽: 큰 메인 사진 */}
+					<div style={{ flex: 4, display: 'flex', alignItems: 'stretch' }}>
+						<img src={allPhotos[0].url} alt={allPhotos[0].title}
+							style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+							referrerPolicy="no-referrer"
+						/>
 					</div>
-					<div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-						{/* <img src="감자튀김_이미지_주소" alt="메인메뉴2" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> */}
-						<span style={{ color: '#999' }}>[메인 이미지 2]</span>
+
+					{/* 중앙: 위아래 중간 사진 2개 */}
+					<div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+						<div style={{ flex: 1, overflow: 'hidden' }}>
+							<img src={allPhotos[1].url} alt={allPhotos[1].title}
+								style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+								referrerPolicy="no-referrer"
+							/>
+						</div>
+						<div style={{ flex: 1, overflow: 'hidden' }}>
+							<img src={allPhotos[2].url} alt={allPhotos[2].title}
+								style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+								referrerPolicy="no-referrer"
+							/>
+						</div>
+					</div>
+
+					{/* 오른쪽: 위아래 작은 사진 2개 */}
+					<div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+						<div style={{ flex: 1, overflow: 'hidden' }}>
+							<img src={allPhotos[3].url} alt={allPhotos[3].title}
+								style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+								referrerPolicy="no-referrer"
+							/>
+						</div>
+						<div style={{ flex: 1, overflow: 'hidden' }}>
+							{/* (더 보기) 오버레이가 제거된 깨끗한 5번째 사진 */}
+							<img src={allPhotos[4].url} alt={allPhotos[4].title}
+								style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+								referrerPolicy="no-referrer"
+							/>
+						</div>
 					</div>
 				</div>
-
+				
 				{/* 텍스트 정보 영역 */}
 				<div style={{ padding: '25px' }}>
 
@@ -73,7 +122,7 @@ export default function StorePage() {
 						{['떡볶이', '매콤', '점심식사', '저녁식사'].map((tag) => ( //태그
 							<span key={tag} style={{ backgroundColor: '#ff9800', color: '#fff', padding: '4px 10px', borderRadius: '12px', fontSize: '13px' }}>
 								{tag}
-							</span> 
+							</span>
 						))}
 					</div>
 
@@ -83,10 +132,24 @@ export default function StorePage() {
 						{/* 왼쪽 안내문구 */}
 						<div style={{ flex: 1, fontSize: '14px', lineHeight: '1.7' }}>
 							<div style={{ marginBottom: '12px' }}>
-								<strong>주소</strong> <span style={{ marginLeft: '10px' }}>경기도 성남시 분당구 성남대로 151 분당엠코헤리츠 2층 211호 청년다방 미금역점 {}</span> //store.addressName
+								<strong>주소</strong> <span style={{ marginLeft: '10px' }}>{store.addressName} <br /> 현재 위치에서 {store.distance}m</span>
 								<div style={{ color: '#999', marginLeft: '42px', fontSize: '13px' }}>미금역 5,6번 출구 도보 5분</div>
 							</div>
-
+							<div>
+								<span>addressName: {store.addressName}</span><br />
+								<span>categoryName: {store.categoryName}</span><br />
+								<span>distance: {store.distance}</span><br />
+								<span>id: {store.id}</span><br />
+								<span>placeName: {store.placeName}</span><br />
+								<span>placeUrl: {store.placeUrl}</span><br />
+								<span>storeNo: {store.storeNo}</span><br />
+								<span>x: {store.x}</span><br />
+								<span>y: {store.y}</span><br />
+								<span>phone: {store.phone}</span><br /><br />
+								<span>storeData.address.road: {storeData.summary.address.road}</span><br />
+								<span>: { }</span><br />
+								<span>: { }</span><br />
+							</div>
 							<div style={{ display: 'flex', marginBottom: '12px' }}>
 								<strong style={{ width: '42px', flexShrink: 0 }}>영업 시간</strong>
 								<div style={{ marginLeft: '10px' }}>
@@ -114,20 +177,21 @@ export default function StorePage() {
 
 			{/* 2. 하단 인기메뉴 카드 영역 */}
 			<div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '25px', backgroundColor: '#fff' }}>
-				<h2 style={{ fontSize: '18px', color: '#ff9800', margin: '0 0 15px 0', fontWeight: 'bold' }}>인기메뉴</h2>
+				<h2 style={{ fontSize: '18px', color: '#ff9800', margin: '0 0 15px 0', fontWeight: 'bold' }}>메뉴</h2>
 
 				{/* 가로 아이템 리스트 */}
 				<div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
-					{[1, 2, 3, 4, 5].map((item) => (
-						<div key={item} style={{ flex: '0 0 150px', height: '110px', backgroundColor: '#f0f0f0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: '#999' }}>
-							{/* <img src="메뉴_이미지_주소" alt="인기메뉴" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }} /> */}
-							[메뉴 이미지 {item}]
+					{photos.map((photo: any) => (
+						<div key={photo.photo_id} style={{ flex: '0 0 150px', height: '110px', backgroundColor: '#f0f0f0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: '#999' }}>
+							<img src={photo.url} alt={photo.title}
+								style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }}
+								referrerPolicy="no-referrer" />
 						</div>
 					))}
 				</div>
 			</div>
 			<div>
-				<ReviewPage storeNo={5} />
+				<ReviewPage storeNo={store.storeNo} />
 			</div>
 		</div>
 	);

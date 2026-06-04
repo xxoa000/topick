@@ -19,7 +19,6 @@ export default function SearchResultsPanel() {
     handleResultClick,
     selectedStore,
   } = useFilterSearch();
-
   return (
     <aside className="filter-results-panel">
       <h2 className="filter-panel-title">
@@ -45,14 +44,6 @@ export default function SearchResultsPanel() {
             onClick={() => handleResultClick(store)}
           >
             <h4>
-              {/* <a
-                href={store.placeUrl || '#'} // 클릭 시 
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {store.placeName}
-              </a> */}
               <NavLink
                 to={`/store/${store.storeNo}`}
                 state={{ store }}
