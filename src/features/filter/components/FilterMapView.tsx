@@ -8,11 +8,8 @@ import {
 import { fetchKakaoMapsJsKey } from '../services/filterApi';
 import { useFilterSearch } from '../context/FilterSearchContext';
 import MapZoomControls from './MapZoomControls';
-<<<<<<< HEAD
 
-=======
 import useCustomLogin from '@/hooks/useCustomLogin';
->>>>>>> cfeed80c893db6def9a35326b72d3efa7dcd7fb6
 
 const DEFAULT_CENTER = { lat: 37.350106, lng: 127.109001 };
 
