@@ -4,3 +4,10 @@ export const SESSION = {
 } as const;
 
 export const API_TIMEOUT = 5000;
+
+// 미완성
+export const ERROR_CODE = {
+  MEMBER_ID_EXIST: "MEMBER_ID_EXIST",
+  MEMBER_EMAIL_EXIST: "MEMBER_EMAIL_EXIST",
+  MEMBER_PHONE_EXIST: "MEMBER_PHONE_EXIST",
+} as const;

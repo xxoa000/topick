@@ -1,43 +1,33 @@
-import { useForm } from "react-hook-form";
-import { useJoinStepStore } from "../hooks/joinStepStore";
-import type { JoinAgreeData } from "../types/joinDTO";
+import { useFormContext } from "react-hook-form";
+import { useCustomJoin } from "../hooks/joinStepStore";
 import styles from "@member/components/_join-form.module.scss"; 
+import type { JoinFormDTO } from "../types/joinDTO";
 
 export default function JoinAgreeForm() {
   // 전역 단계 관리
-  const setStep = useJoinStepStore((state) => state.setStep);
+  const { setStep } = useCustomJoin();
 
-  // react-hook-form 을 사용하기 위한 기본 설정
-  /*
-    register : 등록
-      required : 맞는 값이 들어와야만 submit, 아닐시 message 띄움
-    handleSubmit : form submit 버튼
-    watch : 입력값을 실시간 감지
-    form state : form 상태관리
-    errors : 에러 관리
-      formState.isSubmitting : 제출 중 상태
-      formState.errors → 에러 상태
-   */
-  /* mode 종류
-    - reValidateMode : (submit 에 이한)에러 이후 다시 검증하는 시점
-      onSubmit : 아무 설정 없을시 default, 처음엔 검증 안함, submit 시 전체 검증, 이후부턴 변경시 재검증
-      onChange : 입력할 때 마다 바로 검증, 첫 입력부터 에러 표시, 실시간 검증
-      onBlur : FocusOut 시 검증
-      all : change+blur 모두 검증, 가장 적극적인 검증방식
-   */
-
+  // react-hook-form 설정 (자식 컴포넌트용)
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState : { errors },
-  } = useForm<JoinAgreeData>();
+  } = useFormContext<JoinFormDTO>();
 
-  // const isAgree = watch("isAgree");
-  // const isPrivacyAgree = watch("isPrivacyAgree");
-  // const ageCheck = watch("ageCheck");
-  // const canNext = isAgree && isPrivacyAgree && ageCheck;
+  // 전체 동의
+  const watchCheck = watch(["isAgree","isPrivacyAgree","ageCheck"]);
+  const allCheck = watchCheck.every(Boolean);
+  const handleAllCheck = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setValue("isAgree", checked);
+    setValue("isPrivacyAgree", checked);
+    setValue("ageCheck", checked);
+  }
 
+
+  // 이용약관 동의 register
   const isAgreeRegister = register(
       "isAgree", {
         required: "이용약관에 동의해야 가입이 가능합니다."
@@ -59,10 +49,20 @@ export default function JoinAgreeForm() {
 
 
   return (
-  <form onSubmit ={handleSubmit(handleAgreeCheck)}>
+  <section>
 
   {/* form 전체 box */}
   <div className={styles.formBox}>
+
+    {/* 필수약관 전체 동의 */}
+    <div className={styles.formRow}>
+      <label htmlFor="allCheck">
+        <h3>
+          <input type="checkbox" id="allCheck" 
+            checked={allCheck} onChange={handleAllCheck} /> 모두 동의합니다.
+        </h3>
+      </label>
+    </div>
 
     {/* 약관 동의(필수) */}
     <section className={styles.formRow}>
@@ -174,7 +174,7 @@ export default function JoinAgreeForm() {
   
     {/* 나이 체크(필수) */}
     <section className={styles.formRow}>
-      <h3>만 14세 이상 확인(필수)</h3>
+      <h3>만 14세 이상 확인 (필수)</h3>
       <div className={styles.isAgreeContent}>
         <dl>
           <dd>[오늘의 식당] 사이트는 만 14세 이상부터 가입할 수 있습니다.</dd>
@@ -190,11 +190,11 @@ export default function JoinAgreeForm() {
 
   {/* submit 버튼 */}
   <div className={styles.buttonBox}>
-    <button type="button" className={styles.prevButton} onClick={()=>setStep(1)}>이전</button>
-    <button type="submit" className={styles.nextButton}>다음</button>
+    <button type="button" className={styles.nextButton}
+      onClick={handleAgreeCheck}>다음</button>
   </div>
 
-	</form>
+	</section>
   );
 
 } //JoinAgreeForm()
