@@ -74,7 +74,7 @@ export default function JoinForm() {
     try {
 			await memberApi.join(requestData);
 			// 회원가입 성공시, 서버로 보내서 DB 에 insert
-			console.log(joinData);
+			console.log(requestData);
 
 			// 회원가입 성공시 로그인 페이지로 이동
 			navigate("/member/login");
