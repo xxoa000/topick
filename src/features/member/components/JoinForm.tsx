@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
-import { useCustomJoin } from "../hooks/joinStepStore";
+import { useCustomJoin } from "../hooks/useCustomJoin";
 
 import memberApi from "../services/memberApi";
 import type { JoinFormDTO } from "../types/joinDTO";
@@ -129,16 +129,6 @@ export default function JoinForm() {
 			<JoinInfoForm />
 			</>
 		}
-
-
-		{/* 회원가입 완료 */}
-		{/* { step === 3 &&
-			<form onSubmit={handleSubmit(handleJoin)}>
-				<div>
-					<button type="submit">회원가입</button>
-				</div>
-			</form>
-		} */}
 		</form>
 	</FormProvider>
 	);
