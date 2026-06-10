@@ -56,15 +56,13 @@ export default function LoginForm() {
 
 			<div className={styles.formBox}>
 				<div className={styles.inputBox}>
-					<label htmlFor="memberId">아이디
-						<input type="text" id="memberId" {...register("memberId",loginValidate)}/>
-					</label>
+					<label htmlFor="memberId">아이디</label>
+						<input type="text" id="memberId" placeholder="아이디를 입력해주세요." {...register("memberId",loginValidate)}/>
 				</div>
 
 				<div className={styles.inputBox}>
-					<label htmlFor="memberPw">비밀번호
-						<input type="password" id="memberPw" {...register("memberPw",loginValidate)}/>
-					</label>
+					<label htmlFor="memberPw">비밀번호</label>
+						<input type="password" id="memberPw" placeholder="비밀번호를 입력해주세요." {...register("memberPw",loginValidate)}/>
 				</div>
 			</div>
 			<span className={styles.message}>
