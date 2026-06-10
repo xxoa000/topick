@@ -54,7 +54,13 @@ export const useReview = () => {
 
       const newReview = await reviewService.createReview(reviewPayload, imageFiles);
       return !!newReview;
-    } catch (err) {
+    } catch (err: any) {
+      if (err.response && err.response.status === 400) {
+        // "금지어가 포함되어 있어 리뷰를 등록할 수 없습니다." 경고창 출력
+        alert(err.response.data); 
+      } else {
+        alert('리뷰 등록 중 에러가 발생했습니다.');
+      }
       console.error('리뷰 등록 실패:', err);
       return false;
     }
@@ -82,7 +88,16 @@ export const useReview = () => {
         return true;
       }
       return false;
-    } catch (err) {
+    } catch (err: any) {
+      // 백엔드 Controller에서 ResponseEntity.badRequest().body(...)로 던진 400 에러 캐치
+      if (err.response && err.response.status === 400) {
+        // "비속어 및 금지어가 포함되어 있어 리뷰를 수정할 수 없습니다." 경고창 출력
+        alert(err.response.data); 
+      } else if (err.response && err.response.status === 403) {
+        alert('수정 권한이 없습니다.');
+      } else {
+        alert('리뷰 수정 중 에러가 발생했습니다.');
+      }
       console.error('리뷰 수정 실패:', err);
       return false;
     }
