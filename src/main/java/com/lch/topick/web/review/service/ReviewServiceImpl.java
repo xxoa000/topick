@@ -2,6 +2,7 @@ package com.lch.topick.web.review.service;
 
 import com.lch.topick.web.review.domain.ReviewDomain;
 import com.lch.topick.web.review.entity.ReviewEntity;
+import com.lch.topick.web.review.repository.BlockWordRepository;
 import com.lch.topick.web.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,42 @@ import java.util.List;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final BlockWordRepository blockWordRepository;
 
-    // 💡 프로젝트 내부의 static 폴더 하위에 이미지가 저장되도록 설정된 경로입니다.
+    // 프로젝트 내부의 static 폴더 하위에 이미지 저장 경로
     private final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/reviews/";
 
+    /**
+     * 금지어 검증
+     */
+    private String checkBlockWords(String content) {
+        if (content == null || content.trim().isEmpty()) return "SUCCESS";
+
+        // DB에서 금지어 목록 불러오기
+        List<String> blockedWords = blockWordRepository.findAll()
+                .stream()
+                .map(entity -> entity.getBlockWordName())
+                .toList();
+
+        // 사용자가 쓴 내용에 금지어가 들어있는지 검사
+        for (String word : blockedWords) {
+            if (content.contains(word)) {
+                return "BLOCKED_WORD"; // 금지어가 발견되면 신호 반환
+            }
+        }
+        return "SUCCESS";
+    }
+    
     /**
      * 1. 리뷰 등록 (파일 업로드 + 실제 DB 저장 구현 완료)
      */
     @Override
     public ReviewDomain registerReview(ReviewDomain domain, List<MultipartFile> files) {
+        
+    	// 리뷰 등록 시 금지어가 검출되면 예외를 던지거나 혹은 파일 저장 전에 차단
+        if ("BLOCKED_WORD".equals(checkBlockWords(domain.getReviewContent()))) {
+            throw new IllegalArgumentException("금지어가 포함되어 있어 리뷰를 등록할 수 없습니다.");
+        }
         
         String savedFileName = null;
 
@@ -50,7 +78,7 @@ public class ReviewServiceImpl implements ReviewService {
 
                         break; 
                     } catch (IOException e) {
-                        System.err.println("❌ 백엔드 파일 서버 저장 중 오류 발생: " + e.getMessage());
+                        //System.err.println("❌ 백엔드 파일 서버 저장 중 오류 발생: " + e.getMessage());
                         throw new RuntimeException("파일 업로드 실패", e);
                     }
                 }
@@ -71,7 +99,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     /**
-     * 2. 리뷰 수정 구현 완료
+     * 2. 리뷰 수정
      */
     @Override
     public String modifyReview(ReviewDomain domain, List<MultipartFile> files, String currentMemberId) {
@@ -80,6 +108,11 @@ public class ReviewServiceImpl implements ReviewService {
         if (entity == null) return "NOT_FOUND";
         if (!entity.getMemberId().equals(currentMemberId)) return "FORBIDDEN";
 
+        //리뷰 수정 시 금지어가 검출되면 예외를 던지거나 혹은 파일 저장 전에 차단
+        if ("BLOCKED_WORD".equals(checkBlockWords(domain.getReviewContent()))) {
+            return "BLOCKED_WORD"; // 컨트롤러가 캐치해서 프론트엔드로 브레이크를 걸 수 있도록 문자열 반환
+        }
+        
         entity.setReviewStar(domain.getReviewStar());
         entity.setReviewContent(domain.getReviewContent());
 
