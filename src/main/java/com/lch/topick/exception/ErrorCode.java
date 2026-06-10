@@ -42,7 +42,7 @@ public enum ErrorCode {
     JWT_ERROR(HttpStatus.UNAUTHORIZED, "토큰 검증 중 오류가 발생했습니다."),
 
     // Member
-    LOGIN_FAILED(HttpStatus.BAD_REQUEST, "아이디 또는 비밀번호가 일치하지 않습니다."),				// 400
+    LOGIN_FAILED(HttpStatus.BAD_REQUEST, "아이디 또는 비밀번호가 잘못 되었습니다. 아이디와 비밀번호를 정확히 입력해 주세요."),				// 400
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원 정보를 찾을 수 없습니다."),						// 404
     MEMBER_EMAIL_EXIST(HttpStatus.CONFLICT, "이미 가입된 이메일 입니다."),							// 409
     MEMBER_PHONE_EXIST(HttpStatus.CONFLICT, "이미 가입된 번호 입니다."),
