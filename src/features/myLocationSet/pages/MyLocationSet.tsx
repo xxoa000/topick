@@ -16,7 +16,7 @@ const MyLocationSet = () => {
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
 
-        {/* [화면 1] 나의 배송주소록 목록 */}
+        {/* [화면 1] 나의 저장위치 목록 */}
         {step === 1 && (
           <>
             <div className={styles.modalHeader}>

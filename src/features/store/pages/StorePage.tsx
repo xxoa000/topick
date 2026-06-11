@@ -42,6 +42,7 @@ export default function StorePage() {
 	}
 	const photos = storeData.menu?.menus?.photos || [];
 	const allPhotos = storeData.photos.photos || [];
+	const storeRunTime = storeData.open_hours.week_from_today.week_periods
 	return (
 		<div style={{ maxWidth: '850px', margin: '20px auto', fontFamily: 'sans-serif', color: '#333' }}>
 
@@ -100,7 +101,7 @@ export default function StorePage() {
 						</div>
 					</div>
 				</div>
-				
+
 				{/* 텍스트 정보 영역 */}
 				<div style={{ padding: '25px' }}>
 
@@ -132,8 +133,8 @@ export default function StorePage() {
 						{/* 왼쪽 안내문구 */}
 						<div style={{ flex: 1, fontSize: '14px', lineHeight: '1.7' }}>
 							<div style={{ marginBottom: '12px' }}>
-								<strong>주소</strong> <span style={{ marginLeft: '10px' }}>{store.addressName} <br /> 현재 위치에서 {store.distance}m</span>
-								<div style={{ color: '#999', marginLeft: '42px', fontSize: '13px' }}>미금역 5,6번 출구 도보 5분</div>
+								<strong>주소</strong> <span style={{ marginLeft: '10px' }}>{storeData.summary.address.road}</span>
+								<div style={{ color: '#999', marginLeft: '42px', fontSize: '13px' }}>현재 위치에서 {store.distance}m</div>
 							</div>
 							<div>
 								<span>addressName: {store.addressName}</span><br />
@@ -144,20 +145,21 @@ export default function StorePage() {
 								<span>placeUrl: {store.placeUrl}</span><br />
 								<span>storeNo: {store.storeNo}</span><br />
 								<span>x: {store.x}</span><br />
-								<span>y: {store.y}</span><br />
-								<span>phone: {store.phone}</span><br /><br />
-								<span>storeData.address.road: {storeData.summary.address.road}</span><br />
-								<span>: { }</span><br />
-								<span>: { }</span><br />
-							</div>
-							<div style={{ display: 'flex', marginBottom: '12px' }}>
-								<strong style={{ width: '42px', flexShrink: 0 }}>영업 시간</strong>
-								<div style={{ marginLeft: '10px' }}>
-									<div>월 휴무</div>
-									<div>화 16:00 ~ 22:00</div>
-									<div>수 목 금 10:00 ~ 22:00</div>
-									<div>주말 9:00 ~ 20:00</div>
-								</div>
+								<span>y: {store.y}</span><br /><br />
+
+								<strong style={{ width: '44px', flexShrink: 0 }}>영업 시간</strong>
+								{storeRunTime.map((i: any) => (
+									i.days.map((day: any) => (
+										<div style={{ display: 'flex', marginBottom: '12px' }}>
+											<div style={{ marginLeft: '10px' }}>
+												<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span><br /> {/*요일, 영업시간*/}
+												<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days ? day.on_days.break_times_desc[0] : ""}</span><br /> {/* 브레이크 타임*/}
+											</div>
+										</div>
+									))
+
+								))}
+
 							</div>
 
 							<div>

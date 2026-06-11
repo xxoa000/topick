@@ -26,6 +26,11 @@ export const useMyLocation = () => {
   // 브라우저 뒤로가기 실행 (모달 닫힘 효과)
   const handleClose = () => navigate(-1);
 
+  // 기본 좌표 (GPS 차단 시 사용할 기본값: 미금역) & 화면 크기
+  const defaultLat = 37.3500951835995;
+  const defaultLng = 127.108932846326;
+  const myLevel = 3;
+
   //주소록 목록을 불러오는 함수 (재사용을 위해 useCallback 처리)
   const fetchAddressList = useCallback(async () => { //useEffect 안에서 지정된 값이 변경되는 경우에만 재실행 (useCallback)
     if (!member?.memberId) return;
@@ -52,13 +57,13 @@ export const useMyLocation = () => {
   const handleComplete = (data: Address) => {
     let fullAddress = data.address;
     let extraAddress = '';
-
+    //응답받은 데이터 재가공
     if (data.addressType === 'R') {
       if (data.bname !== '') extraAddress += data.bname;
       if (data.buildingName !== '') extraAddress += extraAddress !== '' ? `, ${data.buildingName}` : data.buildingName;
       fullAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
     }
-
+    //state변수에 저장
     setAddress(fullAddress);
     setAddressData(data);
     setAddressName(data.buildingName || "현재 위치");
@@ -110,18 +115,13 @@ export const useMyLocation = () => {
   // 🌟 컴포넌트에서 주소를 클릭했을 때 실행될 기본 주소 변경 함수
   const changeAdderssDefault = async (addressNo: number) => {
     // 이미 로딩 중이거나 ID가 없다면 중복 방지
-    console.log(addressNo);
     if (!addressNo || isLoading) return;
-
     try {
       setIsLoading(true);
-
       // 1. 서버에 변경 요청 (addressId 전달)
       await changeAddressDefaultApi(addressNo);
-
       // 2. 백엔드에서 N -> Y 업데이트가 끝났으므로, 최신 주소록 리스트를 다시 불러옴
       await fetchAddressList();
-
     } catch (err) {
       console.error("기본 주소 변경 실패:", err);
       alert("기본 주소 설정 중 오류가 발생했습니다.");
@@ -133,23 +133,18 @@ export const useMyLocation = () => {
   // ★ Step 4 진입 시 카카오 지도 초기화 및 GPS 호출 로직
   useEffect(() => {
     if (step !== 4 || !mapContainerRef.current) return;
-
     const { kakao } = window as any;
     if (!kakao || !kakao.maps) {
       alert("카카오 맵 라이브러리가 로드되지 않았습니다.");
       return;
-    }
-
-    // 기본 좌표 (GPS 차단 시 사용할 기본값: 미금역)
-    let defaultLat = 37.3500951835995;
-    let defaultLng = 127.108932846326;
+    } //window.kakao == null 이면 return;
 
     const initMap = (latitude: number, longitude: number, myLevel: number) => {
       const options = { center: new kakao.maps.LatLng(latitude, longitude), level: myLevel }; //지도의 중심점, 확대/축소 수준
       const map = new kakao.maps.Map(mapContainerRef.current, options); //그려질 div, 옵션 전달
       const marker = new kakao.maps.Marker({ position: new kakao.maps.LatLng(latitude, longitude) }); // 마커 생성 및 표시
 
-      marker.setMap(map);
+      marker.setMap(map); //마커를 지도에 뛰움
       setTempCoords({ lat: latitude, lng: longitude });
 
       // 지도 클릭 시 마커 이동 및 좌표 업데이트 이벤트
@@ -166,11 +161,11 @@ export const useMyLocation = () => {
         (position) => initMap(position.coords.latitude, position.coords.longitude, 3),
         () => { //위치권한 거부 || 위치를 불러올 수 없는 경우
           alert("현재 위치(GPS)를 가져올 수 없어 기본 위치로 표시합니다.");
-          initMap(defaultLat, defaultLng, 3);
+          initMap(defaultLat, defaultLng, myLevel);
         }
       );
     } else {
-      initMap(defaultLat, defaultLng, 3);
+      initMap(defaultLat, defaultLng, myLevel);
     }
   }, [step]);
 

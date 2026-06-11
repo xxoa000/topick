@@ -42,26 +42,21 @@ export async function getMyLocationListApi(memberId: string) {
   return response.data;
 }
 
-// 4. 기본 배송지 변경 API 호출 (addressId만 서버로 전달)
+// 4. 기본 배송지 변경 API 호출 (addressNo만 서버로 전달)
 export async function changeAddressDefaultApi(addressNo: number) {
-  // 💡 백엔드 Controller의 URL 매핑에 맞춰 주소를 수정해주세요. (예: @PatchMapping("/default/{addressId}"))
   const response = await accessApiClient.patch(`/myLocationSet/default/${addressNo}`);
-  
   const { member } = zustandAuthStore.getState();
   const newMemberData = {
     ...member!,
     addressX: response.data.addressX, 
     addressY: response.data.addressY
   };
-
   sessionStorage.setItem(
     SESSION.ACCESS_DATA,
     JSON.stringify(newMemberData)
   );
-
   zustandAuthStore.setState({
     member: newMemberData,
   });
-
   return response.data;
 }
