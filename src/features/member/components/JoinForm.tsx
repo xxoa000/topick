@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
-import { useCustomJoin } from "../hooks/joinStepStore";
+import { useCustomJoin } from "../hooks/useCustomJoin";
 
 import memberApi from "../services/memberApi";
 import type { JoinFormDTO } from "../types/joinDTO";
@@ -74,7 +74,7 @@ export default function JoinForm() {
     try {
 			await memberApi.join(requestData);
 			// 회원가입 성공시, 서버로 보내서 DB 에 insert
-			console.log(joinData);
+			console.log(requestData);
 
 			// 회원가입 성공시 로그인 페이지로 이동
 			navigate("/member/login");
@@ -129,16 +129,6 @@ export default function JoinForm() {
 			<JoinInfoForm />
 			</>
 		}
-
-
-		{/* 회원가입 완료 */}
-		{/* { step === 3 &&
-			<form onSubmit={handleSubmit(handleJoin)}>
-				<div>
-					<button type="submit">회원가입</button>
-				</div>
-			</form>
-		} */}
 		</form>
 	</FormProvider>
 	);

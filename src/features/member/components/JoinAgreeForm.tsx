@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import { useCustomJoin } from "../hooks/joinStepStore";
+import { useCustomJoin } from "../hooks/useCustomJoin";
 import styles from "@member/components/_join-form.module.scss"; 
 import type { JoinFormDTO } from "../types/joinDTO";
 

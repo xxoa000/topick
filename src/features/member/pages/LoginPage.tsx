@@ -7,7 +7,7 @@ export default function LoginPage() {
 
 		<main className={styles.loginMain}>
 		<NavLink to="/" className={styles.logoLink}>
-			<img src="/logo.png" alt="오늘의 식당 로고" />
+			<img src="/logo_2.png" alt="오늘의 식당 로고" />
   	</NavLink>
 
 		<LoginForm />
