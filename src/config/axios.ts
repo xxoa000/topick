@@ -7,6 +7,12 @@ import { zustandAuthStore } from '@/hooks/useCustomLogin';
 // 1. 독립된 두 개의 인스턴스 정의
 // ==========================================
 
+// 로그인 확인x 기본 요청 인스턴스
+export const publicApiClient = axios.create({
+  baseURL: ENV.API_BASE_URL,
+  timeout: API_TIMEOUT
+});
+
 //일반 요청 인스턴스 (매 요청마다 자동으로 Access Token을 헤더에 탑재)
 export const accessApiClient = axios.create({
   baseURL: ENV.API_BASE_URL,
