@@ -1,3 +1,4 @@
+import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
@@ -37,9 +38,11 @@ export default function StorePage() {
 
 
 	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
+
 	if (!store || !storeData) {
 		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
 	}
+
 	const photos = storeData.menu?.menus?.photos || [];
 	const allPhotos = storeData.photos.photos || [];
 	return (
@@ -189,6 +192,10 @@ export default function StorePage() {
 						</div>
 					))}
 				</div>
+
+				{/* 메뉴 리스트 */}
+				<MenuListPage />
+
 			</div>
 			<div>
 				<ReviewPage storeNo={store.storeNo} />
