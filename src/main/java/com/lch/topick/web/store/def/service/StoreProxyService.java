@@ -4,4 +4,5 @@ public interface StoreProxyService {
 
 	String fetchStoreData(String id);
 	
+	String fetchMenuData(String yogiyId);
 }

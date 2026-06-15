@@ -21,7 +21,8 @@ public class StoreController {
     @GetMapping("/{id}")
     public ResponseEntity<String> getRestaurantDetails(@PathVariable("id") String id) {
         String jsonResult = storeProxyService.fetchStoreData(id);
-        
+        String jsonResult2 = storeProxyService.fetchMenuData("6907");
+        System.out.println(jsonResult2);
         // 가공 없이 그대로 JSON 형식으로 프론트엔드에 반환
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,7 +63,10 @@ public class MyLocationSetController {
     } //join
 	
 	@GetMapping("/addresslist")
-	public ResponseEntity<?> addressList(@RequestParam("memberId") String memberId) {
+	public ResponseEntity<?> addressList(
+			@AuthenticationPrincipal String memberId
+//			@RequestParam("memberId") String memberId
+			) {
 	    List<MyLocationSet> list = myLocationSetService.findByMemberId(memberId);
 	    if(list!=null) {
 			return ResponseEntity.ok(list);
