@@ -36,12 +36,13 @@ public class MenuController {
 	}//menuList
 	
 	/* (SELECT) 메뉴 리스트 > 메뉴 상세 */
-	@GetMapping("/menu/{menuNo}")
-	public ResponseEntity<?> menuDetail(@PathVariable Long MenuNo) {
-		List<Menu> list = menuService.selectOne(MenuNo);
+	@GetMapping("/store/{storeNo}/menu/{menuNo}")
+	public ResponseEntity<?> menuDetail(@PathVariable("storeNo") Long storeNo, 
+										@PathVariable("menuNo") Long menuNo) {
+		Menu detail = menuService.selectOne(menuNo);
 		
-		if (list!=null && list.size() > 0) {
-			return ResponseEntity.status(HttpStatus.OK).body(list);
+		if (detail!=null) {
+			return ResponseEntity.status(HttpStatus.OK).body(detail);
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("메뉴가 없습니다.");
 		}

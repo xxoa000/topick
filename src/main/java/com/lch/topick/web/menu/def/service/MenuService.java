@@ -10,7 +10,7 @@ public interface MenuService {
 	public List<Menu> selectList(Long storeNo);
 	
 	/* 메뉴 리스트 > 메뉴 상세 */
-	public List<Menu> selectOne(Long menuNo);
+	public Menu selectOne(Long menuNo);
 
 	/* 식당 상세 > 메뉴 추가, 수정 */
 	public Long save (Menu entity);
