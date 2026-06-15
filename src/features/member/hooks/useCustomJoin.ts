@@ -19,7 +19,6 @@ export const zustandJoinStepStore = create<JoinStepState>((set) => ({
     })
   }));
 
-
 // Join custom hook (controller)
 export const useCustomJoin = () => {
   const isCheck = zustandJoinStepStore((state) => state.isCheck);

@@ -1,3 +1,4 @@
+import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
@@ -37,9 +38,11 @@ export default function StorePage() {
 
 
 	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
+
 	if (!store || !storeData) {
 		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
 	}
+
 	const photos = storeData.menu?.menus?.photos || [];
 
 	// 📸 사진 데이터 안전하게 추출
@@ -209,70 +212,9 @@ export default function StorePage() {
 					))}
 				</div>
 
-				<div style={{ display: 'flex', flexDirection: 'column' }}>
-					{menuItems.map((menu: any, index: number) => (
-						<div
-							key={menu.product_id || index}
-							style={{
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-								padding: '20px 0',
-								borderBottom: index === menuItems.length - 1 ? 'none' : '1px solid #eee'
-							}}
-						>
-							{/* [왼쪽] 메뉴명 및 가격 */}
-							<div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-								<div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-									<h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold', color: '#111' }}>
-										{menu.name}
-									</h3>
-									<span style={{ fontSize: '17px', fontWeight: 'bold', color: '#ec7b23' }}>
-										{menu.price ? menu.price.toLocaleString() : '0'}
-									</span>
-								</div>
-								{/* 데이터 구조상 설명 필드가 잘려있으므로, 있을 때만 렌더링하거나 기본 문구 처리 */}
-								{menu.desc && (
-									<p style={{ margin: 0, fontSize: '13px', color: '#888', lineHeight: '1.4' }}>
-										{menu.desc}
-									</p>
-								)}
-							</div>
+				{/* 메뉴 리스트 */}
+				<MenuListPage />
 
-							{/* [오른쪽] 부가정보 및 이미지 */}
-							<div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-								<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-									<span style={{ fontSize: '11px', color: '#bbb' }}>*VAT 포함</span>
-									<span style={{
-										fontSize: '11px',
-										color: '#666',
-										border: '1px solid #e2e2e2',
-										padding: '3px 8px',
-										borderRadius: '4px',
-										backgroundColor: '#fafafa',
-										cursor: 'pointer'
-									}}>
-										매장, 원산지 정보
-									</span>
-								</div>
-
-								{/* 이미지 틀 */}
-								<div style={{ width: '130px', height: '90px', backgroundColor: '#f9f9f9', borderRadius: '6px', overflow: 'hidden', border: '1px solid #f0f0f0' }}>
-									<img
-										src={menu.img_url || menu.imageUrl || defaultMenuIcon}
-										alt={menu.name}
-										style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-										referrerPolicy="no-referrer"
-										onError={(e) => {
-											// 이미지 로드 실패 시 기본 아이콘으로 대체 안전장치
-											(e.target as HTMLImageElement).src = defaultMenuIcon;
-										}}
-									/>
-								</div>
-							</div>
-						</div>
-					))}
-				</div>
 			</div>
 
 			<div>
