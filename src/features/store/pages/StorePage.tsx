@@ -41,8 +41,17 @@ export default function StorePage() {
 		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
 	}
 	const photos = storeData.menu?.menus?.photos || [];
-	const allPhotos = storeData.photos.photos || [];
-	const storeRunTime = storeData.open_hours.week_from_today.week_periods
+
+	// 📸 사진 데이터 안전하게 추출
+	const allPhotos = storeData.photos?.photos || [];
+
+	// ⏰ 영업시간 데이터 구조 매핑 (week_periods -> days)
+	const storeRunTime = storeData.open_hours?.week_from_today?.week_periods || [];
+
+	// 📋 메뉴 데이터 구조 매핑 (menu -> menus -> items)
+	const menuItems = storeData.menu?.menus?.items || [];
+	const defaultMenuIcon = storeData.menu?.default_menu_icon_url;
+
 	return (
 		<div style={{ maxWidth: '850px', margin: '20px auto', fontFamily: 'sans-serif', color: '#333' }}>
 
@@ -142,7 +151,7 @@ export default function StorePage() {
 								<span>distance: {store.distance}</span><br />
 								<span>id: {store.id}</span><br />
 								<span>placeName: {store.placeName}</span><br />
-								<span>placeUrl: {store.placeUrl}</span><br />
+								<a href={store.placeUrl}>spanplaceUrl: {store.placeUrl}</a><br />
 								<span>storeNo: {store.storeNo}</span><br />
 								<span>x: {store.x}</span><br />
 								<span>y: {store.y}</span><br /><br />
@@ -153,7 +162,16 @@ export default function StorePage() {
 										<div style={{ display: 'flex', marginBottom: '12px' }}>
 											<div style={{ marginLeft: '10px' }}>
 												<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span><br /> {/*요일, 영업시간*/}
-												<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days ? day.on_days.break_times_desc[0] : ""}</span><br /> {/* 브레이크 타임*/}
+												{
+													day.on_days?.break_times_desc &&
+													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.break_times_desc[0]}</span> //브레이크 타임
+												}
+												<br />
+												{
+													day.on_days?.last_order_times_desc &&
+													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.last_order_times_desc[0]}</span> //브레이크 타임
+												}
+
 											</div>
 										</div>
 									))
@@ -178,10 +196,9 @@ export default function StorePage() {
 			</div>
 
 			{/* 2. 하단 인기메뉴 카드 영역 */}
-			<div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '25px', backgroundColor: '#fff' }}>
+			<div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '25px', backgroundColor: '#fff', marginBottom: '20px' }}>
 				<h2 style={{ fontSize: '18px', color: '#ff9800', margin: '0 0 15px 0', fontWeight: 'bold' }}>메뉴</h2>
 
-				{/* 가로 아이템 리스트 */}
 				<div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
 					{photos.map((photo: any) => (
 						<div key={photo.photo_id} style={{ flex: '0 0 150px', height: '110px', backgroundColor: '#f0f0f0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: '#999' }}>
@@ -191,7 +208,73 @@ export default function StorePage() {
 						</div>
 					))}
 				</div>
+
+				<div style={{ display: 'flex', flexDirection: 'column' }}>
+					{menuItems.map((menu: any, index: number) => (
+						<div
+							key={menu.product_id || index}
+							style={{
+								display: 'flex',
+								justifyContent: 'space-between',
+								alignItems: 'center',
+								padding: '20px 0',
+								borderBottom: index === menuItems.length - 1 ? 'none' : '1px solid #eee'
+							}}
+						>
+							{/* [왼쪽] 메뉴명 및 가격 */}
+							<div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+								<div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+									<h3 style={{ margin: 0, fontSize: '17px', fontWeight: 'bold', color: '#111' }}>
+										{menu.name}
+									</h3>
+									<span style={{ fontSize: '17px', fontWeight: 'bold', color: '#ec7b23' }}>
+										{menu.price ? menu.price.toLocaleString() : '0'}
+									</span>
+								</div>
+								{/* 데이터 구조상 설명 필드가 잘려있으므로, 있을 때만 렌더링하거나 기본 문구 처리 */}
+								{menu.desc && (
+									<p style={{ margin: 0, fontSize: '13px', color: '#888', lineHeight: '1.4' }}>
+										{menu.desc}
+									</p>
+								)}
+							</div>
+
+							{/* [오른쪽] 부가정보 및 이미지 */}
+							<div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+								<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+									<span style={{ fontSize: '11px', color: '#bbb' }}>*VAT 포함</span>
+									<span style={{
+										fontSize: '11px',
+										color: '#666',
+										border: '1px solid #e2e2e2',
+										padding: '3px 8px',
+										borderRadius: '4px',
+										backgroundColor: '#fafafa',
+										cursor: 'pointer'
+									}}>
+										매장, 원산지 정보
+									</span>
+								</div>
+
+								{/* 이미지 틀 */}
+								<div style={{ width: '130px', height: '90px', backgroundColor: '#f9f9f9', borderRadius: '6px', overflow: 'hidden', border: '1px solid #f0f0f0' }}>
+									<img
+										src={menu.img_url || menu.imageUrl || defaultMenuIcon}
+										alt={menu.name}
+										style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+										referrerPolicy="no-referrer"
+										onError={(e) => {
+											// 이미지 로드 실패 시 기본 아이콘으로 대체 안전장치
+											(e.target as HTMLImageElement).src = defaultMenuIcon;
+										}}
+									/>
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
 			</div>
+
 			<div>
 				<ReviewPage storeNo={store.storeNo} />
 			</div>

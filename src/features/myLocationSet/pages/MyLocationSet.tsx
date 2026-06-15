@@ -39,7 +39,10 @@ const MyLocationSet = () => {
                   <div className={styles.addressListContainer} >
                     {
                       addressList.map((item) => (
-                        <div key={item.addressNo} className={item.addressDefault ==='Y' ? styles.addressDefaultCard : styles.addressCard} onClick={() => changeAdderssDefault(item.addressNo)}>
+                        <div key={item.addressNo} className={item.addressDefault ==='Y' 
+                        ? styles.addressDefaultCard 
+                        : styles.addressCard} 
+                        onClick={() => changeAdderssDefault(item.addressNo)}>
                           <div className={styles.cardContent} >
                             < div className={styles.cardName} > {item.addressName} </div>
                             < div className={styles.cardAddress} > {item.addressRoad} {item.addressDetail} </div>

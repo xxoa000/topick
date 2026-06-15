@@ -148,7 +148,7 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
       x: memberX,
       y: memberY,
     };
-  }, []);
+  }, [member]);
 
   const currentBoundsKey = useCallback(() => {
     const b = buildBounds();
