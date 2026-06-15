@@ -70,12 +70,13 @@ public class MyLocationSetServiceImpl implements MyLocationSetService{
 	    return addr;
 	}
 	
-	@Transactional // 🌟 데이터 정성 확보를 위해 꼭 붙여주세요!
+	@Transactional
     public Map<String, String> changeDefaultAddress(long addressNo) {
         // 1. 수정 요청이 들어온 주소가 존재하는지 먼저 확인 및 조회
         MyLocationSet targetAddress = myLocationSetRepository.findById(addressNo)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주소 ID입니다: " + addressNo));
         
+        // 만약 이미 default 인 주소를 선택 시 종료
         if(targetAddress.getAddressDefault()=='Y') {
         	return null;
         }
