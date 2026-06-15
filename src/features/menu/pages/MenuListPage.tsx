@@ -17,7 +17,7 @@ export default function MenuListPage() {
         console.log(data);
         setMenuList(data);
       } catch(error) {
-        if (!axios.isAxiosError) return;
+        if (!axios.isAxiosError(error)) return;
         console.log(error);
       }
     }
@@ -29,8 +29,8 @@ export default function MenuListPage() {
   return (
   <>
   {menuList.map((menu)=>(
-    <NavLink to="/store/:storeNo/menu/:menuNo">
-      <div key={menu?.menuNo}>
+    <NavLink key={menu?.menuNo} to={`/store/${storeNo}/menu/${menu?.menuNo}`}>
+      <div>
         <span>{menu?.menuName}</span>
         <span>{menu?.menuPrice}</span>
       </div>
