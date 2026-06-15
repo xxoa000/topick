@@ -1,6 +1,5 @@
 package com.lch.topick.web.member.def.domain;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class MemberLoginResponseDTO {
 	private final String addressX;
 	private final String addressY;
 	
-	
+	// 접근권한
 	@Builder.Default
 	private List<MemberRole> roleList = new ArrayList<>();
 	

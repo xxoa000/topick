@@ -77,7 +77,7 @@ public class OrderList {
 	
 	// 총 금액 계산
 	// 추후 finalPrice 할인금액 계산 메서드 추가
-	public void changePrice(Integer totalPrice) {
+	public void changePrice(int totalPrice) {
 		this.orderListTotalPrice = totalPrice;
 		this.orderListFanalPrice = totalPrice;
 	}

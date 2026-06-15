@@ -73,7 +73,6 @@ public class TokenProvider {
 				   .compact();
 	} //createToken
 	
-	
 	// 3. accessToken 발급
 	public String createAccessToken(Map<String, Object> claimList) {
 		return createToken(claimList, accessTokenExp);

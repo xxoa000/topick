@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class OrderCreateRequestDTO {
 
 	// 주문 1건
-	private String memberId;
+	//private String memberId;
 	private Long storeNo;
 	private LocalDateTime orderListVisitTime;
 	private String orderListVisitType;

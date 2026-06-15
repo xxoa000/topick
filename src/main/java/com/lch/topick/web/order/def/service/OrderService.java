@@ -11,7 +11,7 @@ public interface OrderService {
 	
 	
 	// C - Create
-	public void create(OrderCreateRequestDTO reqDto);
+	public void create(String memberId, OrderCreateRequestDTO reqDto);
 	
 	// R - Read
 	public List<OrderList> selectList(String memberId);
