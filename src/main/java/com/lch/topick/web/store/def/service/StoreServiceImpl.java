@@ -30,7 +30,7 @@ public class StoreServiceImpl implements StoreService {
 			String defaultMenuImage = objectMapper.readTree(jsonResult).findValue("menu").findValue("default_menu_icon_url").asText();
 			log.warn(defaultMenuImage);
 			
-			if (!objectMapper.readTree(jsonResult2).has("error")) {
+			if (jsonResult2 != null) {
 				JsonNode yogiyoMenuData = objectMapper.readTree(jsonResult2).findValue("menu");
 
 				for (JsonNode itemNode : yogiyoMenuData) {
