@@ -23,7 +23,7 @@ export default function Section(){
         <Route path="/my-location-set/*" element={<MyLocationSet />} />
         <Route path="/member/login/*" element={<LoginPage />}/>
         <Route path="/member/join/*" element={<JoinPage />}/>
-        <Route path="/store/:storeNo/menu/:menuNo/*" element={<MenuDetailPage />}/>
+        {/* <Route path="/store/:storeNo/menu/:menuNo/*" element={<MenuDetailPage />}/> */}
         <Route path="/store/:storeNo/menu/list" element={<MenuListPage />}/>
         <Route path="/store/:storeNo/*" element={<StorePage />}/>
         <Route path="/order/*" element={<OrderPage />}/>
