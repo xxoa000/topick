@@ -1,0 +1,138 @@
+// 변수 정의
+$border-light: #eee;
+$border-default: #ccc;
+$primary-orange: #ff9800;
+$price-orange: #ec7b23;
+$text-main: #111;
+$text-sub: #666;
+$text-light: #bbb;
+$bg-gray: #f9f9f9;
+
+.menuContainer {
+  border: 1px solid $border-default;
+  border-radius: 8px;
+  padding: 25px;
+  background-color: #fff;
+  margin-bottom: 20px;
+}
+
+.photoSection {
+  margin-bottom: 15px;
+
+  .photoTitle {
+    font-size: 18px;
+    color: $primary-orange;
+    margin: 0 0 15px 0;
+    font-weight: bold;
+  }
+
+  .photoWrapper {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+  }
+
+  .photoItem {
+    flex: 0 0 150px;
+    height: 110px;
+    background-color: #f0f0f0;
+    border-radius: 6px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+.menuListWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.menuLink {
+  text-decoration: none; // NavLink 기본 스타일 제거
+}
+
+.menuItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid $border-light;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.menuInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .name {
+    margin: 0;
+    font-size: 17px;
+    font-weight: bold;
+    color: $text-main;
+  }
+
+  .price {
+    font-size: 17px;
+    font-weight: bold;
+    color: $price-orange;
+  }
+}
+
+.menuActions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  .metaInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .vatText {
+    font-size: 11px;
+    color: $text-light;
+  }
+
+  .badge {
+    font-size: 11px;
+    color: $text-sub;
+    border: 1px solid #e2e2e2;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background-color: $bg-gray;
+    cursor: pointer;
+  }
+
+  .imageContainer {
+    width: 130px;
+    height: 90px;
+    background-color: $bg-gray;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
