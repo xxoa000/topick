@@ -1,7 +1,7 @@
 import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useEffect, useState } from "react";
-import { useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 interface StoreData {
 	addressName: string;
@@ -61,6 +61,14 @@ export default function StorePage() {
 			{/* 1. 상단 상세정보 카드 영역 */}
 			<div style={{ border: '1px solid #ccc', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#fff', marginBottom: '20px' }}>
 
+				{/* 상단 탭 메뉴 */}
+				<div style={{ display: 'flex', backgroundColor: '#e6e1da' }}>
+					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: '#fff', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}>홈</button>
+					<NavLink to={`/store/${store?.storeNo}/menu/list`}><button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>메뉴</button></NavLink>
+					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>리뷰</button>
+					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>사진</button>
+					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>정보</button>
+				</div>
 
 				{/* 대표 이미지 배너 (첨부 이미지와 동일한 격자 배치, 5개 사진만 표시) */}
 				<div style={{ display: 'flex', height: '250px', backgroundColor: '#f5f5f5', borderRadius: '12px', overflow: 'hidden', gap: '4px' }}>

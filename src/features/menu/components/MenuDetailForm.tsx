@@ -1,78 +1,101 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { menuApi } from "../services/menuApi";
 import type { MenuResponseDTO } from "../types/menuDTO";
-import axios from "axios";
 import s from "@/features/menu/components/_menuDetailForm.module.scss";
 import type { OrderCreateRequestDTO } from "@/features/order/types/orderDTO";
 import { useFormContext } from "react-hook-form";
 
+type MenuDetailFormProps = {
+  menu: MenuResponseDTO;
+};
 
-export default function MenuDetailForm() {
-  const { storeNo, menuNo } = useParams();
-  const [menu,setMenu] = useState<MenuResponseDTO>();
-  const [amount,setAmount] = useState(1);
-  const totalPrice = (menu?.menuPrice ?? 0) * amount;
-  const { setValue } = useFormContext<OrderCreateRequestDTO>();
 
-  // 메뉴 상세 출력
-  useEffect (() => {
-    if (!storeNo || !menuNo) return;
-    const updateDetail = async() => {
-      try {
-        const data = await menuApi.selectOne(Number(storeNo),Number(menuNo));
-        console.log("data: ",data);
-        setMenu(data);
-      } catch(error) {
-        if (!axios.isAxiosError(error)) return;
-        console.log("error: ",error);
-      }
-    }
-    updateDetail();
-  },[storeNo, menuNo]);
+export default function MenuDetailForm({menu}: MenuDetailFormProps) {
+  const { storeNo } = useParams();
+  const [amount,setAmount] = useState(0);
+  const { setValue, getValues } = useFormContext<OrderCreateRequestDTO>();
 
   // 주문용 상세 데이터 저장
-  useEffect (() => {
-    if (!storeNo || !menuNo) return;
+  const saveMenu = (nextAmount:number) => {
+    //오류 방지
+    if (!storeNo || !menu?.menuNo) return;
+    
     setValue("storeNo",Number(storeNo));
-    setValue("orderListTotalPrice",Number(totalPrice));
-    setValue("detailList", [
-      {
-        menuNo: Number(menuNo),
-        orderDetailAmount: amount,
-      }
-    ])
-  },[storeNo, menuNo, amount, totalPrice, setValue]);
 
+    // 여러메뉴 주문시 합치기 위한 코드 -> orderForm 에서 총 가격 계산 
+    const currentList = getValues("detailList") ?? [];
+    const findList = currentList.filter((m)=> m.menuNo !== Number(menu.menuNo));
+
+    // 수량이 0 인 리스트는 제외시킴
+    if (nextAmount < 1) {
+      setValue("detailList", findList);
+      return;
+    }
+
+    setValue("detailList", [
+      ...findList,
+      {
+        menuNo: Number(menu?.menuNo),
+        orderDetailAmount: nextAmount,
+        menuPrice: Number(menu?.menuPrice)
+      }
+    ]);
+  };
 
   // 수량 증감
-  const handleDecrease = () => setAmount(prev => (prev > 1 ? prev-1 : 1) );
-  const handleIncrease = () => setAmount(prev => prev+1);
+  const handleDecrease = () => {
+    const nextAmount = amount > 0 ? amount-1 : 0;
+    setAmount(nextAmount);
+    saveMenu(nextAmount);
+  };
+  const handleIncrease = () => {
+    const nextAmount = amount+1;
+    setAmount(nextAmount);
+    saveMenu(nextAmount);
+  };
+
+  // 메뉴 오픈시 출력
+  useEffect(() => {
+    if (!menu?.menuNo) return;
+    //저장된 값이 없다면 수량 1부터 시작
+    const currentList = getValues("detailList") ?? [];
+    const findMenu = currentList.find(
+      (m) => m.menuNo === Number(menu.menuNo)
+    );
+    const saveAmount = findMenu?.orderDetailAmount ?? 0;
+    setAmount(saveAmount);
+    saveMenu(saveAmount);
+  },[menu?.menuNo, getValues]);
 
 
 
 
-  return (    
-  <div className={s.info} key={menu?.menuNo}>
 
-    <img src="/icon_2.png" alt="default_menu" className={s.image}/>
-    <span className={s.menuName}>{menu?.menuName}</span>
 
-    <div className={s.row}>
-      <span>가격</span>
-      <span className={s.price}>{totalPrice}</span>
-    </div>
+  return (
+  <div className={s.info}>
 
-    <div className={s.row}>
-      <span>수량</span>
+    <div className={s.left}>
+      <div className={s.header}>
+        <span className={s.name}>{menu.menuName}</span>
+      </div>
       <div className={s.amountBox}>
+        <span className={s.price}>{menu.menuPrice?.toLocaleString()}원</span>
         <button type="button" onClick={handleDecrease}>-</button>
         <span>{amount}</span>
         <button type="button" onClick={handleIncrease}>+</button>
       </div>
     </div>
 
-
+    <div className={s.right}>
+      <div className={s.menuAction}>
+        <span className={s.vatText}>*VAT 포함</span>
+        <span className={s.badge}>매장, 원산지 정보</span>
+      </div>
+      <div className={s.image}>
+        <img src={menu.img_url} alt={menu.menuName} referrerPolicy="no-referrer" />
+      </div>
+    </div>
 
   </div>
   );
