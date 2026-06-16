@@ -7,5 +7,22 @@ export const orderApi = {
     const response = await accessApiClient.post(
       "/order/create", ordCreReqDto );
       return response.data;
-  } 
+  },
+
+  // 주문 리스트 조회
+  selectList: async() => {
+    const response = await accessApiClient.get(
+      "/order/list",
+
+    );
+    return response.data;
+  },
+
+  // 주문 상세 조회
+  selectOne: async() => {
+    const response = await accessApiClient.get(
+      `order/detail/${orderListNo}`,
+    );
+    return response.data;
+  },
 }

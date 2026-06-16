@@ -16,7 +16,7 @@ const MyLocationSet = () => {
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
 
-        {/* [화면 1] 나의 배송주소록 목록 */}
+        {/* [화면 1] 나의 저장위치 목록 */}
         {step === 1 && (
           <>
             <div className={styles.modalHeader}>
@@ -39,7 +39,10 @@ const MyLocationSet = () => {
                   <div className={styles.addressListContainer} >
                     {
                       addressList.map((item) => (
-                        <div key={item.addressNo} className={item.addressDefault ==='Y' ? styles.addressDefaultCard : styles.addressCard} onClick={() => changeAdderssDefault(item.addressNo)}>
+                        <div key={item.addressNo} className={item.addressDefault ==='Y' 
+                        ? styles.addressDefaultCard 
+                        : styles.addressCard} 
+                        onClick={() => changeAdderssDefault(item.addressNo)}>
                           <div className={styles.cardContent} >
                             < div className={styles.cardName} > {item.addressName} </div>
                             < div className={styles.cardAddress} > {item.addressRoad} {item.addressDetail} </div>
