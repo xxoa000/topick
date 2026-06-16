@@ -30,7 +30,7 @@ public class Menu {
 	@Column(name="menu_name", nullable=false, length=100)
 	private String menuName;
 	
-	@Column(name="menu_image", nullable=false, length=255)
+	@Column(name="menu_image", nullable=false, length=500)
 	private String menuImage;
 	
 	@Column(name="menu_price", nullable=false)
