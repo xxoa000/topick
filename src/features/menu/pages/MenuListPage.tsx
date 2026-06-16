@@ -1,74 +1,176 @@
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { menuApi } from "../services/menuApi";
 import type { MenuResponseDTO } from "../types/menuDTO";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import styles from './_menu-list-page.module.scss'; // SCSS 파일 임포트
+import s from "./_menu-list-page.module.scss";
+import { FormProvider, useForm } from "react-hook-form";
+import type { OrderCreateRequestDTO } from "@/features/order/types/orderDTO";
+import OrderForm from "@/features/order/components/OrderForm";
+import MenuDetailForm from "../components/MenuDetailForm";
+
+
 
 export default function MenuListPage({ photos }: { photos: { photo_id: number; url: string; title?: string }[] }) {
+  // 추후 옵션 용으로 쓸 예정
+  //const [openMenuNo, setOpenMenuNo] = useState<number | null>(null);
   const { storeNo } = useParams();
   const [menuList, setMenuList] = useState<MenuResponseDTO[]>([]);
 
-  //메뉴 리스트 출력
+  // 주문용 기본 값 설정
+  const methods = useForm<OrderCreateRequestDTO>({
+    defaultValues: {
+      orderListVisitType: "visit",
+      orderListRequest: "",
+      detailList: []
+    }
+  });
+
   useEffect(() => {
     if (!storeNo) return;
     const updateList = async () => {
       try {
         const data = await menuApi.selectList(Number(storeNo));
-        console.log(data);
+        //console.log(data);
         setMenuList(data);
       } catch(error) {
         if (!axios.isAxiosError(error)) return;
         console.log(error);
       }
-    }
+    };
     updateList();
   }, [storeNo]);
 
   return (
-
-  <div className={styles.menuContainer}>
-    {photos && photos.length > 0 && (
-      <div className={styles.photoSection}>
-        <h2 className={styles.photoTitle}>메뉴판 사진</h2>
-        <div className={styles.photoWrapper}>
-          {photos.map((photo: any) => (
-            <div key={photo.photo_id} className={styles.photoItem}>
-              <img src={photo.url} alt={photo.title || "메뉴 사진"} referrerPolicy="no-referrer" />
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
-
-    <div className={styles.menuListWrapper}>
-      {menuList.map((menu, index) => (
-        <NavLink key={menu?.menuNo} to={`/store/${storeNo}/menu/${menu?.menuNo}`} className={styles.menuLink}>
-          <div className={styles.menuItem} style={{borderBottom: index === menuList?.length - 1 ? 'none' : '1px solid #eee'
-
-              }}>
-            <div className={styles.menuInfo}>
-              <div className={styles.header}>
-                <h3 className={styles.name}>{menu?.menuName}</h3>
-                <span className={styles.price}>
-                  {menu?.menuPrice ? menu.menuPrice.toLocaleString() : '0'}
-                </span>
+    <main className={s.menuContainer}>
+      {photos && photos.length > 0 && (
+        <article className={s.photoSection}>
+          <h2 className={s.photoTitle}>메뉴</h2>
+          <div className={s.photoWrapper}>
+            {photos.map((photo) => (
+              <div key={photo.photo_id} className={s.photoItem}>
+                <img src={photo.url} alt={photo.title || "메뉴 사진"} referrerPolicy="no-referrer" />
               </div>
-            </div>
-              
-            <div className={styles.menuActions}>
-              <div className={styles.metaInfo}>
-                <span className={styles.vatText}>*VAT 포함</span>
-                <span className={styles.badge}>매장, 원산지 정보</span>
-              </div>
-              <div className={styles.imageContainer}>
-                <img src={menu?.img_url} alt={menu?.menuName} referrerPolicy="no-referrer" />
-              </div>
-            </div>
+            ))}
           </div>
-        </NavLink>
-      ))}
-    </div>
-  </div>
-);
+        </article>
+      )}
+
+      <FormProvider {...methods}>
+        <section className={s.page}>
+          <section className={s.left}>
+            {menuList.map((menu, index) => (
+              <div key={menu.menuNo}>
+                <div className={s.menuItem}
+                  style={{ borderBottom: index === menuList.length - 1 ? "none" : "1px solid #eee" }}
+                  // onClick={() => setOpenMenuNo(prev => prev === menu.menuNo ? null : menu.menuNo)}
+                  >
+                  <MenuDetailForm menu={menu} />
+
+                  {/* 추후 메뉴 옵션 선택용 */}
+                  {/* {openMenuNo === menu.menuNo && <MenuOptionForm menu={menu} />} */}
+                </div>
+              </div>
+            ))}
+          </section>
+        </section>
+
+        {/* 주문 폼 */}
+        <aside className={s.right}>
+          <OrderForm />
+        </aside>
+      </FormProvider>
+    </main>
+  );
 }
+
+
+
+
+
+
+// export default function MenuListPage({ photos }: { photos: { photo_id: number; url: string; title?: string }[] }) {
+//   const [openMenuNo, setOpenMenuNo] = useState<number | null>(null);
+//   const { storeNo } = useParams();
+//   const [menuList, setMenuList] = useState<MenuResponseDTO[]>([]);
+
+//   // 주문용 기본 값 설정
+//   const methods = useForm<OrderCreateRequestDTO>({
+//     defaultValues: {
+//       orderListVisitType: "visit",
+//       orderListRequest: "",
+//       detailList: []
+//     }
+//   });
+
+//   useEffect(() => {
+//     if (!storeNo) return;
+//     const updateList = async () => {
+//       try {
+//         const data = await menuApi.selectList(Number(storeNo));
+//         //console.log(data);
+//         setMenuList(data);
+//       } catch(error) {
+//         if (!axios.isAxiosError(error)) return;
+//         console.log(error);
+//       }
+//     };
+//     updateList();
+//   }, [storeNo]);
+
+//   return (
+//     <main className={s.menuContainer}>
+//       {photos && photos.length > 0 && (
+//         <article className={s.photoSection}>
+//           <h2 className={s.photoTitle}>메뉴</h2>
+//           <div className={s.photoWrapper}>
+//             {photos.map((photo) => (
+//               <div key={photo.photo_id} className={s.photoItem}>
+//                 <img src={photo.url} alt={photo.title || "메뉴 사진"} referrerPolicy="no-referrer" />
+//               </div>
+//             ))}
+//           </div>
+//         </article>
+//       )}
+
+//       <FormProvider {...methods}>
+//         <section className={s.page}>
+//           <section className={s.left}>
+//             {menuList.map((menu, index) => (
+//               <div key={menu.menuNo}>
+//                 <div className={s.menuItem}
+//                   style={{ borderBottom: index === menuList.length - 1 ? "none" : "1px solid #eee" }}
+//                   onClick={() => setOpenMenuNo(prev => prev === menu.menuNo ? null : menu.menuNo)}
+//                 >
+//                   <div className={s.menuInfo}>
+//                     <div className={s.header}>
+//                       <h3 className={s.name}>{menu.menuName}</h3>
+//                       <span className={s.price}>
+//                         {menu.menuPrice ? menu.menuPrice.toLocaleString() : "0"}
+//                       </span>
+//                     </div>
+//                   </div>
+//                   <div className={s.menuActions}>
+//                     <div className={s.metaInfo}>
+//                       <span className={s.vatText}>*VAT 포함</span>
+//                       <span className={s.badge}>매장, 원산지 정보</span>
+//                     </div>
+//                     <div className={s.imageContainer}>
+//                       <img src={menu.img_url} alt={menu.menuName} referrerPolicy="no-referrer" />
+//                     </div>
+//                   </div>
+//                 </div>
+//                 {openMenuNo === menu.menuNo && <MenuDetailForm menu={menu} />}
+//               </div>
+//             ))}
+//           </section>
+//         </section>
+
+//         {/* 주문 폼 */}
+//         <aside className={s.right}>
+//           <OrderForm />
+//         </aside>
+//       </FormProvider>
+//     </main>
+//   );
+// }

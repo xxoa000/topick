@@ -1,7 +1,7 @@
 import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useEffect, useState } from "react";
-import { useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 interface StoreData {
 	addressName: string;
@@ -63,7 +63,7 @@ export default function StorePage() {
 				{/* 상단 탭 메뉴 */}
 				<div style={{ display: 'flex', backgroundColor: '#e6e1da' }}>
 					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: '#fff', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}>홈</button>
-					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>메뉴</button>
+					<NavLink to={`/store/${store?.storeNo}/menu/list`}><button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>메뉴</button></NavLink>
 					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>리뷰</button>
 					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>사진</button>
 					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>정보</button>

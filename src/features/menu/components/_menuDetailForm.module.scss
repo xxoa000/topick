@@ -1,99 +1,102 @@
 .info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   width: 100%;
-  margin-top: 24px;
-  
+  padding: 16px 0;
 
-  .image {
-    width: 100%;
-    height: 280px;
+}
 
-    object-fit: cover;
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
 
-    border: 1px solid #eee;
-    border-radius: 12px;
-    background-color: #f8f8f8;
-  }
-
-  .menuName {
-    display: block;
-
-    margin-bottom: 32px;
-
-    font-size: 28px;
-    font-weight: 700;
-    color: #222;
-  }
-
-  .row {
+  .header {
     display: flex;
-    justify-content: space-between;
+    gap: 10px;
     align-items: center;
 
-    padding: 20px 0;
-
-    border-bottom: 1px solid #eee;
-
-    label {
-      font-size: 16px;
-      font-weight: 600;
-      color: #666;
+    .name {
+      margin: 0;
+      font-size: 17px;
+      font-weight: bold;
+      color: #111;
     }
+  }
 
+  .amountBox {
+  display: flex;
+  align-items: center;
+  gap: 16px;
     .price {
-      font-size: 22px;
-      font-weight: 700;
-      color: #ff7a00;
+      font-size: 17px;
+      font-weight: bold;
+      color: #ec7b23;
     }
 
-    .amountBox {
-      display: flex;
-      align-items: center;
-      gap: 16px;
+  button {
+    width: 32px;
+    height: 32px;
 
-      button {
-        width: 32px;
-        height: 32px;
+    border: 1px solid #ddd;
+    border-radius: 50%;
 
-        border: 1px solid #ddd;
-        border-radius: 50%;
+    background: #fff;
 
-        background-color: #fff;
-
-        font-size: 18px;
-        font-weight: 700;
-
-        cursor: pointer;
-      }
-
-      span {
-        min-width: 24px;
-
-        text-align: center;
-
-        font-size: 18px;
-        font-weight: 700;
-        color: #222;
-      }
-    }
+    cursor: pointer;
   }
+}
 
-  .totalRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+}
 
-    padding-top: 28px;
 
-    .totalLabel {
-      font-size: 18px;
-      font-weight: 700;
-      color: #222;
+.image {
+  width: 130px;
+  height: 90px;
+
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+
+
+.right {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 6px;
+
+  .menuAction {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+
+    .vatText {
+      font-size: 11px;
+      color: #bbb;
     }
 
-    .totalPrice {
-      font-size: 30px;
-      font-weight: 800;
-      color: #ff7a00;
+    .badge {
+      padding: 3px 8px;
+
+      border: 1px solid #e2e2e2;
+      border-radius: 4px;
+
+      font-size: 11px;
+      color: #666;
     }
   }
 }
+
+

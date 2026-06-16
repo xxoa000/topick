@@ -11,6 +11,7 @@ import OrderPage from "@/features/order/pages/OrderPage";
 import PaymentPage from "@/features/payment/pages/PaymentPage";
 import MyInfoPage from "@/features/myInfo/pages/MyInfoPage";
 import MenuDetailPage from "@/features/menu/pages/MenuDetailPage";
+import MenuListPage from "@/features/menu/pages/MenuListPage";
 
 export default function Section(){
   return (
@@ -23,6 +24,7 @@ export default function Section(){
         <Route path="/member/login/*" element={<LoginPage />}/>
         <Route path="/member/join/*" element={<JoinPage />}/>
         <Route path="/store/:storeNo/menu/:menuNo/*" element={<MenuDetailPage />}/>
+        <Route path="/store/:storeNo/menu/list" element={<MenuListPage />}/>
         <Route path="/store/:storeNo/*" element={<StorePage />}/>
         <Route path="/order/*" element={<OrderPage />}/>
         <Route path="/payment/*" element={<PaymentPage />}/>

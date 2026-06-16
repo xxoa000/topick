@@ -12,8 +12,12 @@ export default function OrderForm() {
     watch,
   }=useFormContext<OrderCreateRequestDTO>();
 
-  const totalPrice = watch("orderListTotalPrice") ?? 0;
   const navigate = useNavigate();
+  // 총 금액 계산
+  const detailList = watch("detailList") ?? [];
+  const totalPrice = detailList.reduce( (sum,m) => {
+    return sum + m.menuPrice * m.orderDetailAmount;
+  },0);
 
 
   const handleOrderCreate = async (data:OrderCreateRequestDTO) => {
@@ -21,8 +25,8 @@ export default function OrderForm() {
     try {
       await orderApi.create(data);
       console.log("order result: ",data);
-      alert("주문 완료, 결제창이 미구현이므로 주문 내역으로 넘어갑니다.");
-      navigate("/order/list");
+      alert("주문 완료, 결제창이 미구현이므로 홈으로 돌아갑니다.");
+      navigate("/");
     } catch(error) {
       if (!axios.isAxiosError(error)) {
 				console.error(error);
@@ -35,19 +39,21 @@ export default function OrderForm() {
 
   return (
   <form onSubmit={handleSubmit(handleOrderCreate)} className={s.form}>
-    <div className={s.dateRow}>
+    <div className={s.row}>
       <label>방문일시<span className={s.required}>*</span></label>
         <input type="datetime-local" {...register("orderListVisitTime")}></input>
     </div>
     
-    <div className={s.typeRow}>
+    <div className={s.row}>
       <label>방문타입<span className={s.required}>*</span></label>
-      <label className={s.radio}>
-        <input type="radio" value="visit" {...register("orderListVisitType")} />매장 식사
-      </label>
-      <label className={s.radio}>
-        <input type="radio" value="takeout" {...register("orderListVisitType")} />방문 포장
-      </label>
+      <div className={s.typeRow}>
+        <label className={s.radio}>
+          <input type="radio" value="visit" {...register("orderListVisitType")} />매장 식사
+        </label>
+        <label className={s.radio}>
+          <input type="radio" value="takeout" {...register("orderListVisitType")} />방문 포장
+        </label>
+      </div>
     </div>
 
     <div className={s.request}>
