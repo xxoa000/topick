@@ -1,8 +1,11 @@
 package com.lch.topick.web.menu.def.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.lch.topick.exception.CustomException;
+import com.lch.topick.exception.ErrorCode;
 import com.lch.topick.web.menu.def.entity.Menu;
 import com.lch.topick.web.menu.def.repository.MenuRepository;
 
@@ -21,8 +24,9 @@ public class MenuServiceImpl implements MenuService {
 
 	/* 식당 리스트 > 식당 상세 > 메뉴 리스트 > 특정 메뉴 */
 	@Override
-	public List<Menu> selectOne(Long menuNo) {
-		return repository.findByStoreNo(menuNo);
+	public Menu selectOne(Long menuNo) {
+		return repository.findById(menuNo)
+				.orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
 	}
 
 	/* 특정 메뉴 추가, 수정 */

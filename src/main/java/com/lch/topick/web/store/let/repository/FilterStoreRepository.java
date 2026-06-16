@@ -7,5 +7,7 @@ import com.lch.topick.web.store.let.entity.FilterStore;
 
 
 public interface FilterStoreRepository extends JpaRepository<FilterStore, Long> {
+	
 	FilterStore findByKakaoId(String kakaoId);
+	
 } //interface

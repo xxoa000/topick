@@ -33,14 +33,12 @@ public class AuthController {
 	
 	private final TokenProvider tokenProvider;
 	private final MemberRepository memberRepository;
-	private final MyLocationSetRepository addrRepository;
 	private final MemberService memberService;
 	
 	// accessToken 만료 유무 확인
 		
 	// accesssToken 만료 -> refreshToken 만료 유무 확인
 	// refreshToken 만료 -> 계정 로그아웃 && DB에서도 삭제
-	
 	
 	// accessToken 재발급 메서드
 	/*
@@ -77,11 +75,7 @@ public class AuthController {
 		String newAccessToken = tokenProvider.createAccessToken(claims);
 		
 		// 클라이언트로 전달
-		return ResponseEntity.ok(
-				Map.of(
-						"accessToken", newAccessToken
-						)
-				);
+		return ResponseEntity.ok( Map.of("accessToken", newAccessToken) );
 	} //newAccesssToken
 	
 	

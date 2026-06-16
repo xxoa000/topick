@@ -45,5 +45,12 @@ public class OrderDetail {
 	@Builder.Default
 	@Column(name = "order_detail_today_price", nullable = false)
 	private Integer orderDetailTodayPrice = 0;
+	
+	
+	
+	// 수량 증감 메서드
+	public void changeAmount(int amount) {
+		this.orderDetailAmount = amount;
+	}
 
 } //class
