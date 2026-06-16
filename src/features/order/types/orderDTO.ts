@@ -1,8 +1,3 @@
-export type OrderDetailRequestDTO = {
-  menuNo : number;
-  orderDetailAmount: number;
-}
-
 
 export type OrderCreateRequestDTO = {
 
@@ -11,8 +6,14 @@ export type OrderCreateRequestDTO = {
 	orderListVisitTime : string;
 	orderListVisitType : string ;
 	orderListRequest : string;
+	orderListTotalPrice?: number;
 	
 	// 주문 1건의 상세
 	detailList : OrderDetailRequestDTO[] ;
 
+}
+
+export type OrderDetailRequestDTO = {
+  menuNo : number;
+  orderDetailAmount: number;
 }

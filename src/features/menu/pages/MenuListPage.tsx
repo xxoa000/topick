@@ -17,8 +17,8 @@ export default function MenuListPage({ photos }: { photos: { photo_id: number; u
         const data = await menuApi.selectList(Number(storeNo));
         console.log(data);
         setMenuList(data);
-      } catch (error) {
-        if (!axios.isAxiosError) return;
+      } catch(error) {
+        if (!axios.isAxiosError(error)) return;
         console.log(error);
       }
     }
@@ -26,6 +26,7 @@ export default function MenuListPage({ photos }: { photos: { photo_id: number; u
   }, [storeNo]);
 
   return (
+
   <div className={styles.menuContainer}>
     {photos && photos.length > 0 && (
       <div className={styles.photoSection}>

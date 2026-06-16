@@ -202,7 +202,6 @@ export default function StorePage() {
 			{/* 메뉴 리스트 */}
 			<MenuListPage photos={photos}/>
 
-
 			<div>
 				<ReviewPage storeNo={store.storeNo} />
 			</div>
