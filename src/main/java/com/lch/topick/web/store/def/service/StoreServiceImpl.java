@@ -26,17 +26,21 @@ public class StoreServiceImpl implements StoreService {
 		try {
 			JsonNode kakaoMenuData = objectMapper.readTree(jsonResult).findValue("menu").findValue("menus")
 					.findValue("items");
+			
+			String defaultMenuImage = objectMapper.readTree(jsonResult).findValue("menu").findValue("default_menu_icon_url").asText();
+			log.warn(defaultMenuImage);
+			
 			if (!objectMapper.readTree(jsonResult2).has("error")) {
 				JsonNode yogiyoMenuData = objectMapper.readTree(jsonResult2).findValue("menu");
 
 				for (JsonNode itemNode : yogiyoMenuData) {
 					String menuName = itemNode.path("name").asText();
-					String menuImage = "default_menu.png";
+					String menuImage = itemNode.path("thumbnail").path("image").asText();
 					Integer menuPrice = itemNode.path("price").path("final_price").asInt();
 					Integer menuStock = itemNode.hasNonNull("stock_amount") ? itemNode.path("stock_amount").asInt()
 							: 999;
 					String menuContent = itemNode.path("description").asText();
-					String menuStatus = itemNode.path("soldout").asBoolean() ? "soldeout" : "active";
+					String menuStatus = "active";
 
 					System.out.printf("[요기요] 메뉴: %s, 이미지: %s, 가격: %d, 재고: %d, 설명: %s, 품절: %s \n", menuName, menuImage,
 							menuPrice, menuStock, menuContent, menuStatus);
@@ -70,44 +74,47 @@ public class StoreServiceImpl implements StoreService {
 				} // for
 
 			} else {
-//				for (JsonNode itemNode : kakaoMenuData) {
-//					String menuName = itemNode.path("name").asText();
-//					String menuImage = "default_menu.png";
-//					Integer menuPrice = itemNode.path("price").asInt();
-//					Integer menuStock = 999;
-//					String menuContent = itemNode.path("ai_mate_desc").asText();
-//
-//					System.out.printf("[요기요] 메뉴: %s, 이미지: %s, 가격: %d, 재고: %d, 설명: %s \n", menuName, menuImage,
-//							menuPrice, menuStock, menuContent);
-//
-//					Optional<Menu> existingMenu = repository.findByStoreNoAndMenuName(storeNo, menuName);
-//					Menu entity;
-//					if (existingMenu.isPresent()) {
-//						Long existingMenuNo = existingMenu.get().getMenuNo();
-//						entity = Menu.builder()
-//								.menuNo(existingMenuNo)
-//								.storeNo(storeNo)
-//								.menuName(menuName)
-//								.menuImage(menuImage)
-//								.menuPrice(menuPrice)
-//								.menuStock(menuStock)
-//								.menuContent(menuContent)
-//								.build();
-//					} else {
-//						entity = Menu.builder()
-//								.storeNo(storeNo)
-//								.menuName(menuName)
-//								.menuImage(menuImage)
-//								.menuPrice(menuPrice)
-//								.menuStock(menuStock)
-//								.menuContent(menuContent)
-//								.build();
-//					}
-//					
-//					repository.save(entity);
-//				} // for
+				for (JsonNode itemNode : kakaoMenuData) {
+					String menuName = itemNode.path("name").asText();
+					String menuImage = defaultMenuImage;
+					Integer menuPrice = itemNode.path("price").asInt();
+					Integer menuStock = 999;
+					String menuContent = itemNode.path("ai_mate_desc").asText();
+
+					System.out.printf("[요기요] 메뉴: %s, 이미지: %s, 가격: %d, 재고: %d, 설명: %s \n", menuName, menuImage,
+							menuPrice, menuStock, menuContent);
+
+					Optional<Menu> existingMenu = repository.findByStoreNoAndMenuName(storeNo, menuName);
+					Menu entity;
+					if (existingMenu.isPresent()) {
+						Long existingMenuNo = existingMenu.get().getMenuNo();
+						entity = Menu.builder()
+								.menuNo(existingMenuNo)
+								.storeNo(storeNo)
+								.menuName(menuName)
+								.menuImage(menuImage)
+								.menuPrice(menuPrice)
+								.menuStock(menuStock)
+								.menuContent(menuContent)
+								.menuStatus("inactive")
+								.build();
+					} else {
+						entity = Menu.builder()
+								.storeNo(storeNo)
+								.menuName(menuName)
+								.menuImage(menuImage)
+								.menuPrice(menuPrice)
+								.menuStock(menuStock)
+								.menuContent(menuContent)
+								.menuStatus("inactive")
+								.build();
+					}
+					
+					repository.save(entity);
+				} // for
 			}
 		} catch (Exception e) {
+			log.error("repository.save" + e);
 		}
 	}
 	// jsonResult, jsonResult2, storeNo 를 받아서 storeEntity 를 생성해야함
