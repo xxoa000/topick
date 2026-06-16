@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.lch.topick.exception.CustomException;
 import com.lch.topick.exception.ErrorCode;
+import com.lch.topick.web.member.def.entity.Member;
+import com.lch.topick.web.member.def.repository.MemberRepository;
 import com.lch.topick.web.menu.def.entity.Menu;
 import com.lch.topick.web.menu.def.repository.MenuRepository;
 import com.lch.topick.web.order.def.domain.OrderCreateRequestDTO;
@@ -30,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderDetailRepository detRepository;
 	private final OrderStoreRepository storeRepository;
 	private final MenuRepository menuRepository;
+	private final MemberRepository memberRepository;
 	
 	// C - Create
 	// INSERT : 주문하기
@@ -37,16 +40,19 @@ public class OrderServiceImpl implements OrderService {
 	// 1.1 새 주문 생성
 	private OrderList insert(String memberId, OrderCreateRequestDTO creReqDto) {
 		
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		
 		FilterStore store = storeRepository.findByStoreNo(creReqDto.getStoreNo())
-							.orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+				.orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 		
 		// 주문 빌드
 		OrderList list = OrderList.builder()
-				.memberId( memberId )
+				.memberId( member.getMemberId() )
 				.storeNo( store.getStoreNo() )
 				.orderStoreName( store.getStoreName() )
 				.orderListVisitTime( creReqDto.getOrderListVisitTime() )
-				.orderListVisitType( creReqDto.getOrderListVisitType() )
+				.orderListVisitType( creReqDto.getOrderListVisitType().toLowerCase() )
 				.orderListRequest( creReqDto.getOrderListRequest() )
 				.build();
 		// DB 에 저장

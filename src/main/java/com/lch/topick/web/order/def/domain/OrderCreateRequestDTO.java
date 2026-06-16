@@ -16,6 +16,7 @@ public class OrderCreateRequestDTO {
 	private LocalDateTime orderListVisitTime;
 	private String orderListVisitType;
 	private String orderListRequest;
+	private Integer totalPrice;
 	
 	// 주문 1건의 상세
 	private List<OrderDetailRequestDTO> detailList;

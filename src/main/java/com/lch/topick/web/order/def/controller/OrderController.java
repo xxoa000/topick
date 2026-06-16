@@ -27,7 +27,10 @@ public class OrderController {
 	// C - Create
 	// 새 주문하기 -> OrderList insert -> OrderDetail insert -> OrderOption insert 
 	@PostMapping("/create")
-	public ResponseEntity<?> create(@AuthenticationPrincipal String memberId, @RequestBody OrderCreateRequestDTO creReqDto) {
+	public ResponseEntity<?> create(@AuthenticationPrincipal String memberId, 
+									@RequestBody OrderCreateRequestDTO creReqDto) {
+		log.info("memberId: {}", memberId);
+		log.info("creReqDto: {}", creReqDto);
 		orderService.create(memberId, creReqDto);
 		return ResponseEntity.status(HttpStatus.CREATED)
 							.body("메뉴 선택 완료, 결제 창으로 이동합니다.");
