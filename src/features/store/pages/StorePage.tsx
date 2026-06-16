@@ -1,6 +1,4 @@
-import MenuDetailPage from "@/features/menu/pages/MenuDetailPage";
 import MenuListPage from "@/features/menu/pages/MenuListPage";
-import OrderForm from "@/features/order/components/OrderForm";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
@@ -30,8 +28,8 @@ export default function StorePage() {
 	const store = state?.store;
 
 	useEffect(() => {
-		// 우리가 만든 스프링 부트 API 호출
-		fetch(`http://localhost:8080/api/store/${store?.id}`)
+		// 스프링 부트 API 호출
+		fetch(`http://localhost:8080/api/store/${store?.storeNo}/kakaoId/${store?.id}/lat/${store?.y}/lng/${store?.y}`)
 			.then(res => res.json())
 			.then(data => setStoreData(data));
 	}, []);
@@ -40,22 +38,21 @@ export default function StorePage() {
 
 
 	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
-
 	if (!store || !storeData) {
 		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
 	}
 
-	const photos = storeData.menu?.menus?.photos || [];
+	const photos = storeData.storeDetails.menu?.menus?.photos || [];
 
 	// 📸 사진 데이터 안전하게 추출
-	const allPhotos = storeData.photos?.photos || [];
+	const allPhotos = storeData.storeDetails.photos?.photos || [];
 
 	// ⏰ 영업시간 데이터 구조 매핑 (week_periods -> days)
-	const storeRunTime = storeData.open_hours?.week_from_today?.week_periods || [];
+	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
 
 	// 📋 메뉴 데이터 구조 매핑 (menu -> menus -> items)
-	const menuItems = storeData.menu?.menus?.items || [];
-	const defaultMenuIcon = storeData.menu?.default_menu_icon_url;
+	const menuItems = storeData.storeDetails.menu?.menus?.items || [];
+	const defaultMenuIcon = storeData.storeDetails.menu?.default_menu_icon_url;
 
 	return (
 		<div style={{ maxWidth: '850px', margin: '20px auto', fontFamily: 'sans-serif', color: '#333' }}>
@@ -147,7 +144,7 @@ export default function StorePage() {
 						{/* 왼쪽 안내문구 */}
 						<div style={{ flex: 1, fontSize: '14px', lineHeight: '1.7' }}>
 							<div style={{ marginBottom: '12px' }}>
-								<strong>주소</strong> <span style={{ marginLeft: '10px' }}>{storeData.summary.address.road}</span>
+								<strong>주소</strong> <span style={{ marginLeft: '10px' }}>{storeData.storeDetails.summary.address.road}</span>
 								<div style={{ color: '#999', marginLeft: '42px', fontSize: '13px' }}>현재 위치에서 {store.distance}m</div>
 							</div>
 							<div>
@@ -201,22 +198,9 @@ export default function StorePage() {
 			</div>
 
 			{/* 2. 하단 인기메뉴 카드 영역 */}
-			<div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '25px', backgroundColor: '#fff', marginBottom: '20px' }}>
-				<h2 style={{ fontSize: '18px', color: '#ff9800', margin: '0 0 15px 0', fontWeight: 'bold' }}>메뉴</h2>
-
-				<div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
-					{photos.map((photo: any) => (
-						<div key={photo.photo_id} style={{ flex: '0 0 150px', height: '110px', backgroundColor: '#f0f0f0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: '#999' }}>
-							<img src={photo.url} alt={photo.title}
-								style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }}
-								referrerPolicy="no-referrer" />
-						</div>
-					))}
-				</div>
-
-				{/* 메뉴 리스트 */}
-				<MenuListPage />
-			</div>
+			
+			{/* 메뉴 리스트 */}
+			<MenuListPage photos={photos}/>
 
 			<div>
 				<ReviewPage storeNo={store.storeNo} />
