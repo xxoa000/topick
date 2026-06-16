@@ -62,7 +62,7 @@ export default function MenuListPage({ photos }: { photos: { photo_id: number; u
                 <span className={styles.badge}>매장, 원산지 정보</span>
               </div>
               <div className={styles.imageContainer}>
-                <img src={menu?.img_url} alt={menu?.menuName} referrerPolicy="no-referrer" />
+                <img src={menu?.menuImage} alt={menu?.menuName} referrerPolicy="no-referrer" />
               </div>
             </div>
           </div>

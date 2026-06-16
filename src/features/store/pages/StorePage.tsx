@@ -50,24 +50,17 @@ export default function StorePage() {
 	// ⏰ 영업시간 데이터 구조 매핑 (week_periods -> days)
 	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
 
-	// 📋 메뉴 데이터 구조 매핑 (menu -> menus -> items)
-	const menuItems = storeData.storeDetails.menu?.menus?.items || [];
-	const defaultMenuIcon = storeData.storeDetails.menu?.default_menu_icon_url;
+	// api 태그 데이터 추출
+	const storeTag = storeData.storeDetails.place_add_info?.tags || [];
+	storeTag.push(store?.categoryName.split('>')[1]?.trim());
 
 	return (
 		<div style={{ maxWidth: '850px', margin: '20px auto', fontFamily: 'sans-serif', color: '#333' }}>
+			<a href={store.placeUrl}>placeUrl: {store.placeUrl}</a><br /><br />
 
 			{/* 1. 상단 상세정보 카드 영역 */}
 			<div style={{ border: '1px solid #ccc', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#fff', marginBottom: '20px' }}>
 
-				{/* 상단 탭 메뉴 */}
-				<div style={{ display: 'flex', backgroundColor: '#e6e1da' }}>
-					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: '#fff', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer' }}>홈</button>
-					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>메뉴</button>
-					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>리뷰</button>
-					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>사진</button>
-					<button style={{ flex: 1, padding: '15px', border: 'none', backgroundColor: 'transparent', fontSize: '16px', color: '#666', cursor: 'pointer' }}>정보</button>
-				</div>
 
 				{/* 대표 이미지 배너 (첨부 이미지와 동일한 격자 배치, 5개 사진만 표시) */}
 				<div style={{ display: 'flex', height: '250px', backgroundColor: '#f5f5f5', borderRadius: '12px', overflow: 'hidden', gap: '4px' }}>
@@ -131,7 +124,7 @@ export default function StorePage() {
 
 					{/* 태그 리스트 */}
 					<div style={{ display: 'flex', gap: '6px', marginBottom: '20px' }}>
-						{['떡볶이', '매콤', '점심식사', '저녁식사'].map((tag) => ( //태그
+						{storeTag.map((tag: string) => ( //태그
 							<span key={tag} style={{ backgroundColor: '#ff9800', color: '#fff', padding: '4px 10px', borderRadius: '12px', fontSize: '13px' }}>
 								{tag}
 							</span>
@@ -148,37 +141,32 @@ export default function StorePage() {
 								<div style={{ color: '#999', marginLeft: '42px', fontSize: '13px' }}>현재 위치에서 {store.distance}m</div>
 							</div>
 							<div>
-								<span>addressName: {store.addressName}</span><br />
-								<span>categoryName: {store.categoryName}</span><br />
-								<span>distance: {store.distance}</span><br />
-								<span>id: {store.id}</span><br />
-								<span>placeName: {store.placeName}</span><br />
-								<a href={store.placeUrl}>spanplaceUrl: {store.placeUrl}</a><br />
-								<span>storeNo: {store.storeNo}</span><br />
-								<span>x: {store.x}</span><br />
-								<span>y: {store.y}</span><br /><br />
 
-								<strong style={{ width: '44px', flexShrink: 0 }}>영업 시간</strong>
-								{storeRunTime.map((i: any) => (
-									i.days.map((day: any) => (
-										<div style={{ display: 'flex', marginBottom: '12px' }}>
-											<div style={{ marginLeft: '10px' }}>
-												<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span><br /> {/*요일, 영업시간*/}
+								<div style={{ display: 'flex', marginBottom: '12px' }}>
+								<strong>영업 시간</strong>
+									<div style={{ marginLeft: '10px' }}>
+										{storeRunTime.map((i: any) => (
+											i.days.map((day: any) => (
+												<>
+												<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span> {/*요일, 영업시간*/ }
 												{
 													day.on_days?.break_times_desc &&
-													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.break_times_desc[0]}</span> //브레이크 타임
+														<>
+															<br />
+															<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.break_times_desc[0]}</span>
+														</>
 												}
-												<br />
+												< br />
 												{
 													day.on_days?.last_order_times_desc &&
-													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.last_order_times_desc[0]}</span> //브레이크 타임
+													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.last_order_times_desc[0]}</span>
 												}
+												</>
 
-											</div>
-										</div>
-									))
-
-								))}
+											))
+										))}
+									</div>
+								</div>
 
 							</div>
 
@@ -197,10 +185,8 @@ export default function StorePage() {
 				</div>
 			</div>
 
-			{/* 2. 하단 인기메뉴 카드 영역 */}
-			
 			{/* 메뉴 리스트 */}
-			<MenuListPage photos={photos}/>
+			<MenuListPage photos={photos} />
 
 			<div>
 				<ReviewPage storeNo={store.storeNo} />
