@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import { useCustomJoin } from "../hooks/joinStepStore";
+import { useCustomJoin } from "../hooks/useCustomJoin";
 import styles from "@member/components/_join-form.module.scss"; 
 import type { JoinFormDTO } from "../types/joinDTO";
 
@@ -43,7 +43,7 @@ export default function JoinAgreeForm() {
 
   // 약관 동의사항 & 만 14세 이상 확인
 	const handleAgreeCheck = () => {
-    alert ("약관 동의 확인");
+    //alert ("약관 동의 확인");
     setStep(2);
 	}
 

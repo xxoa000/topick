@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import JoinForm from "../components/JoinForm";
-import { useCustomJoin } from "../hooks/joinStepStore";
+import { useCustomJoin } from "../hooks/useCustomJoin";
 import styles from "@member/pages/_join-page.module.scss";
 
     

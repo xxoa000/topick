@@ -1,3 +1,4 @@
+import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
@@ -27,8 +28,8 @@ export default function StorePage() {
 	const store = state?.store;
 
 	useEffect(() => {
-		// 우리가 만든 스프링 부트 API 호출
-		fetch(`http://localhost:8080/api/store/${store?.id}`)
+		// 스프링 부트 API 호출
+		fetch(`http://localhost:8080/api/store/${store?.storeNo}/kakaoId/${store?.id}/lat/${store?.y}/lng/${store?.y}`)
 			.then(res => res.json())
 			.then(data => setStoreData(data));
 	}, []);
@@ -40,8 +41,19 @@ export default function StorePage() {
 	if (!store || !storeData) {
 		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
 	}
-	const photos = storeData.menu?.menus?.photos || [];
-	const allPhotos = storeData.photos.photos || [];
+
+	const photos = storeData.storeDetails.menu?.menus?.photos || [];
+
+	// 📸 사진 데이터 안전하게 추출
+	const allPhotos = storeData.storeDetails.photos?.photos || [];
+
+	// ⏰ 영업시간 데이터 구조 매핑 (week_periods -> days)
+	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
+
+	// 📋 메뉴 데이터 구조 매핑 (menu -> menus -> items)
+	const menuItems = storeData.storeDetails.menu?.menus?.items || [];
+	const defaultMenuIcon = storeData.storeDetails.menu?.default_menu_icon_url;
+
 	return (
 		<div style={{ maxWidth: '850px', margin: '20px auto', fontFamily: 'sans-serif', color: '#333' }}>
 
@@ -100,7 +112,7 @@ export default function StorePage() {
 						</div>
 					</div>
 				</div>
-				
+
 				{/* 텍스트 정보 영역 */}
 				<div style={{ padding: '25px' }}>
 
@@ -132,8 +144,8 @@ export default function StorePage() {
 						{/* 왼쪽 안내문구 */}
 						<div style={{ flex: 1, fontSize: '14px', lineHeight: '1.7' }}>
 							<div style={{ marginBottom: '12px' }}>
-								<strong>주소</strong> <span style={{ marginLeft: '10px' }}>{store.addressName} <br /> 현재 위치에서 {store.distance}m</span>
-								<div style={{ color: '#999', marginLeft: '42px', fontSize: '13px' }}>미금역 5,6번 출구 도보 5분</div>
+								<strong>주소</strong> <span style={{ marginLeft: '10px' }}>{storeData.storeDetails.summary.address.road}</span>
+								<div style={{ color: '#999', marginLeft: '42px', fontSize: '13px' }}>현재 위치에서 {store.distance}m</div>
 							</div>
 							<div>
 								<span>addressName: {store.addressName}</span><br />
@@ -141,23 +153,33 @@ export default function StorePage() {
 								<span>distance: {store.distance}</span><br />
 								<span>id: {store.id}</span><br />
 								<span>placeName: {store.placeName}</span><br />
-								<span>placeUrl: {store.placeUrl}</span><br />
+								<a href={store.placeUrl}>spanplaceUrl: {store.placeUrl}</a><br />
 								<span>storeNo: {store.storeNo}</span><br />
 								<span>x: {store.x}</span><br />
-								<span>y: {store.y}</span><br />
-								<span>phone: {store.phone}</span><br /><br />
-								<span>storeData.address.road: {storeData.summary.address.road}</span><br />
-								<span>: { }</span><br />
-								<span>: { }</span><br />
-							</div>
-							<div style={{ display: 'flex', marginBottom: '12px' }}>
-								<strong style={{ width: '42px', flexShrink: 0 }}>영업 시간</strong>
-								<div style={{ marginLeft: '10px' }}>
-									<div>월 휴무</div>
-									<div>화 16:00 ~ 22:00</div>
-									<div>수 목 금 10:00 ~ 22:00</div>
-									<div>주말 9:00 ~ 20:00</div>
-								</div>
+								<span>y: {store.y}</span><br /><br />
+
+								<strong style={{ width: '44px', flexShrink: 0 }}>영업 시간</strong>
+								{storeRunTime.map((i: any) => (
+									i.days.map((day: any) => (
+										<div style={{ display: 'flex', marginBottom: '12px' }}>
+											<div style={{ marginLeft: '10px' }}>
+												<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span><br /> {/*요일, 영업시간*/}
+												{
+													day.on_days?.break_times_desc &&
+													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.break_times_desc[0]}</span> //브레이크 타임
+												}
+												<br />
+												{
+													day.on_days?.last_order_times_desc &&
+													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.last_order_times_desc[0]}</span> //브레이크 타임
+												}
+
+											</div>
+										</div>
+									))
+
+								))}
+
 							</div>
 
 							<div>
@@ -176,20 +198,10 @@ export default function StorePage() {
 			</div>
 
 			{/* 2. 하단 인기메뉴 카드 영역 */}
-			<div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '25px', backgroundColor: '#fff' }}>
-				<h2 style={{ fontSize: '18px', color: '#ff9800', margin: '0 0 15px 0', fontWeight: 'bold' }}>메뉴</h2>
+			
+			{/* 메뉴 리스트 */}
+			<MenuListPage photos={photos}/>
 
-				{/* 가로 아이템 리스트 */}
-				<div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
-					{photos.map((photo: any) => (
-						<div key={photo.photo_id} style={{ flex: '0 0 150px', height: '110px', backgroundColor: '#f0f0f0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: '#999' }}>
-							<img src={photo.url} alt={photo.title}
-								style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }}
-								referrerPolicy="no-referrer" />
-						</div>
-					))}
-				</div>
-			</div>
 			<div>
 				<ReviewPage storeNo={store.storeNo} />
 			</div>

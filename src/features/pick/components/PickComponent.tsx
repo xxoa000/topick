@@ -1,9 +1,12 @@
 // src/features/pick/components/PickComponent.tsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePick } from '../hooks/usePick';
 import styles from './_pick-component.module.scss';
 
 export const PickComponent: React.FC = () => {
+  const navigate = useNavigate();
+
   const {
     currentStep,  //현재 진행중인 단계 (1부터 시작)
     totalSteps,   //전체 단계 수 (질문의 갯수)
@@ -16,6 +19,13 @@ export const PickComponent: React.FC = () => {
     handlePrev, //'이전 질문' 버튼 클릭
     handleReset //'다시 추천받기' 버튼 클릭 시, 상태 초기화
   } = usePick();
+
+  //추천 메뉴 클릭 시 메뉴 이름을 인자로 받아서 /filter 페이지로 state를 실어서 보내기
+  const handleMenuClick = (menuName: string) => {
+    navigate('/filter', {
+      state: {keyword: menuName}
+    });
+  };
 
   //상단 진행바(퍼센트 계산)
   const progressPercent = (currentStep / totalSteps) * 100;
@@ -89,14 +99,18 @@ export const PickComponent: React.FC = () => {
     <div className={styles.pickContainer}>
       <div className={styles.resultSection}>
         <h2 className={styles.resultTitle}>오늘의 식당 Pick 결과!</h2>
-        <p className={styles.resultSub}>고객님의 취향에 가장 고득점을 획득한 상위 3가지 추천 메뉴입니다.</p>
+        <p className={styles.resultSub}>설문에 따른 상위 3가지 추천 메뉴</p>
 
         {isLoading ? (
           <div className={styles.loadingSpinner}>알고리즘 분석 중...</div>
         ) : (
           <ul className={styles.menuResultList}>
             {recommendedMenus.map((menuName, idx) => (
-              <li key={idx} className={styles.menuItem}>
+              <li 
+                key={idx} 
+                className={styles.menuItem}
+                onClick={()=>handleMenuClick(menuName)} //메뉴 이름 클릭
+              >
                 <span className={styles.rankBadge}>{idx + 1}위</span>
                 <strong className={styles.foodNameText}>{menuName}</strong>
               </li>

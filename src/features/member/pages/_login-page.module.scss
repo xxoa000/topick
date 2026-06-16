@@ -6,10 +6,10 @@
 
   width: 100%;
   max-width: 500px;
-  min-height: 100vh;
+  min-height: 80vh;
 
   margin: 30px auto;
-  padding: 30px 40px 0px 40px;
+  padding: 30px 40px 100px 40px;
 
   border: 1px solid #ddd;
   border-radius: 16px;
@@ -22,13 +22,13 @@
   align-items: flex-start;
 
   margin-top: 1em;
-  margin-bottom: 4em;
+  margin-bottom: 3em;
   padding-top: 0;
   line-height: 0; // img 아래 미세 공백 제거
 
   img {
     display: block;
-    width: 400px;
+    width: 300px;
   }
 }
 

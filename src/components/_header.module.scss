@@ -1,7 +1,8 @@
 .header {
   width: 100%;
   min-height: 50px;
-  background-color: rgb(255, 197, 232);
+  background-color: rgb(255, 255, 255);
+  border-bottom: 1px solid rgb(228, 225, 216);
 
   display: flex;
   align-items: center;
@@ -13,7 +14,7 @@
   justify-content: center;
   align-items: flex-start;
   
-  padding: 5px 0;
+  padding: 0 5px 5px 0;
   line-height: 0; // img 아래 미세 공백 제거
 
   img {

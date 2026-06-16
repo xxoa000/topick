@@ -6,7 +6,6 @@ export type JoinStepState = {
 	
 	step : number;
 	setStep : (step:number) => void;
-
 	resetState : () => void;
 };
 
@@ -16,7 +15,6 @@ export type JoinFormDTO = JoinRequestDTO & {
 	isAgree : boolean;
 	ageCheck : boolean;
 	isPrivacyAgree : boolean;
-
 	pwCheck? : string;
 }
 

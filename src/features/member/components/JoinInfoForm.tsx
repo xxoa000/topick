@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import type { JoinFormDTO } from "../types/joinDTO";
 import styles from "@member/components/_join-form.module.scss";
-import { useCustomJoin } from "../hooks/joinStepStore";
+import { useCustomJoin } from "../hooks/useCustomJoin";
 
 export default function JoinInfoForm() {
   // 전역 단계 관리

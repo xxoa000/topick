@@ -1,6 +1,6 @@
-import { NavLink, useNavigate } from "react-router-dom"
-import useCustomLogin from "@/hooks/useCustomLogin";
 import accessApiClient from "@/config/axios";
+import useCustomLogin from "@/hooks/useCustomLogin";
+import { NavLink, useNavigate } from "react-router-dom";
 
 
 export default function LoginHeader(){
@@ -29,7 +29,7 @@ export default function LoginHeader(){
   return (
   <>
     {isLogin ?  <div><b>{member?.memberName}</b> 님 환영합니다!&nbsp;&nbsp;
-                  <button type="button" onClick={handleLogout}>로그아웃</button>
+                  <button type="button" onClick={handleLogout}>로그아웃</button>&nbsp;&nbsp;
                   <button><NavLink to='/'>마이페이지</NavLink></button>
                 </div>
               : <div><NavLink to='/member/login'>로그인</NavLink></div> }

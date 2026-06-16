@@ -10,6 +10,7 @@ import StorePage from "@/features/store/pages/StorePage";
 import OrderPage from "@/features/order/pages/OrderPage";
 import PaymentPage from "@/features/payment/pages/PaymentPage";
 import MyInfoPage from "@/features/myInfo/pages/MyInfoPage";
+import MenuDetailPage from "@/features/menu/pages/MenuDetailPage";
 
 export default function Section(){
   return (
@@ -21,7 +22,8 @@ export default function Section(){
         <Route path="/my-location-set/*" element={<MyLocationSet />} />
         <Route path="/member/login/*" element={<LoginPage />}/>
         <Route path="/member/join/*" element={<JoinPage />}/>
-        <Route path="/store/*" element={<StorePage />}/>
+        <Route path="/store/:storeNo/menu/:menuNo/*" element={<MenuDetailPage />}/>
+        <Route path="/store/:storeNo/*" element={<StorePage />}/>
         <Route path="/order/*" element={<OrderPage />}/>
         <Route path="/payment/*" element={<PaymentPage />}/>
         <Route path="/my-info/*" element={<MyInfoPage />}/>
