@@ -1,0 +1,168 @@
+.container {
+  max-width: 850px;
+  margin: 20px auto;
+  font-family: sans-serif;
+  color: #333;
+
+  /* 1. 상단 상세정보 카드 영역 */
+  .card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    margin-bottom: 20px;
+
+    /* 대표 이미지 배너 */
+    .banner {
+      display: flex;
+      height: 250px;
+      background-color: #f5f5f5;
+      border-radius: 12px;
+      overflow: hidden;
+      gap: 4px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .mainPhoto {
+        flex: 4;
+        display: flex;
+        align-items: stretch;
+      }
+
+      .subPhotoGroup {
+        flex: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .imgWrapper {
+          flex: 1;
+          overflow: hidden;
+        }
+      }
+    }
+
+    /* 텍스트 정보 영역 */
+    .infoSection {
+      padding: 25px;
+
+      /* 타이틀 / 별점 / 버튼 Row */
+      .titleRow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+
+        .titleLeft {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+          }
+
+          .stars {
+            color: #ff9800;
+            font-size: 18px;
+          }
+
+          .reviewCount {
+            color: #aaa;
+            font-size: 14px;
+          }
+        }
+
+        .btnGroup {
+          display: flex;
+          gap: 8px;
+
+          button {
+            padding: 6px 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+          }
+        }
+      }
+
+      /* 태그 리스트 */
+      .tagList {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 20px;
+
+        .tag {
+          background-color: #ff9800;
+          color: #fff;
+          padding: 4px 10px;
+          border-radius: 12px;
+          font-size: 13px;
+        }
+      }
+
+      /* 상세 안내 정보 & 우측 지도 */
+      .detailsRow {
+        display: flex;
+        justify-content: space-between;
+        gap: 30px;
+
+        /* 왼쪽 안내문구 */
+        .detailsLeft {
+          flex: 1;
+          font-size: 14px;
+          line-height: 1.7;
+
+          strong {
+            // 고정폭 지정을 원할 경우 추가 가능
+          }
+
+          span {
+            margin-left: 10px;
+          }
+
+          .addressBlock {
+            margin-bottom: 12px;
+            
+            .distance {
+              color: #999;
+              margin-left: 42px;
+              font-size: 13px;
+            }
+          }
+
+          .timeBlock {
+            display: flex;
+            margin-bottom: 12px;
+            
+            .timeDetails {
+              margin-left: 10px;
+            }
+          }
+        }
+
+        /* 우측 미니 지도 플레이스홀더 */
+        .mapPlaceholder {
+          width: 24px;
+          min-width: 220px;
+          height: 130px;
+          background-color: #eef2f5;
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 13px;
+          color: #888;
+        }
+      }
+    }
+  }
+}
