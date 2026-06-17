@@ -1,4 +1,4 @@
-import accessApiClient, { refreshApiClient } from "@/config/axios";
+import accessApiClient, { publicApiClient, refreshApiClient } from "@/config/axios";
 import type { LoginRequestDTO } from "@member/types/loginDTO";
 import type { JoinRequestDTO } from "../types/joinDTO";
 
@@ -8,13 +8,13 @@ const memberApi = {
 
 	// 아이디 중복 확인
 	idCheck: async(memberId: string):Promise<boolean> => {
-		const response = await refreshApiClient.get( `/member/idCheck/${memberId}`);
+		const response = await publicApiClient.get( `/member/idCheck/${memberId}`);
 		return response.data;
 	},
 
 	// 회원가입
 	join: async(joinReqDto : JoinRequestDTO) => {
-		const response = await refreshApiClient.post( "/member/join", joinReqDto );
+		const response = await publicApiClient.post( "/member/join", joinReqDto );
 		console.log(`response.data: ${response.data}`);
 		alert(response.data);
 		return response.data;
@@ -27,7 +27,7 @@ const memberApi = {
 	},
 	// 로그아웃
 	logout: async() => {
-		const response = await accessApiClient.post( "/member/logout" );
+		const response = await refreshApiClient.post( "/member/logout" );
 		return response.data;
 	},
 	// accessToken 재발급
