@@ -54,16 +54,6 @@ export default function JoinForm() {
 
 
 	const handleJoin = async(data:JoinFormDTO) => {
-		// 서버로 보낼때 제외할 data 분리
-		// const {
-		// 	isAgree,
-		// 	isPrivacyAgree,
-		// 	ageCheck,
-		// 	pwCheck,
-		// 	emailFirst,
-		// 	emailLast,
-		// 	...joinData
-		// } = data;
 
 		// 이메일 단어 합쳐서 서버로 전달
 		const email = data.emailFirst && data.emailLast ? `${data.emailFirst}@${data.emailLast}` : "";

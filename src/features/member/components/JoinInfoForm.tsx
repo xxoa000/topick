@@ -39,14 +39,14 @@ export default function JoinInfoForm() {
     "emailFirst", {
       required: "이메일을 입력해주세요.",
       pattern: {
-        value: /^[A-Za-z0-9._%+-]+$/,
+        value: /^[A-Za-z0-9._+-]+$/,
         message: "이메일 형식이 올바르지 않습니다."
       }
     });
 
   const emailLastRegister = register(
     "emailLast", {
-      required: "이메일을 입력해주세요.",
+      required: "이메일을 선택해주세요.",
       pattern: {
         value: /^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
         message: "이메일 형식이 올바르지 않습니다."
@@ -63,9 +63,10 @@ export default function JoinInfoForm() {
     });
 
   // 이메일 도메인 선택하기
-  const handleEmailDomain = (e) => {
+  const handleEmailDomain = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setEmailDomain(value);
+
     if (value==="custom") {
       setValue("emailLast","");
     } else {
@@ -76,7 +77,7 @@ export default function JoinInfoForm() {
   }
   
   // 가입조건 만족식 버튼 색 바뀌는 용도
-  const watchCheck = watch(["memberId", "memberPw", "memberName","memberEmail"]);
+  const watchCheck = watch(["memberId", "memberPw", "memberPwCheck", "memberName","emailFirst","emailLast"]);
   const allCheck = watchCheck.every(Boolean);
 
 

@@ -35,7 +35,7 @@ export default function JoinPwCheckForm() {
 
   // pw 확인 무결성 검사
   const pwCheckRegister = register(
-    "pwCheck", {
+    "memberPwCheck", {
       validate: (value) => value===pw || "비밀번호가 일치하지 않습니다."
     });
 
@@ -58,7 +58,7 @@ export default function JoinPwCheckForm() {
       <div className={s.inputBox}>
         <input id="memberPwCheck" type="password" {...pwCheckRegister}></input>
       </div>
-      <span className={s.message}>{errors.pwCheck?.message}</span>
+      <span className={s.message}>{errors.memberPwCheck?.message}</span>
     </section>
 
   </>
