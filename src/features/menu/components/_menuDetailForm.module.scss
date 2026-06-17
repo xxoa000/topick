@@ -28,43 +28,51 @@
   }
 
   .amountBox {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
     .price {
       font-size: 17px;
       font-weight: bold;
       color: #ec7b23;
     }
 
-  button {
-    width: 32px;
-    height: 32px;
+    button {
+      width: 32px;
+      height: 32px;
 
-    border: 1px solid #ddd;
-    border-radius: 50%;
+      border: 1px solid #ddd;
+      border-radius: 50%;
 
-    background: #fff;
+      background: #fff;
 
-    cursor: pointer;
+      cursor: pointer;
+    }
   }
-}
 
 }
 
 
 .image {
-  width: 130px;
-  height: 90px;
-
+  width: 162px;
+  height: 96px;
   overflow: hidden;
   border-radius: 6px;
   background-color: #f9f9f9;
 
+  // 이미지를 정중앙에 정렬하기 위해 추가
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   img {
+    /* 🔥 어떤 이미지든 알아서 비율을 맞추고, 
+      상자보다 크면 줄이고 작으면 원래 크기를 유지합니다.
+    */
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: scale-down;
   }
 }
 
@@ -77,10 +85,10 @@
   gap: 6px;
 
   .menuAction {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
 
     .vatText {
       font-size: 11px;
@@ -98,5 +106,3 @@
     }
   }
 }
-
-

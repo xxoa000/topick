@@ -8,9 +8,8 @@ import {
 import { fetchKakaoMapsJsKey } from '../services/filterApi';
 import { useFilterSearch } from '../context/FilterSearchContext';
 import MapZoomControls from './MapZoomControls';
-import useCustomLogin from '@/hooks/useCustomLogin';
 
-const DEFAULT_CENTER = { lat: 37.350106, lng: 127.109001 };
+import useCustomLogin from '@/hooks/useCustomLogin';
 
 function waitForElementSize(el: HTMLElement): Promise<void> {
   return new Promise((resolve) => {
@@ -37,10 +36,6 @@ function waitForElementSize(el: HTMLElement): Promise<void> {
 
 function getCurrentCenter(): Promise<{ lat: number; lng: number }> {
   return new Promise((resolve) => {
-    if (!navigator.geolocation) {
-      resolve(DEFAULT_CENTER);
-      return;
-    }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -48,11 +43,6 @@ function getCurrentCenter(): Promise<{ lat: number; lng: number }> {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
-      },
-      () => resolve(DEFAULT_CENTER),
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
       },
     );
   });
@@ -100,8 +90,8 @@ export default function FilterMapView() {
           center: new maps.LatLng(center.lat, center.lng),
           level: 5,
         });
-        map.setDraggable?.(false);
-        map.setZoomable?.(true);
+        map.setDraggable?.(false); //드래그 이동 비활성화
+        map.setZoomable?.(true); //줌은 활성화
         mapRef.current = map;
         setMapInstance(map);
         relayoutMap(map);

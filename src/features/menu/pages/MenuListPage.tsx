@@ -33,7 +33,7 @@ export default function MenuListPage({ photos }: { photos: { photo_id: number; u
         const data = await menuApi.selectList(Number(storeNo));
         //console.log(data);
         setMenuList(data);
-      } catch(error) {
+      } catch (error) {
         if (!axios.isAxiosError(error)) return;
         console.log(error);
       }
@@ -43,9 +43,9 @@ export default function MenuListPage({ photos }: { photos: { photo_id: number; u
 
   return (
     <main className={s.menuContainer}>
-      {photos && photos.length > 0 && (
-        <article className={s.photoSection}>
-          <h2 className={s.photoTitle}>메뉴</h2>
+      <article className={s.photoSection}>
+        <h2 className={s.photoTitle}>메뉴</h2>
+        {photos && photos.length > 0 && (
           <div className={s.photoWrapper}>
             {photos.map((photo) => (
               <div key={photo.photo_id} className={s.photoItem}>
@@ -53,8 +53,8 @@ export default function MenuListPage({ photos }: { photos: { photo_id: number; u
               </div>
             ))}
           </div>
-        </article>
-      )}
+        )}
+      </article>
 
       <FormProvider {...methods}>
         <section className={s.page}>
@@ -63,8 +63,8 @@ export default function MenuListPage({ photos }: { photos: { photo_id: number; u
               <div key={menu.menuNo}>
                 <div className={s.menuItem}
                   style={{ borderBottom: index === menuList.length - 1 ? "none" : "1px solid #eee" }}
-                  // onClick={() => setOpenMenuNo(prev => prev === menu.menuNo ? null : menu.menuNo)}
-                  >
+                // onClick={() => setOpenMenuNo(prev => prev === menu.menuNo ? null : menu.menuNo)}
+                >
                   <MenuDetailForm menu={menu} />
 
                   {/* 추후 메뉴 옵션 선택용 */}

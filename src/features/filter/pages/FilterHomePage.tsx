@@ -8,9 +8,9 @@ export default function FilterHomePage() {
     <div className="filter-home">
       <div className="filter-layout">
         <SearchResultsPanel />
-        <TagFilterPanel />
         <div className="filter-map-column">
           <FilterMapView />
+          <TagFilterPanel />
         </div>
       </div>
     </div>

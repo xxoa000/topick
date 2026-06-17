@@ -93,7 +93,7 @@ export default function MenuDetailForm({menu}: MenuDetailFormProps) {
         <span className={s.badge}>매장, 원산지 정보</span>
       </div>
       <div className={s.image}>
-        <img src={menu.img_url} alt={menu.menuName} referrerPolicy="no-referrer" />
+        <img src={menu.menuImage} alt={menu.menuName} referrerPolicy="no-referrer" />
       </div>
     </div>
 

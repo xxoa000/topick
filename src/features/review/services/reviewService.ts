@@ -83,5 +83,11 @@ export const reviewService = {
   getPhotoReviews: async (storeNo: number): Promise<Review[]> => {
     const response = await accessApiClient.get<Review[]>(`/reviews/store/${storeNo}/photos`);
     return response.data;
+  },
+
+  //가게 평균 리뷰 보기
+  getReviewTotal: async (storeNo: number): Promise<{avg: number, total: number}> => {
+    const response = await accessApiClient.get<{avg: number, total: number}>(`/reviews/store/${storeNo}/total`);
+    return response.data;
   }
 };
