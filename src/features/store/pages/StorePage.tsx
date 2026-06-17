@@ -1,7 +1,7 @@
 import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useReview } from '../../review/hooks/useReview';
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 import styles from './_store-page.module.scss';
 
@@ -141,9 +141,9 @@ export default function StorePage() {
 							<div className={styles.timeBlock}>
 								<strong>영업 시간</strong>
 								<div className={styles.timeDetails}>
-									{storeRunTime.map((i: any) => (
-										i.days.map((day: any) => (
-											<>
+									{storeRunTime.map((i: any, index: number) => (
+										i.days.map((day: any, dayIndex: number) => (
+											<Fragment key={`${index}-${dayIndex}`}>
 												<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span>
 												{
 													day.on_days?.break_times_desc &&
@@ -157,7 +157,7 @@ export default function StorePage() {
 													day.on_days?.last_order_times_desc &&
 													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.last_order_times_desc[0]}</span>
 												}
-											</>
+											</Fragment>
 										))
 									))}
 								</div>
