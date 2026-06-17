@@ -35,7 +35,7 @@ public class StoreServiceImpl implements StoreService {
 
 				for (JsonNode itemNode : yogiyoMenuData) {
 					String menuName = itemNode.path("name").asText();
-					String menuImage = itemNode.path("thumbnail").path("image").asText();
+					String menuImage = itemNode.path("thumbnail").hasNonNull("image") ? itemNode.path("thumbnail").path("image").asText() : defaultMenuImage;
 					Integer menuPrice = itemNode.path("price").path("final_price").asInt();
 					Integer menuStock = itemNode.hasNonNull("stock_amount") ? itemNode.path("stock_amount").asInt()
 							: 999;
