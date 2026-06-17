@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -119,4 +120,14 @@ public class ReviewController {
         List<ReviewDomain> reviews = reviewService.getPhotoReviewList(storeNo);
         return ResponseEntity.ok(reviews);
     }
+    
+	/**
+	 * 특정 가게의 전체 리뷰 정보
+	 */
+	@GetMapping("/store/{storeNo}/total")
+	public ResponseEntity<Map<String, Object>> getStoreReviewTotal(
+			@PathVariable("storeNo") Long storeNo) {
+		Map<String, Object> stats = reviewService.findReviewStatsByStoreNo(storeNo);
+		return ResponseEntity.ok(stats);
+	}
 }
