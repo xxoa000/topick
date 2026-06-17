@@ -148,8 +148,6 @@ public class KakaoSearchServiceImpl implements KakaoSearchService {
 
         for (JsonNode d : docs) {
 
-            System.out.println("@@@@@@@@@@@@@@@@@@!!@@@@!");
-            System.out.println(d);
             String placeName = d.path("place_name").asText();
             String placeUrl = d.path("place_url").asText();
             String categoryName = d.path("category_name").asText();
