@@ -31,11 +31,20 @@ export const usePick = () => {
       if (isMultiple) {
         // [다중 선택] 값 유무 판단 후 토글 연산 (contains -> includes 수정 완료)
         const currentArray = prev[pickType] as string[];
-        const updatedArray = currentArray.includes(value)
-          ? currentArray.filter((item) => item !== value)
-          : [...currentArray, value];
 
-        return { ...prev, [pickType]: updatedArray };
+        if(value === '없음'){
+          const updatedArray = currentArray.includes('없음')?[]:['없음'];
+          return {...prev, [pickType]: updatedArray};
+        }
+        else{
+          const arrayWithoutNone = currentArray.filter((item)=>item !=='없음');
+
+          const updatedArray = arrayWithoutNone.includes(value)
+          ? arrayWithoutNone.filter((item) => item !== value) //이미 있으면 제거
+          : [...arrayWithoutNone, value]; //없으면 추가
+
+          return { ...prev, [pickType]: updatedArray };
+        }
       } else {
         // [단일 선택] 덮어쓰기
         return { ...prev, [pickType]: value };

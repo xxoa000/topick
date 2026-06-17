@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePick } from '../hooks/usePick';
-import styles from './_pick-component.module.scss';
+import styles from './_pick_component.module.scss';
 
 export const PickComponent: React.FC = () => {
   const navigate = useNavigate();
@@ -85,7 +85,10 @@ export const PickComponent: React.FC = () => {
             type="button"
             className={styles.nextButton}
             onClick={handleNext}
-            disabled={currentQuestion.isMultiple ? false : !formData[currentQuestion.pickType]}
+            disabled={currentQuestion.isMultiple
+                      ? (formData[currentQuestion.pickType] as string[]).length === 0 // 다중 선택인데 빈 배열이면 막음
+                      : !formData[currentQuestion.pickType] // 단일 선택인데 값이 없으면 막음
+}
           >
             {currentStep === totalSteps ? '결과 확인하기 🎉' : '다음 단계 〉'}
           </button>

@@ -1,4 +1,3 @@
-// 🎨 변수 선언 (프로젝트 메인 컬러에 맞게 수정하셔도 됩니다)
 $primary-color: #ff9f43;    // 상단 오렌지/주황 테마 색상
 $background-light: #f9f9f9; // 선택 안 된 버튼 배경색
 $border-color: #e0e0e0;     // 경계선 색상
@@ -13,7 +12,7 @@ $text-sub: #777777;         // 서브 설명글 색상
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  min-height: 480px; // 카드 최소 높이 고정으로 덜컹거림 방지
+  height: 100%;
   justify-content: space-between;
 }
 
@@ -66,12 +65,30 @@ $text-sub: #777777;         // 서브 설명글 색상
   }
 }
 
-/* 🔘 선택지 버튼 리스트 구역 */
+/* 선택지 버튼 리스트 구역 */
 .choiceList {
   display: flex;
   flex-direction: column;
   gap: 12px;
   flex-grow: 1; // 버튼 영역이 중간 공간을 다 차지하도록 설정
+
+  // 💡 [여기서부터 추가된 핵심 코드]
+  max-height: 260px;     // 1. 답변 영역의 최대 높이를 딱 고정 (디자인에 맞게 조절 가능)
+  overflow-y: auto;      // 2. 이 높이를 넘어가면 내부 스크롤바 생성
+  padding-right: 6px;    // 3. 스크롤바가 생겼을 때 우측 버튼 영역이 답답해 보이지 않게 여백 추가
+  margin-bottom: 8px;    // 4. 스크롤 바닥과 하단 내비게이션(이전/다음) 사이 여백
+
+  // 💡 투박한 기본 스크롤바를 서비스 테마에 맞춰 슬림하고 깔끔하게 다듬기
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1; // 은은한 회색 바
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
   .choiceButton {
     width: 100%;
