@@ -1,5 +1,6 @@
 import type { Tag } from '../types';
 import { useFilterSearch } from '../context/FilterSearchContext';
+import { useState } from 'react';
 
 function groupTagsByType(tags: Tag[]): Record<string, Tag[]> {
   const grouped: Record<string, Tag[]> = {};
@@ -21,7 +22,7 @@ export default function TagFilterPanel() {
     tagsError,
     handleToggleTag,
   } = useFilterSearch();
-
+  const [isOpen, setIsOpen] = useState(false);
   const groupedTags = groupTagsByType(tags);
   const selectedTagsText =
     selectedTags.size === 0
@@ -29,7 +30,9 @@ export default function TagFilterPanel() {
       : `선택: ${Array.from(selectedTags).join(', ')}`;
 
   return (
-    <aside className="filter-tags-panel">
+    <aside className={`filter-tags-panel${isOpen ? '' : ' closed'}`}>
+    {isOpen && (
+      <>
       <h2 className="filter-panel-title">태그 필터</h2>
       <p className="filter-selected-tags">{selectedTagsText}</p>
       <div>
@@ -83,6 +86,15 @@ export default function TagFilterPanel() {
                 </div>
               </div>
             ))}
+      </div>
+      </>
+      )}
+      <div className="filter-tag-button">
+        {isOpen ? (
+          <button onClick={() => setIsOpen(false)} style={{fontSize: '20px'}}>{"<"}</button>
+        ) : (
+          <button onClick={() => setIsOpen(true)} >{">"}</button>
+        )}
       </div>
     </aside>
   );
