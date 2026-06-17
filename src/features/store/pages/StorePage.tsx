@@ -1,6 +1,7 @@
 import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
-import { useEffect, useState } from "react";
+import { useReview } from '../../review/hooks/useReview';
+import { Fragment, useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 import styles from './_store-page.module.scss';
 
@@ -19,24 +20,28 @@ interface StoreData {
 
 
 export default function StorePage() {
+
 	const location = useLocation();
-
 	const [storeData, setStoreData] = useState<any>(null);
-
-	// location.state 안에 우리가 보낸 store가 들어있습니다.
-	// TypeScript를 사용 중이시라면 아래와 같이 타입을 지정해 줄 수 있습니다.
 	const state = location.state as { store: StoreData } | null;
 	const store = state?.store;
+	const { reviewTotal, getStoreReviewTotal } = useReview();
+
+
+
 
 	useEffect(() => {
 		// 스프링 부트 API 호출
 		fetch(`http://localhost:8080/api/store/${store?.storeNo}/kakaoId/${store?.id}/lat/${store?.y}/lng/${store?.y}`)
 			.then(res => res.json())
 			.then(data => setStoreData(data));
-	}, []);
 
-	console.log(storeData);
+		if (store?.storeNo) {
+			getStoreReviewTotal(store.storeNo);
+		}
+	}, [store?.storeNo, getStoreReviewTotal]);
 
+	console.log(reviewTotal);
 
 	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
 	if (!store || !storeData) {
@@ -44,14 +49,8 @@ export default function StorePage() {
 	}
 
 	const photos = storeData.storeDetails.menu?.menus?.photos || [];
-
-	// 📸 사진 데이터 안전하게 추출
 	const allPhotos = storeData.storeDetails.photos?.photos || [];
-
-	// ⏰ 영업시간 데이터 구조 매핑 (week_periods -> days)
 	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
-
-	// api 태그 데이터 추출
 	const storeTag = storeData.storeDetails.place_add_info?.tags || [];
 	storeTag.push(store?.categoryName.split('>')[1]?.trim());
 
@@ -97,8 +96,22 @@ export default function StorePage() {
 					<div className={styles.titleRow}>
 						<div className={styles.titleLeft}>
 							<h1>{store.placeName}</h1>
-							<span className={styles.stars}>★★★★☆</span>
-							<span className={styles.reviewCount}>(2,309)</span>
+							{/* 별점 컨테이너 */}
+							<div className={styles.starRating}>
+								{/* 1. 채워진 별 (노란색) - 평점 퍼센트만큼만 보여짐 */}
+								<div
+									className={styles.starsFill}
+									style={{ width: `${(reviewTotal.avg / 5) * 100}%` }}
+								>
+									<span>★★★★★</span>
+								</div>
+
+								{/* 2. 기본 별 (회색) - 배경에 항상 깔려있음 */}
+								<div className={styles.starsBase}>
+									<span>★★★★★</span>
+								</div>
+							</div>
+							<span className={styles.reviewCount}>({reviewTotal.total})</span>
 						</div>
 						<div className={styles.btnGroup}>
 							<button>북마크</button>
@@ -122,15 +135,15 @@ export default function StorePage() {
 						<div className={styles.detailsLeft}>
 							<div className={styles.addressBlock}>
 								<strong>주소</strong> <span>{storeData.storeDetails.summary.address.road}</span>
-								<div className={styles.distance}>현재 위치에서 {store.distance}m</div>
+								<span className={styles.distance}>현재 위치에서 {store.distance}m</span>
 							</div>
 
 							<div className={styles.timeBlock}>
 								<strong>영업 시간</strong>
 								<div className={styles.timeDetails}>
-									{storeRunTime.map((i: any) => (
-										i.days.map((day: any) => (
-											<>
+									{storeRunTime.map((i: any, index: number) => (
+										i.days.map((day: any, dayIndex: number) => (
+											<Fragment key={`${index}-${dayIndex}`}>
 												<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span>
 												{
 													day.on_days?.break_times_desc &&
@@ -144,7 +157,7 @@ export default function StorePage() {
 													day.on_days?.last_order_times_desc &&
 													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.last_order_times_desc[0]}</span>
 												}
-											</>
+											</Fragment>
 										))
 									))}
 								</div>
