@@ -52,6 +52,7 @@ type FilterSearchContextValue = {
   clearStoreDetail: () => void;
   attachMap: (map: KakaoMap | null) => Promise<void>;
   reportMapError: (message: string) => void;
+  handleClear: () => void;
 };
 
 const FilterSearchContext = createContext<FilterSearchContextValue | null>(null);
@@ -96,27 +97,26 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
   const [storeMenus, setStoreMenus] = useState<Menu[]>([]);
   const [storeDetailLoading, setStoreDetailLoading] = useState(false);
   const [storeDetailError, setStoreDetailError] = useState('');
-
   const { member } = useCustomLogin();
 
   selectedTagsRef.current = selectedTags;
   searchKeywordRef.current = searchKeyword;
 
   useEffect(() => {
-    const isFilterPage =
-      location.pathname === '/filter' ||
-      location.pathname.startsWith('/filter/');
-    if (!isFilterPage) return;
-
+    
     const state = location.state as FilterNavigateState | null;
     if (state && 'keyword' in state) {
       pendingKeywordRef.current = state.keyword ?? '';
     }
   }, [location.pathname, location.state]);
-
+  
   const toDistanceOption = useCallback((value: DistanceOption) => {
     setSelectedDistance(value);
   }, []);
+  
+  const isFilterPage =
+    location.pathname === '/filter' ||
+    location.pathname.startsWith('/filter/');
 
   const displayedResults = useMemo(() => {
     const map = mapRef.current;
@@ -456,6 +456,20 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     [clearMarkers, suppressIdle, navigate, location.pathname],
   );
 
+  const handleClear = useCallback(() => {
+  if (isFilterPage) {
+    setSearchKeyword('');
+    searchKeywordRef.current = ''
+    selectedTagsRef.current = new Set()
+    setSelectedTags(new Set())
+    lastModeRef.current = 'keyword'
+    lastFetchedBoundsKeyRef.current = ''
+    }
+  }, 
+  [isFilterPage]
+);
+
+
   useEffect(() => {
     let cancelled = false;
 
@@ -535,6 +549,7 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
     clearStoreDetail,
     attachMap,
     reportMapError,
+    handleClear,
   };
 
   return (

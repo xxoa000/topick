@@ -3,13 +3,14 @@ import LoginHeader from "../features/member/components/LoginHeader";
 import useCustomLogin from "@/hooks/useCustomLogin";
 import KeywordSearchBar from "@/features/filter/components/KeywordSearchBar";
 import styles from "@/components/_header.module.scss";
+import { useFilterSearch } from '@/features/filter/context/FilterSearchContext';
 
 export default function Header(){
   const { isLogin } = useCustomLogin();
-
+  const { handleClear } = useFilterSearch();
   return (
     <header className={styles.header}>
-      <NavLink to="/" className={styles.logoLink}>
+      <NavLink to="/" className={styles.logoLink} onClick={handleClear}>
         <img src="/logo_1.png" alt="오늘의 식당 로고" />
   	  </NavLink>
       {isLogin ? <div><NavLink to='/my-location-set'>내 위치 설정</NavLink></div> 
