@@ -7,10 +7,8 @@ import LoginPage from "../features/member/pages/LoginPage";
 import Home from "./Home";
 import JoinPage from "@/features/member/pages/JoinPage";
 import StorePage from "@/features/store/pages/StorePage";
-import OrderPage from "@/features/order/pages/OrderPage";
 import PaymentPage from "@/features/payment/pages/PaymentPage";
 import MyInfoPage from "@/features/myInfo/pages/MyInfoPage";
-import MenuDetailPage from "@/features/menu/pages/MenuDetailPage";
 import MenuListPage from "@/features/menu/pages/MenuListPage";
 
 export default function Section(){
@@ -26,7 +24,6 @@ export default function Section(){
         {/* <Route path="/store/:storeNo/menu/:menuNo/*" element={<MenuDetailPage />}/> */}
         <Route path="/store/:storeNo/menu/list" element={<MenuListPage />}/>
         <Route path="/store/:storeNo/*" element={<StorePage />}/>
-        <Route path="/order/*" element={<OrderPage />}/>
         <Route path="/payment/*" element={<PaymentPage />}/>
         <Route path="/my-info/*" element={<MyInfoPage />}/>
 
