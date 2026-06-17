@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { useCustomJoin } from "../hooks/useCustomJoin";
-import styles from "@member/components/_join-form.module.scss"; 
+import s from "@member/components/_join-form.module.scss"; 
 import type { JoinFormDTO } from "../types/joinDTO";
 
 export default function JoinAgreeForm() {
@@ -10,8 +10,8 @@ export default function JoinAgreeForm() {
   // react-hook-form 설정 (자식 컴포넌트용)
   const {
     register,
-    handleSubmit,
     watch,
+    trigger,
     setValue,
     formState : { errors },
   } = useFormContext<JoinFormDTO>();
@@ -21,9 +21,9 @@ export default function JoinAgreeForm() {
   const allCheck = watchCheck.every(Boolean);
   const handleAllCheck = (e:React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
-    setValue("isAgree", checked);
-    setValue("isPrivacyAgree", checked);
-    setValue("ageCheck", checked);
+    setValue("isAgree", checked, {shouldValidate: true});
+    setValue("isPrivacyAgree", checked, {shouldValidate: true});
+    setValue("ageCheck", checked, {shouldValidate: true});
   }
 
 
@@ -42,8 +42,13 @@ export default function JoinAgreeForm() {
   });
 
   // 약관 동의사항 & 만 14세 이상 확인
-	const handleAgreeCheck = () => {
-    //alert ("약관 동의 확인");
+	const handleAgreeCheck = async() => {
+    const isValid = await trigger([
+      "isAgree",
+      "isPrivacyAgree",
+      "ageCheck"
+    ]);
+    if (!isValid) return;
     setStep(2);
 	}
 
@@ -52,10 +57,10 @@ export default function JoinAgreeForm() {
   <section>
 
   {/* form 전체 box */}
-  <div className={styles.formBox}>
+  <div className={s.formBox}>
 
     {/* 필수약관 전체 동의 */}
-    <div className={styles.formRow}>
+    <div className={s.agreeRow}>
       <label htmlFor="allCheck">
         <h3>
           <input type="checkbox" id="allCheck" 
@@ -65,9 +70,9 @@ export default function JoinAgreeForm() {
     </div>
 
     {/* 약관 동의(필수) */}
-    <section className={styles.formRow}>
-      <h3>이용약관 동의 (필수)</h3>
-      <div className={styles.isAgreeContent}>
+    <section className={s.agreeRow }>
+      <h3>이용약관 동의 (필수)<span className={s.required}>*</span></h3>
+      <div className={s.isAgreeContent}>
         <dl>
           <dt>제1조 (목적)</dt> 
           <dd>
@@ -124,13 +129,13 @@ export default function JoinAgreeForm() {
       <label htmlFor="isAgree">
         <input type="checkbox" id="isAgree" {...isAgreeRegister} /> 이용약관에 동의합니다.
       </label>
-      <span className={styles.message}>{errors.isAgree?.message}</span>
+      <span className={s.message}>{errors.isAgree?.message}</span>
     </section>
 
     {/* 개인정보 수집 및 이용 동의(필수) */}
-    <section className={styles.formRow}>
-      <h3>개인정보 수집 및 이용 동의(필수)</h3>
-      <div className={styles.isAgreeContent}>
+    <section className={s.agreeRow}>
+      <h3>개인정보 수집 및 이용 동의(필수)<span className={s.required}>*</span></h3>
+      <div className={s.isAgreeContent}>
         <dl>
           <dd>TOPICK은 회원가입 및 서비스 제공을 위하여 아래와 같이 개인정보를 수집 및 이용합니다.</dd>
           <dt>1. 수집 항목</dt>
@@ -169,13 +174,13 @@ export default function JoinAgreeForm() {
       <label htmlFor="isPrivacyAgree">
         <input type="checkbox" id="isPrivacyAgree" {...isPrivacyAgreeRegister} /> 개인정보 수집 및 이용에 동의합니다.
       </label>
-      <span className={styles.message}>{errors.isPrivacyAgree?.message}</span>
+      <span className={s.message}>{errors.isPrivacyAgree?.message}</span>
     </section>
   
     {/* 나이 체크(필수) */}
-    <section className={styles.formRow}>
-      <h3>만 14세 이상 확인 (필수)</h3>
-      <div className={styles.isAgreeContent}>
+    <section className={s.agreeRow }>
+      <h3>만 14세 이상 확인 (필수)<span className={s.required}>*</span></h3>
+      <div className={s.isAgreeContent}>
         <dl>
           <dd>[오늘의 식당] 사이트는 만 14세 이상부터 가입할 수 있습니다.</dd>
         </dl>
@@ -183,14 +188,14 @@ export default function JoinAgreeForm() {
       <label htmlFor="ageCheck">
         <input type="checkbox" id="ageCheck" {...ageCheckRegister} /> 만 14세 이상입니다.
       </label>
-      <span className={styles.message}>{errors.ageCheck?.message}</span>
+      <span className={s.message}>{errors.ageCheck?.message}</span>
     </section>
 
   </div>
 
   {/* submit 버튼 */}
-  <div className={styles.buttonBox}>
-    <button type="button" className={styles.nextButton}
+  <div className={s.buttonBox}>
+    <button type="button" className={allCheck ? s.activeButton : s.disableButton}
       onClick={handleAgreeCheck}>다음</button>
   </div>
 
