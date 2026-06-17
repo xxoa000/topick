@@ -1,10 +1,9 @@
-import accessApiClient, { publicApiClient, refreshApiClient } from "@/config/axios";
+import { publicApiClient, refreshApiClient } from "@/config/axios";
 import type { LoginRequestDTO } from "@member/types/loginDTO";
 import type { JoinRequestDTO } from "../types/joinDTO";
 
 
 const memberApi = {
-
 
 	// 아이디 중복 확인
 	idCheck: async(memberId: string):Promise<boolean> => {

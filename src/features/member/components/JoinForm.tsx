@@ -4,7 +4,7 @@ import { useCustomJoin } from "../hooks/useCustomJoin";
 
 import memberApi from "../services/memberApi";
 import type { JoinFormDTO } from "../types/joinDTO";
-import styles from "@member/components/_join-form.module.scss";
+import s from "@member/components/_join-form.module.scss";
 
 import JoinIdCheckForm from "./JoinIdCheckForm";
 import JoinAgreeForm from "./JoinAgreeForm";
@@ -55,20 +55,29 @@ export default function JoinForm() {
 
 	const handleJoin = async(data:JoinFormDTO) => {
 		// 서버로 보낼때 제외할 data 분리
-		const {
-			isAgree,
-			isPrivacyAgree,
-			ageCheck,
-			pwCheck,
-			...joinData
-		} = data;
+		// const {
+		// 	isAgree,
+		// 	isPrivacyAgree,
+		// 	ageCheck,
+		// 	pwCheck,
+		// 	emailFirst,
+		// 	emailLast,
+		// 	...joinData
+		// } = data;
+
+		// 이메일 단어 합쳐서 서버로 전달
+		const email = data.emailFirst && data.emailLast ? `${data.emailFirst}@${data.emailLast}` : "";
 
 		// "" 값 방지용, 선택사항을 선택하지 않은 경우엔 null 전송
 		const requestData = {
-			...joinData,
-			memberPhone : joinData.memberPhone?.trim() ? joinData.memberPhone : null,
-			memberGender : joinData.memberGender || "none",
-			memberBirthday : joinData.memberBirthday || null,
+			//...joinData,
+			memberId: data.memberId,
+			memberPw: data.memberPw,
+			memberName: data.memberName,
+			memberEmail: email,
+			memberPhone : data.memberPhone?.trim() ? data.memberPhone.trim() : null,
+			memberGender : data.memberGender || "none",
+			memberBirthday : data.memberBirthday || null,
 		}
 
     try {
@@ -88,17 +97,17 @@ export default function JoinForm() {
 			const errorMessage = error.response?.data?.message;
 
 			// 상황별 errorCode 정리
-			if (errorName=="MEMBER_ID_EXIST") {
+			if (errorName==="MEMBER_ID_EXIST") {
 				setError("memberId", {
 						type: "server",
 						message: errorMessage
 					});
-			} else if (errorName=="MEMBER_EMAIL_EXIST") {
+			} else if (errorName==="MEMBER_EMAIL_EXIST") {
 				setError("memberEmail", {
 						type: "server",
 						message: errorMessage
 					});
-			} else if (errorName=="MEMBER_PHONE_EXIST") {
+			} else if (errorName==="MEMBER_PHONE_EXIST") {
 				setError("memberPhone", {
 						type: "server",
 						message: errorMessage
@@ -113,7 +122,7 @@ export default function JoinForm() {
 
 	return (
 	<FormProvider {...joinMethod}>
-		<form onSubmit={handleSubmit(handleJoin)} className={styles.joinForm}>
+		<form onSubmit={handleSubmit(handleJoin)} className={s.joinForm}>
 		{/* 14세 이상 체크 & 약관동의 */}
 		{ step === 1 && <JoinAgreeForm /> }
 

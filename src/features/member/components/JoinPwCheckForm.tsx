@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import type { JoinFormDTO } from "../types/joinDTO";
-import styles from "@member/components/_join-form.module.scss";
+import s from "@member/components/_join-form.module.scss";
 
 export default function JoinPwCheckForm() {
   
@@ -44,21 +44,21 @@ export default function JoinPwCheckForm() {
   return (
   <>
     {/* 비밀번호 */}
-    <section className={styles.formRow}>
-      <label htmlFor="memberPw">비밀번호</label>
-      <div className={styles.inputBox}>
+    <section className={s.formRow}>
+      <label htmlFor="memberPw">비밀번호<span className={s.required}>*</span></label>
+      <div className={s.inputBox}>
         <input id="memberPw" type="password" {...pwRegister}></input>
       </div>
-      <span className={styles.message}>{errors.memberPw?.message}</span>
+      <span className={s.message}>{errors.memberPw?.message}</span>
     </section>
 
     {/* 비밀번호 확인 */}
-    <section className={styles.formRow}>
-      <label htmlFor="memberPwCheck">비밀번호 확인</label>
-      <div className={styles.inputBox}>
+    <section className={s.formRow}>
+      <label htmlFor="memberPwCheck">비밀번호 확인<span className={s.required}>*</span></label>
+      <div className={s.inputBox}>
         <input id="memberPwCheck" type="password" {...pwCheckRegister}></input>
       </div>
-      <span className={styles.message}>{errors.pwCheck?.message}</span>
+      <span className={s.message}>{errors.pwCheck?.message}</span>
     </section>
 
   </>

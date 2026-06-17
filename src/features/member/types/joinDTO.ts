@@ -16,6 +16,9 @@ export type JoinFormDTO = JoinRequestDTO & {
 	ageCheck : boolean;
 	isPrivacyAgree : boolean;
 	pwCheck? : string;
+
+	emailFirst: string;
+	emailLast: string;
 }
 
 // 클라이언트 -> 서버로 보내는 데이터

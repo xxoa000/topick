@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import type { JoinFormDTO } from "../types/joinDTO";
 import memberApi from "../services/memberApi";
-import styles from "@member/components/_join-form.module.scss";
+import s from "@member/components/_join-form.module.scss";
 
 export default function JoinIdCheckForm() {
 
@@ -66,14 +66,14 @@ export default function JoinIdCheckForm() {
     <br/><h3>필수 입력사항</h3><hr/><br/>
 
     {/* Id 중복 확인 */}
-    <section className={styles.formRow}>
-      <label htmlFor="memberId">아이디</label>
-      <div className={styles.inputBox}>
+    <section className={s.formRow}>
+      <label htmlFor="memberId">아이디<span className={s.required}>*</span></label>
+      <div className={s.inputBox}>
         <input id="memberId" type="text" {...idCheckRegister}/>
       </div>
-      <button type="button" className={styles.idCheckBtn}
+      <button type="button" className={s.idCheckBtn}
         onClick={handleIdCheck}>중복확인</button>
-      <span className={styles.message}>{errors.memberId?.message}</span>
+      <span className={s.message}>{errors.memberId?.message}</span>
     </section>
 
   </section>
