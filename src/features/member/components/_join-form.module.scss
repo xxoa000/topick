@@ -7,22 +7,6 @@
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.formBox {
-  overflow: hidden;
-}
-
-.formRow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-
-  width: 100%;
-  min-height: 64px;
-  padding: 10px;
-
-  flex-wrap: wrap;
 
   h3 {
     color: #222;
@@ -41,19 +25,73 @@
 
     display: flex;
     align-items: center;
-    gap: 6px;
     color: #222;
     font-size: 16px;
     cursor: pointer;
   }
+}
 
-  input[type="radio"],
-  input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    flex-shrink: 0;
-    vertical-align: middle;
+.formBox {
+  overflow: hidden;
+}
+
+.agreeRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 64px;
+  padding: 10px;
+  flex-wrap: wrap;
+  
+  label {
+    gap: 6px;
+  }
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  width: 100%;
+  min-height: 64px;
+  padding: 10px;
+
+  flex-wrap: wrap;
+
+  h3 {
+    border-bottom: 1px solid #ddd;
+  }
+
+  label {
+    width: 95px;
+    align-items: center;
+  }
+  .radio {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    
+    height: 3em;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+
+    color: #535353;
+    cursor: pointer;
+  }
+  .radio:has(input:checked) {
+    border: 1px solid #ff7a00;
+    color: #ff7a00;
+    border-color: #ff7a00;
+    background-color: #fff4e8;
+  }
+  input[type="radio"] {
+    appearance: none;
+    display: none;
+    //flex: 1;
     cursor: pointer;
   }
 }
@@ -165,7 +203,21 @@
   cursor: pointer;
 }
 
-.nextButton {
+.disableButton {
+  width: 100%;
+  height: 64px;
+  border: none;
+  border-radius: 10px;
+
+  background-color: #ddd;
+  color: #939393;
+  font-size: 20px;
+  font-weight: 700;
+
+  cursor: not-allowed;
+}
+
+.activeButton {
   width: 100%;
   height: 64px;
   border: none;
@@ -178,6 +230,8 @@
 
   cursor: pointer;
 }
+
+
 
 .idCheckBtn {
   width: 100px;
@@ -205,4 +259,12 @@
   font-weight: 700;
 
   cursor: pointer;
+}
+
+.required {
+  color: rgb(250, 75, 0);
+  font-size: 0.8em;
+  position: relative;
+  left: 2px;
+  top: -2px;
 }
