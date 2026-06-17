@@ -16,4 +16,5 @@ export type OrderCreateRequestDTO = {
 export type OrderDetailRequestDTO = {
   menuNo : number;
   orderDetailAmount: number;
+	menuPrice : number;
 }
