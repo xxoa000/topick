@@ -17,9 +17,18 @@
       display: flex;
       height: 250px;
       background-color: #f5f5f5;
-      border-radius: 12px;
+
+      border-radius: 14px;
       overflow: hidden;
       gap: 4px;
+
+      margin: 20px 16px;
+      /* 위아래 20px, 좌우 16px 여백 (프로젝트에 맞게 수치 조절 가능) */
+
+      width: calc(100% - 32px);
+      /* 좌우 margin 16px * 2 만큼 빼기 */
+      margin-left: auto;
+      margin-right: auto;
 
       img {
         width: 100%;
@@ -68,9 +77,35 @@
             font-weight: bold;
           }
 
-          .stars {
-            color: #ff9800;
+          .starRating {
+            position: relative;
+            display: inline-block;
             font-size: 18px;
+            /* 별 크기는 여기서 자유롭게 조절하세요 */
+            color: #e0e0e0;
+            /* 배경 회색 별 색상 */
+            user-select: none;
+            /* 별이 드래그되는 현상 방지 */
+
+            // 1. 채워진 노란색 별 스타일
+            .starsFill {
+              position: absolute;
+              top: 0;
+              left: 0;
+              color: #ffca28;
+              /* 채워질 노란색(금색) 별 색상 */
+              overflow: hidden;
+              /* 🔥 핵심: 설정된 width를 넘어서는 별들을 숨김 */
+              white-space: nowrap;
+              /* 너비가 줄어들어도 별이 아래로 떨어지지 않게 고정 */
+              width: 0;
+              /* 기본값 (JSX에서 변경됨) */
+            }
+
+            // 2. 배경 회색 별 스타일
+            .starsBase {
+              white-space: nowrap;
+            }
           }
 
           .reviewCount {
@@ -120,20 +155,16 @@
           font-size: 14px;
           line-height: 1.7;
 
-          strong {
-            // 고정폭 지정을 원할 경우 추가 가능
-          }
-
           span {
             margin-left: 10px;
           }
 
           .addressBlock {
             margin-bottom: 12px;
-            
+
             .distance {
               color: #999;
-              margin-left: 42px;
+              margin-left: 5px;
               font-size: 13px;
             }
           }
@@ -141,7 +172,7 @@
           .timeBlock {
             display: flex;
             margin-bottom: 12px;
-            
+
             .timeDetails {
               margin-left: 10px;
             }
