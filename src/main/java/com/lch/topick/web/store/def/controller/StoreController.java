@@ -26,22 +26,24 @@ public class StoreController {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@GetMapping("{storeNo}/kakaoId/{kakaoId}/lat/{lat}/lng/{lng}")
-	public ResponseEntity<Map<String, Object>> getStoreDetails(@PathVariable("storeNo") Long storeNo, @PathVariable("kakaoId") String kakaoId,
-			@PathVariable("lat") String lat, @PathVariable("lng") String lng) {
+	public ResponseEntity<Map<String, Object>> getStoreDetails(@PathVariable("storeNo") Long storeNo,
+			@PathVariable("kakaoId") String kakaoId, @PathVariable("lat") String lat, @PathVariable("lng") String lng) {
 
 		// 1. 카카오 플레이스 데이터 조회
 		String jsonResult = storeProxyService.fetchStoreData(kakaoId); // 카카오 가게 데이터
 		String yogiyoId = extractYogiyoId(jsonResult); // 요기요 ID
-		String jsonResult2 = storeProxyService.fetchMenuData(yogiyoId, lat, lng); // 요기요 메뉴 데이터
+		String jsonResult2 = null; // 요기요 메뉴 데이터
 		ResponseEntity<Map<String, Object>> result;
 		try {
-
+			JsonNode storeNode = objectMapper.readTree(jsonResult);
+			JsonNode menuNode = null;
+			if (yogiyoId != null) {
+				jsonResult2 = storeProxyService.fetchMenuData(yogiyoId, lat, lng);
+				menuNode = objectMapper.readTree(jsonResult2);
+			}
 			// 2. 카카오 데이터에서 추출한 동적 ID를 전달하여 요기요 메뉴 데이터 조회
 			System.out.println("추출된 요기요 ID: " + yogiyoId);
 			System.out.println(jsonResult2);
-
-			JsonNode storeNode = objectMapper.readTree(jsonResult);
-			JsonNode menuNode = objectMapper.readTree(jsonResult2);
 
 			// 자바 컬렉션 프레임워크의 Map을 생성하여 두 데이터를 깔끔하게 key-value로 묶어줍니다.
 			Map<String, Object> combinedResponse = new HashMap<>();
@@ -49,6 +51,7 @@ public class StoreController {
 			combinedResponse.put("menuData", menuNode);
 
 			result = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(combinedResponse);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
 		} catch (Exception e) {
 			System.err.println("요기요 ID 추출 중 예외 발생: " + e.getMessage());
@@ -58,18 +61,19 @@ public class StoreController {
 			errorResponse.put("error", "서버 내부 오류가 발생했습니다.");
 			errorResponse.put("message", e.getMessage());
 
-			result =  ResponseEntity.internalServerError().body(errorResponse);
+			result = ResponseEntity.internalServerError().body(errorResponse);
 		}
 
 		storeService.saveMenuData(jsonResult, jsonResult2, storeNo);
-		//jsonResult, jsonResult, storeNo 데이터를 인자로 넣어서 필요한 엔티티값을 구해서 Repository save하는 serviceImpl 메서드 호출
-		
+		// jsonResult, jsonResult, storeNo 데이터를 인자로 넣어서 필요한 엔티티값을 구해서 Repository save하는
+		// serviceImpl 메서드 호출
+
 		return result;
 	}// getStoreDetails
 
 	// 요기요 ID 추출 헬퍼 메서드
 	private String extractYogiyoId(String jsonResult) {
-		String yogiyoId = "";
+		String yogiyoId = null;
 		try {
 			// String 구조의 JSON 데이터를 트리 객체로 변환
 			JsonNode rootNode = objectMapper.readTree(jsonResult);
