@@ -1,4 +1,3 @@
-// 🎨 변수 선언 (프로젝트 메인 컬러에 맞게 수정하셔도 됩니다)
 $primary-color: #ff9f43;    // 상단 오렌지/주황 테마 색상
 $background-light: #f9f9f9; // 선택 안 된 버튼 배경색
 $border-color: #e0e0e0;     // 경계선 색상
@@ -13,8 +12,48 @@ $text-sub: #777777;         // 서브 설명글 색상
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  min-height: 480px; // 카드 최소 높이 고정으로 덜컹거림 방지
+  height: 100%;
   justify-content: space-between;
+  box-sizing: border-box;
+}
+
+/* 🎨 표지 전용 컨테이너 예외처리 */
+.coverContainer {
+  padding: 0 !important; // 패딩을 없애 이미지와 카드 테두리를 밀착시킵니다.
+  overflow: hidden;      // 컨테이너 라운딩 밖으로 이미지가 깨져나가는 현상 방지
+}
+
+.coverWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .coverImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   // 고정된 컴포넌트 해상도에 맞게 리사이징
+  }
+
+  /* 💡 이미지 내에 그려진 주황색 버튼 위에 투명한 클릭 영역을 정확하게 얹어놓습니다 */
+  .coverStartButton {
+    position: absolute;
+    bottom: 34px;        // 이미지 속 실제 버튼 위치에 맞춰 패딩 배치
+    width: 174px;        // 이미지 속 버튼의 가로 크기
+    height: 50px;        // 이미지 속 버튼의 세로 크기
+    
+    // 버튼을 투명하게 만들어 이미지 자체의 이쁜 디자인을 그대로 활용합니다
+    background-color: transparent; 
+    color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    
+    // 클릭하기 편하도록 라운딩 반경만 동기화
+    border-radius: 25px; 
+  }
 }
 
 /* 📊 상단 진행 바 (Progress Bar) 구역 */
@@ -41,7 +80,7 @@ $text-sub: #777777;         // 서브 설명글 색상
       height: 100%;
       background-color: $primary-color;
       border-radius: 3px;
-      transition: width 0.3s ease; // 단계 넘어갈 때 슥 늘어나는 애니메이션
+      transition: width 0.3s ease;
     }
   }
 }
@@ -56,7 +95,7 @@ $text-sub: #777777;         // 서브 설명글 색상
     color: $text-main;
     line-height: 1.4;
     margin: 0 0 8px 0;
-    word-break: keep-all; // 한글 단어 예쁘게 줄바꿈
+    word-break: keep-all;
   }
 
   .subText {
@@ -66,12 +105,28 @@ $text-sub: #777777;         // 서브 설명글 색상
   }
 }
 
-/* 🔘 선택지 버튼 리스트 구역 */
+/* 선택지 버튼 리스트 구역 */
 .choiceList {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  flex-grow: 1; // 버튼 영역이 중간 공간을 다 차지하도록 설정
+  flex-grow: 1;
+
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 6px;
+  margin-bottom: 8px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
   .choiceButton {
     width: 100%;
@@ -91,7 +146,6 @@ $text-sub: #777777;         // 서브 설명글 색상
       border-color: lighten($primary-color, 10%);
     }
 
-    /* 💡 클릭되어 활성화(active) 되었을 때의 스타일 */
     &.active {
       background-color: rgba($primary-color, 0.08);
       border-color: $primary-color;
@@ -141,7 +195,7 @@ $text-sub: #777777;         // 서브 설명글 색상
     transition: background-color 0.2s;
 
     &:hover:not(:disabled) {
-      background-color: darkne($primary-color, 5%);
+      background-color: darken($primary-color, 5%);
     }
 
     &:disabled {
@@ -197,9 +251,9 @@ $text-sub: #777777;         // 서브 설명글 색상
       padding: 16px;
       cursor: pointer;
 
-      &:hover{
+      &:hover {
         background-color: #f9f9f9; 
-        transform: translateY(2px); //위로 살짝 띄위는 애니메이션 효과
+        transform: translateY(-2px);
       }
       
       .rankBadge {
