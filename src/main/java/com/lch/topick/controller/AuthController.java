@@ -15,8 +15,6 @@ import com.lch.topick.jwtToken.TokenProvider;
 import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.repository.MemberRepository;
 import com.lch.topick.web.member.def.service.MemberService;
-import com.lch.topick.web.myLocationSet.entity.MyLocationSet;
-import com.lch.topick.web.myLocationSet.repository.MyLocationSetRepository;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +34,6 @@ public class AuthController {
 	private final MemberService memberService;
 	
 	// accessToken 만료 유무 확인
-		
 	// accesssToken 만료 -> refreshToken 만료 유무 확인
 	// refreshToken 만료 -> 계정 로그아웃 && DB에서도 삭제
 	
@@ -50,6 +47,7 @@ public class AuthController {
 	@PostMapping("/refresh")
 	public ResponseEntity<?> newAccesssToken(@CookieValue(value="refreshToken") String refreshToken, 
 											HttpServletRequest request, HttpServletResponse response) {
+		log.info("AuthController 도착, refreshToken: {}", refreshToken);
 		
 		// refreshToken 이 없을 경우 오류 출력
 		if (refreshToken == null) {
@@ -71,18 +69,22 @@ public class AuthController {
 			throw new CustomException(ErrorCode.JWT_MALFORMED);
 		}
 		
+		// 토큰 만들때 필요한 값인 claimList 생성
+		Map<String, Object> claimList = Map.of(
+				"memberId", member.getMemberId(),
+				"roleList", member.getRoleList()
+				);
+		
 		// 새 accessToken 발급
-		String newAccessToken = tokenProvider.createAccessToken(claims);
+		String newAccessToken = tokenProvider.createAccessToken(claimList);
+		log.info("재발급 claimList: {}", claimList);
+		log.info("토큰 재발급 성공: {}", newAccessToken);
 		
 		// 클라이언트로 전달
 		return ResponseEntity.ok( Map.of("accessToken", newAccessToken) );
 	} //newAccesssToken
 	
 	
-	
-	
-	
-	// refreshToken 발급 -> DB에서도 추가
 	
 	
 } //class
