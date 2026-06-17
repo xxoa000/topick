@@ -7,6 +7,7 @@ export const useReview = () => {
   const { member } = useCustomLogin();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [reviewTotal, setReviewTotal] = useState<{avg: number, total: number}>({avg:0, total: 0});
 
   // 1. 가게 리뷰 목록 조회
   const getStoreReviewList = useCallback(async (storeNo: number, isPhotoOnly = false) => {
@@ -116,13 +117,29 @@ export const useReview = () => {
     }
   };
 
+  // 6. 식당 평균 별점, 전체 리뷰 수
+  const getStoreReviewTotal = useCallback(async (storeNo: number) => {
+    setLoading(true);
+    try {
+        const data = await reviewService.getReviewTotal(storeNo)
+        if(data.avg ==null) data.avg = 0;
+      setReviewTotal(data);
+    } catch (err) {
+      console.error('가게 리뷰 평균 조회 실패:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return { 
     reviews, 
-    loading, 
+    loading,
+    reviewTotal, 
     getStoreReviewList, 
     getMyReviewList, 
     addReview, 
     removeReview, 
-    updateReviewContent
+    updateReviewContent,
+    getStoreReviewTotal
   };
 };
