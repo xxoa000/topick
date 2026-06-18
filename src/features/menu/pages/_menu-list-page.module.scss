@@ -1,9 +1,9 @@
 .menuContainer {
   position: relative;
-  left: -50px;
+  //left: -50px;
   width: 100%;
-  max-width: 720px;
-  margin: 40px auto;
+  //max-width: 750px;
+  margin: 20px auto;
   padding: 25px;
 
   border: 1px solid #ccc;
@@ -15,7 +15,7 @@
   margin-bottom: 15px;
 
   .photoTitle {
-    font-size: 18px;
+    font-size: 20px;
     color: #ff9800;
     margin: 0 0 15px 0;
     font-weight: bold;
@@ -52,13 +52,15 @@
 
 .right {
   position: fixed;
-  top: 120px;
-  right: 10px;
-  bottom: 15px;
+  top: 155px;
+  right: 20px;
+  bottom: 30px;
 
   width: 280px;
+  min-height: 500px;
   max-height: 700px;
   overflow-y: auto;
+  z-index: 99;
 
   padding: 24px;
 
