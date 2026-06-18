@@ -13,10 +13,10 @@ export default function Header(){
       <NavLink to="/" className={s.logoLink} onClick={handleClear}>
         <img src="/logo_1.png" alt="오늘의 식당 로고" />
   	  </NavLink>
-      {isLogin ? <div><NavLink to='/my-location-set'  className={s.marker}>
+      {isLogin ? <div><NavLink to='/my-location-set' className={s.marker}>
                         <img src="/marker.png" alt="marker.png"/>내 위치 설정
                       </NavLink></div> 
-               : <div><NavLink to='/member/login'>
+               : <div><NavLink to='/member/login' className={s.marker}>
                         <img src="/marker.png" alt="marker.png"/>내 위치 설정
                       </NavLink></div> 
       }
