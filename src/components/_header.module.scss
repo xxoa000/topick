@@ -9,6 +9,19 @@
   justify-content: space-around;
 }
 
+.marker {
+  display: flex;
+  justify-content: center;
+  line-height: 0; // img 아래 미세 공백 제거
+  align-items: center;
+  gap: 3px;
+
+  img {
+    min-height: 20px;
+    height: 25px;
+  }
+}
+
 .logoLink {
   display: flex;
   justify-content: center;
