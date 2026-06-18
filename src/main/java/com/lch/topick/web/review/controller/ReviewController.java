@@ -20,7 +20,6 @@ public class ReviewController {
     /**
      * 1. 리뷰 등록 (텍스트 JSON + 사진 파일 함께 받기)
      * POST /api/reviews
-     * 서비스에서 금지어로 인해 IllegalArgumentException이 던져지면 400 에러를 반환
      */
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> createReview(
@@ -31,7 +30,7 @@ public class ReviewController {
             ReviewDomain savedReview = reviewService.registerReview(domain, files);
             return ResponseEntity.ok(savedReview);
         } catch (IllegalArgumentException e) {
-            // 💡 서비스 레이어의 checkBlockWords에서 던진 금지어 경고 메시지를 프론트엔드로 400 Bad Request와 함께 전송
+            //서비스의 checkBlockWords에서 던진 금지어 경고 메시지를 프론트엔드로 400 Bad Request와 함께 전송
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -39,7 +38,6 @@ public class ReviewController {
     /**
      * 2. 리뷰 수정 (텍스트 JSON + 수정/추가된 사진 파일 함께 받기)
      * PUT /api/reviews/{reviewNo}
-     * 서비스로부터 "BLOCKED_WORD"를 응답받으면 400 에러를 반환
      */
     @PutMapping(value = "/{reviewNo}", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> updateReview(

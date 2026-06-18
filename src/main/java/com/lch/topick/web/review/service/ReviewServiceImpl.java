@@ -22,11 +22,11 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final BlockWordRepository blockWordRepository;
 
-    // 프로젝트 내부의 static 폴더 하위에 이미지 저장 경로
+    // 프로젝트 내부 static 폴더 하위에 이미지 저장 경로
     private final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/uploads/reviews/";
 
     /**
-     * 금지어 검증
+     * 0. 금지어 검증
      */
     private String checkBlockWords(String content) {
         if (content == null || content.trim().isEmpty()) return "SUCCESS";
@@ -60,29 +60,29 @@ public class ReviewServiceImpl implements ReviewService {
         String savedFileName = null;
 
         if (files != null && !files.isEmpty()) {
-            for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    try {
-                        File folder = new File(uploadDir);
-                        if (!folder.exists()) {
-                            folder.mkdirs();
-                        }
-
-                        String originalName = file.getOriginalFilename();
-                        String uuid = UUID.randomUUID().toString();
-                        String extension = originalName.substring(originalName.lastIndexOf("."));
-                        savedFileName = uuid + extension;
-
-                        File targetFile = new File(uploadDir + savedFileName);
-                        file.transferTo(targetFile);
-
-                        break; 
-                    } catch (IOException e) {
-                        //System.err.println("❌ 백엔드 파일 서버 저장 중 오류 발생: " + e.getMessage());
-                        throw new RuntimeException("파일 업로드 실패", e);
-                    }
-                }
-            }
+	        for (MultipartFile file : files) {
+	            if (!file.isEmpty()) {
+	                try {
+	                    File folder = new File(uploadDir);
+	                    if (!folder.exists()) {
+	                        folder.mkdirs();
+	                    }
+	
+	                    String originalName = file.getOriginalFilename();
+	                    String uuid = UUID.randomUUID().toString();
+	                    String extension = originalName.substring(originalName.lastIndexOf("."));
+	                    savedFileName = uuid + extension;
+	
+	                    File targetFile = new File(uploadDir + savedFileName);
+	                    file.transferTo(targetFile);
+	
+	                    break; 
+	                } catch (IOException e) {
+	                    //System.err.println("❌ 백엔드 파일 서버 저장 중 오류 발생: " + e.getMessage());
+	                    throw new RuntimeException("파일 업로드 실패", e);
+	                }
+	            }
+	        }
         }
 
         ReviewEntity entity = ReviewEntity.builder()
@@ -137,7 +137,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     /**
-     * 3. 리뷰 삭제 구현 완료
+     * 3. 리뷰 삭제
      */
     @Override
     public String removeReview(Long reviewNo, String currentMemberId) {
