@@ -1,0 +1,39 @@
+.btnBox {
+  display: flex;
+  gap: 10px;
+  //width: 400px;
+  align-items: center;
+  justify-content: center;
+}
+
+.login {
+  display: flex;
+  gap: 10px;
+  span {
+    margin-top: 10px;
+  }
+}
+
+
+.btn {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  max-width: 100px;
+  height: 40px;
+  padding: 3px;
+
+  border: none;
+  border-radius: 10px;
+
+  background-color: #ff9900;
+  color: #fff;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f08f00;
+  }
+}

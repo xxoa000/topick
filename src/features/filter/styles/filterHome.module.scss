@@ -1,18 +1,3 @@
-:global(section:has(.filter-home)) {
-  padding: 0;
-  min-height: 0;
-  display: block;
-  background: none;
-  text-align: left;
-}
-
-/* filter-home은 fixed로 띄우는데, 페이지(body) 스크롤까지 허용하면
-   지도는 그대로 보이고 header/footer만 스크롤되어 어긋나 보일 수 있습니다.
-   panel 내부는 overflow: auto로 스크롤되므로, 바깥 스크롤만 막습니다. */
-:global(body:has(.filter-home)) {
-  overflow: hidden;
-}
-
 @import './filterKeywordSearch.module.scss';
 
 :global(.filter-home) {
