@@ -35,15 +35,15 @@ public class StoreServiceImpl implements StoreService {
 
 				for (JsonNode itemNode : yogiyoMenuData) {
 					String menuName = itemNode.path("name").asText();
-					String menuImage = itemNode.path("thumbnail").path("image").asText();
+					String menuImage = itemNode.path("thumbnail").hasNonNull("image") ? itemNode.path("thumbnail").path("image").asText() : defaultMenuImage;
 					Integer menuPrice = itemNode.path("price").path("final_price").asInt();
 					Integer menuStock = itemNode.hasNonNull("stock_amount") ? itemNode.path("stock_amount").asInt()
 							: 999;
 					String menuContent = itemNode.path("description").asText();
 					String menuStatus = "active";
 
-					System.out.printf("[요기요] 메뉴: %s, 이미지: %s, 가격: %d, 재고: %d, 설명: %s, 품절: %s \n", menuName, menuImage,
-							menuPrice, menuStock, menuContent, menuStatus);
+//					System.out.printf("[요기요] 메뉴: %s, 이미지: %s, 가격: %d, 재고: %d, 설명: %s, 품절: %s \n", menuName, menuImage,
+//							menuPrice, menuStock, menuContent, menuStatus);
 
 					Optional<Menu> existingMenu = repository.findByStoreNoAndMenuName(storeNo, menuName);
 					Menu entity;
@@ -81,8 +81,8 @@ public class StoreServiceImpl implements StoreService {
 					Integer menuStock = 999;
 					String menuContent = itemNode.path("ai_mate_desc").asText();
 
-					System.out.printf("[요기요] 메뉴: %s, 이미지: %s, 가격: %d, 재고: %d, 설명: %s \n", menuName, menuImage,
-							menuPrice, menuStock, menuContent);
+//					System.out.printf("[요기요] 메뉴: %s, 이미지: %s, 가격: %d, 재고: %d, 설명: %s \n", menuName, menuImage,
+//							menuPrice, menuStock, menuContent);
 
 					Optional<Menu> existingMenu = repository.findByStoreNoAndMenuName(storeNo, menuName);
 					Menu entity;

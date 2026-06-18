@@ -42,8 +42,8 @@ public class StoreController {
 				menuNode = objectMapper.readTree(jsonResult2);
 			}
 			// 2. 카카오 데이터에서 추출한 동적 ID를 전달하여 요기요 메뉴 데이터 조회
-			System.out.println("추출된 요기요 ID: " + yogiyoId);
-			System.out.println(jsonResult2);
+			//System.out.println("추출된 요기요 ID: " + yogiyoId);
+			//System.out.println(jsonResult2);
 
 			// 자바 컬렉션 프레임워크의 Map을 생성하여 두 데이터를 깔끔하게 key-value로 묶어줍니다.
 			Map<String, Object> combinedResponse = new HashMap<>();
@@ -51,10 +51,10 @@ public class StoreController {
 			combinedResponse.put("menuData", menuNode);
 
 			result = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(combinedResponse);
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			//System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
 		} catch (Exception e) {
-			System.err.println("요기요 ID 추출 중 예외 발생: " + e.getMessage());
+			//System.err.println("요기요 ID 추출 중 예외 발생: " + e.getMessage());
 
 			// 💡 [여기서 에러가 났던 것임!] 에러 발생 시 프론트엔드에 보낼 에러 Map 객체를 반환합니다.
 			Map<String, Object> errorResponse = new HashMap<>();
@@ -80,7 +80,7 @@ public class StoreController {
 
 			// 중첩 구조 깊숙이 있는 "yogiyo_menu_url" 노드를 검색
 			JsonNode urlNode = rootNode.findValue("yogiyo_menu_url");
-			System.out.println(urlNode);
+			//System.out.println(urlNode);
 			if (urlNode != null && !urlNode.asText().isEmpty()) {
 				String fullUrl = urlNode.asText();
 

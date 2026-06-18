@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -185,5 +186,10 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewCreateAt(entity.getReviewCreateAt())
                 .reviewImage(entity.getReviewImage())
                 .build();
+    }
+    
+    @Override
+    public Map<String, Object> findReviewStatsByStoreNo(Long storeNo) {
+    	return reviewRepository.findReviewStatsByStoreNo(storeNo);
     }
 }

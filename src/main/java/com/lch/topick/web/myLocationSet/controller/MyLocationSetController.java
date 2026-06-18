@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lch.topick.web.myLocationSet.domain.MyLocationSetDTO;
@@ -31,7 +30,7 @@ public class MyLocationSetController {
 	private final MyLocationSetService myLocationSetService;
 	
 	@PostMapping("/join")
-    public ResponseEntity<?> join(@RequestBody MyLocationSetDTO dto) 
+    public ResponseEntity<?> join(@AuthenticationPrincipal String memberId, @RequestBody MyLocationSetDTO dto) 
                                             throws IOException {
         try {
             //  USER Role 추가후
@@ -40,10 +39,10 @@ public class MyLocationSetController {
             //entity.addRole(MemberRole.USER); 
             //=> save
         	char addressDefault = 'N';
-        	if(myLocationSetService.findByMemberId(dto.getMemberId()).size() <=0) addressDefault = 'Y';
+        	if(myLocationSetService.findByMemberId(memberId).size() <=0) addressDefault = 'Y';
         	
         	MyLocationSet entity = MyLocationSet.builder()
-            .memberId(dto.getMemberId())
+            .memberId(memberId)
             .addressPostcode(dto.getAddressPostcode())
             .addressRoad(dto.getAddressRoad())
             .addressLot(dto.getAddressLot())
@@ -65,7 +64,6 @@ public class MyLocationSetController {
 	@GetMapping("/addresslist")
 	public ResponseEntity<?> addressList(
 			@AuthenticationPrincipal String memberId
-//			@RequestParam("memberId") String memberId
 			) {
 	    List<MyLocationSet> list = myLocationSetService.findByMemberId(memberId);
 	    if(list!=null) {
