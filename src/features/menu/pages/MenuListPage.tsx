@@ -10,8 +10,18 @@ import OrderForm from "@/features/order/components/OrderForm";
 import MenuDetailForm from "../components/MenuDetailForm";
 
 
+type Photo = {
+  photo_id: number;
+  url: string;
+  title?: string;
+};
 
-export default function MenuListPage({ photos }: { photos: { photo_id: number; url: string; title?: string }[] }) {
+type MenuListPageProps = {
+  photos?: Photo[];
+};
+
+
+export default function MenuListPage({ photos = [] }: MenuListPageProps) {
   // 추후 옵션 용으로 쓸 예정
   //const [openMenuNo, setOpenMenuNo] = useState<number | null>(null);
   const { storeNo } = useParams();
