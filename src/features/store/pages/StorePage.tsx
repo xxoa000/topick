@@ -41,12 +41,14 @@ export default function StorePage() {
 		}
 	}, [store?.storeNo, getStoreReviewTotal]);
 
-	console.log(reviewTotal);
+	
 
 	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
 	if (!store || !storeData) {
 		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
 	}
+
+	console.log(storeData);
 
 	const photos = storeData.storeDetails.menu?.menus?.photos || [];
 	const allPhotos = storeData.storeDetails.photos?.photos || [];
@@ -56,7 +58,7 @@ export default function StorePage() {
 
 	return (
 		<div className={styles.container}>
-			<a href={store.placeUrl} className={styles.placeLink}>placeUrl: {store.placeUrl}</a><br /><br />
+			{/* <a href={store.placeUrl} className={styles.placeLink}>placeUrl: {store.placeUrl}</a><br /><br /> */}
 
 			{/* 1. 상단 상세정보 카드 영역 */}
 			<div className={styles.card}>
