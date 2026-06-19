@@ -19,10 +19,10 @@ export const orderApi = {
   },
 
   // 주문 상세 조회
-  selectOne: async() => {
-    const response = await accessApiClient.get(
-      `order/detail/${orderListNo}`,
-    );
-    return response.data;
-  },
+  // selectOne: async() => {
+  //   const response = await accessApiClient.get(
+  //     `order/detail/${orderListNo}`,
+  //   );
+  //   return response.data;
+  // },
 }

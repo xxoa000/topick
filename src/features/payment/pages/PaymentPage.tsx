@@ -8,9 +8,9 @@ export default function PaymentPage() {
 	const navigate = useNavigate();
 
 	const {
-		register,
+		//register,
 		handleSubmit,
-		formState: {errors},
+		//formState: {errors},
 	}=useForm<PaymentRequestDTO>();
 
 	const handlePayment = async(data:PaymentRequestDTO) => {
