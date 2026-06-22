@@ -22,10 +22,9 @@ export default function Section() {
         <Route path="/filter" element={<FilterHomePage />} />
         <Route path="/member/login/*" element={<LoginPage />} />
         <Route path="/member/join/*" element={<JoinPage />} />
-        {/* <Route path="/store/:storeNo/menu/:menuNo/*" element={<MenuDetailPage />}/> */}
         <Route path="/store/:storeNo/menu/list" element={<MenuListPage />}/>
         <Route path="/store/:storeNo/*" element={<StorePage />}/>
-        <Route path="/payment/*" element={<PaymentPage />}/>
+        <Route path="/payment/:orderListNo" element={<PaymentPage />}/>
         <Route path="/my-info/*" element={<MyInfoPage />}/>
         {!backgroundLocation && <Route path="/my-location-set/*" element={<MyLocationSet />} />}
       </Routes>

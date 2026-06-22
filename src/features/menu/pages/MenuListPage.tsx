@@ -41,7 +41,8 @@ export default function MenuListPage({ photos = [] }: MenuListPageProps) {
     const updateList = async () => {
       try {
         const data = await menuApi.selectList(Number(storeNo));
-        //console.log(data);
+        console.log("menuList data:", data);
+        console.log("menuNo 목록:", data.map((m) => m.menuNo));
         setMenuList(data);
       } catch (error) {
         if (!axios.isAxiosError(error)) return;
@@ -69,25 +70,23 @@ export default function MenuListPage({ photos = [] }: MenuListPageProps) {
         <section className={s.page}>
           <section className={s.left}>
             {menuList.map((menu, index) => (
-              <div key={menu.menuNo}>
-                <div className={s.menuItem}
+              <div key={menu.menuNo} className={s.menuItem}
                   style={{ borderBottom: index === menuList.length - 1 ? "none" : "1px solid #eee" }}
                 // onClick={() => setOpenMenuNo(prev => prev === menu.menuNo ? null : menu.menuNo)}
                 >
                   <MenuDetailForm menu={menu} />
-
                   {/* 추후 메뉴 옵션 선택용 */}
                   {/* {openMenuNo === menu.menuNo && <MenuOptionForm menu={menu} />} */}
-                </div>
               </div>
             ))}
           </section>
+          {/* 주문 폼 */}
+          <aside className={s.right}>
+            <OrderForm />
+          </aside>
         </section>
 
-        {/* 주문 폼 */}
-        <aside className={s.right}>
-          <OrderForm />
-        </aside>
+        
       </FormProvider>
     </main>
   );

@@ -14,11 +14,11 @@ dist-ssr
 
 #.env(환경 변수 파일)
 .env
+.env.example
 .env.production
 .env.local
 .env.development.local
 .env.production.local
-
 
 # Editor directories and files
 .vscode/*
