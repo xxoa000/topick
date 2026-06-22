@@ -54,7 +54,7 @@ public class OrderList {
 	// 실제 주문 가격
 	@Builder.Default
 	@Column(name = "order_list_final_price", nullable = false)
-	private Integer orderListFanalPrice = 0;
+	private Integer orderListFinalPrice = 0;
 
 	// 주문 생성 시간
 	@CreatedDate
@@ -79,7 +79,7 @@ public class OrderList {
 	// 추후 finalPrice 할인금액 계산 메서드 추가
 	public void changePrice(int totalPrice) {
 		this.orderListTotalPrice = totalPrice;
-		this.orderListFanalPrice = totalPrice;
+		this.orderListFinalPrice = totalPrice;
 	}
 
 }// class
