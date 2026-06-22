@@ -12,7 +12,7 @@ const MyLocationSet = () => {
     , addressList, isLoading
   } = useMyLocation();
 
-  const handleOverlayClick = (e) => {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       handleClose();
     }
