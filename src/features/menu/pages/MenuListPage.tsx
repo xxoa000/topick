@@ -50,15 +50,14 @@ export default function MenuListPage({ photos = [] }: MenuListPageProps) {
     };
     updateList();
   }, [storeNo]);
-
   return (
     <main className={s.menuContainer}>
       <article className={s.photoSection}>
         <h2 className={s.photoTitle}>메뉴</h2>
         {photos && photos.length > 0 && (
           <div className={s.photoWrapper}>
-            {photos.map((photo) => (
-              <div key={photo.photo_id} className={s.photoItem}>
+            {photos.map((photo,index) => (
+              <div key={photo.photo_id | index} className={s.photoItem}>
                 <img src={photo.url} alt={photo.title || "메뉴 사진"} referrerPolicy="no-referrer" />
               </div>
             ))}

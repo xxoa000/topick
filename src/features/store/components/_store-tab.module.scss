@@ -1,0 +1,44 @@
+.tabsContainer {
+    display: flex;
+    width: 100%;
+    background-color: #ffffff;
+    border-bottom: 1px solid #eaeaea;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.tabItem {
+    flex: 1; /* 4개의 탭을 균등한 너비로 배분 */
+    padding: 14px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #666666;
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+        color: #333333;
+    }
+
+    &.active {
+        color: #ff7a00; /* 대표 오렌지 테마 색상 적용 */
+        font-weight: 700;
+
+        /* 활성화된 탭 밑에 강조선 표시 */
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; /* 부모 컨테이너의 border-bottom 선과 겹치도록 설정 */
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #ff7a00;
+            border-radius: 2px 2px 0 0;
+        }
+    }
+}

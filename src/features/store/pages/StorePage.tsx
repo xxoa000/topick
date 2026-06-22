@@ -2,6 +2,8 @@ import { useStore } from "../hooks/useStore.ts";
 import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useReview } from '../../review/hooks/useReview';
+import { ThumbnailPhoto } from '../components/ThumbnailPhotoComponent.tsx'
+import { StoreTab } from '../components/StoreTabComponent.tsx'
 import { Fragment, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
 import styles from './_store-page.module.scss';
@@ -35,8 +37,6 @@ export default function StorePage() {
 
 	}, [store?.storeNo, store?.id, store?.y, store?.x, getStoreReviewTotal]);
 
-
-
 	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
 	if (!store || !storeData) {
 		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
@@ -45,45 +45,18 @@ export default function StorePage() {
 	console.log(storeData);
 
 	const photos = storeData.storeDetails.menu?.menus?.photos || [];
-	const allPhotos = storeData.storeDetails.photos?.photos || [];
 	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
 	const storeTag = storeData.storeDetails.place_add_info?.tags || [];
 	storeTag.push(store?.categoryName.split('>')[1]?.trim());
 
 	return (
 		<div className={styles.container}>
-			<a href={store.placeUrl} className={styles.placeLink}>placeUrl: {store.placeUrl}</a><br /><br />
+			{/* <a href={store.placeUrl} className={styles.placeLink}>placeUrl: {store.placeUrl}</a><br /><br /> */}
 
 			{/* 1. 상단 상세정보 카드 영역 */}
 			<div className={styles.card}>
 
-				{/* 대표 이미지 배너 */}
-				<div className={styles.banner}>
-					{/* 왼쪽: 큰 메인 사진 */}
-					<div className={styles.mainPhoto}>
-						<img src={allPhotos[0].url} alt={allPhotos[0].title} referrerPolicy="no-referrer" />
-					</div>
 
-					{/* 중앙: 위아래 중간 사진 2개 */}
-					<div className={styles.subPhotoGroup}>
-						<div className={styles.imgWrapper}>
-							<img src={allPhotos[1].url} alt={allPhotos[1].title} referrerPolicy="no-referrer" />
-						</div>
-						<div className={styles.imgWrapper}>
-							<img src={allPhotos[2].url} alt={allPhotos[2].title} referrerPolicy="no-referrer" />
-						</div>
-					</div>
-
-					{/* 오른쪽: 위아래 작은 사진 2개 */}
-					<div className={styles.subPhotoGroup}>
-						<div className={styles.imgWrapper}>
-							<img src={allPhotos[3].url} alt={allPhotos[3].title} referrerPolicy="no-referrer" />
-						</div>
-						<div className={styles.imgWrapper}>
-							<img src={allPhotos[4].url} alt={allPhotos[4].title} referrerPolicy="no-referrer" />
-						</div>
-					</div>
-				</div>
 
 				{/* 텍스트 정보 영역 */}
 				<div className={styles.infoSection}>
@@ -123,7 +96,12 @@ export default function StorePage() {
 							</span>
 						))}
 					</div>
+					{/* 대표 이미지 배너 */}
+					<ThumbnailPhoto storeData={storeData} />
 
+					{/*  탭 컴포넌트 */}
+					<StoreTab />
+					
 					{/* 상세 안내 정보 & 우측 지도 */}
 					<div className={styles.detailsRow}>
 
