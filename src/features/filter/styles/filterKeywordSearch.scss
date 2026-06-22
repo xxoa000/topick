@@ -1,22 +1,22 @@
-:global(header:has(#food-type-slot)) {
+header:has(#food-type-slot) {
   position: relative;
   z-index: 10;
 }
 
-:global(#food-type-slot) {
+#food-type-slot {
   flex: 1;
   min-width: 0;
   max-width: 420px;
 }
 
-:global(.filter-keyword-search) {
+.filter-keyword-search {
   display: flex;
   align-items: center;
   gap: 6px;
   width: 100%;
 }
 
-:global(.filter-keyword-search__input) {
+.filter-keyword-search__input {
   flex: 1;
   min-width: 0;
   height: 36px;
@@ -37,8 +37,8 @@
   }
 }
 
-:global(.filter-keyword-search__submit),
-:global(.filter-keyword-search__clear) {
+.filter-keyword-search__submit,
+.filter-keyword-search__clear {
   flex-shrink: 0;
   height: 36px;
   padding: 0 12px;
@@ -48,7 +48,7 @@
   white-space: nowrap;
 }
 
-:global(.filter-keyword-search__submit) {
+.filter-keyword-search__submit {
   border: none;
   background: #ff6b00;
   color: #fff;
@@ -63,7 +63,7 @@
   }
 }
 
-:global(.filter-keyword-search__clear) {
+.filter-keyword-search__clear {
   border: 1px solid #ddd;
   background: #fff;
   color: #666;

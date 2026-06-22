@@ -1,7 +1,7 @@
 import FilterMapView from '../components/FilterMapView';
 import SearchResultsPanel from '../components/SearchResultsPanel';
 import TagFilterPanel from '../components/TagFilterPanel';
-import '../styles/filterHome.module.scss';
+import '../styles/filterHome.scss';
 
 export default function FilterHomePage() {
   return (
