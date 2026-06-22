@@ -13,6 +13,8 @@ import com.lch.topick.web.menu.def.entity.Menu;
 import com.lch.topick.web.menu.def.repository.MenuRepository;
 import com.lch.topick.web.order.def.domain.OrderCreateRequestDTO;
 import com.lch.topick.web.order.def.domain.OrderDetailRequestDTO;
+import com.lch.topick.web.order.def.domain.OrderDetailResponseDTO;
+import com.lch.topick.web.order.def.domain.OrderListResponseDTO;
 import com.lch.topick.web.order.def.entity.OrderDetail;
 import com.lch.topick.web.order.def.entity.OrderList;
 import com.lch.topick.web.order.def.repository.OrderDetailRepository;
@@ -22,7 +24,9 @@ import com.lch.topick.web.store.let.repository.OrderStoreRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -62,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
 	
 	// 1.2 주문 리스트 > 주문 상세 생성
 	@Override
-	public void create(String memberId, OrderCreateRequestDTO creReqDto) {
+	public Long create(String memberId, OrderCreateRequestDTO creReqDto) {
 		
 		// Error : 주문한 게 아무것도 없는 경우
 		if ( creReqDto.getDetailList()==null || creReqDto.getDetailList().isEmpty() )
@@ -99,6 +103,11 @@ public class OrderServiceImpl implements OrderService {
 		// 총 주문 가격, 최종 주문 가격 계산
 		newList.changePrice(totalPrice);
 		
+		// orderListNo 리턴 -> 결제 페이지에서 사용
+		log.info("orderListNo: {}", newList.getOrderListNo());
+		return newList.getOrderListNo();
+		
+		
 	} //create
 	
 	
@@ -119,11 +128,33 @@ public class OrderServiceImpl implements OrderService {
 	
 	// SELECT : 내 주문 리스트 > 주문 상세
 	@Override
-	public List<OrderDetail> selectOne(Long orderListNo) {
-		List<OrderDetail> detEntity = detRepository.findByOrderListNo(orderListNo);
+	public OrderListResponseDTO selectOne(Long orderListNo) {
+		OrderList listEntity = listRepository.findById(orderListNo)
+				.orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 		
+		List<OrderDetailResponseDTO> detailList =
+				detRepository.findByOrderListNo(orderListNo)
+				.stream()
+				.map(det -> new OrderDetailResponseDTO(
+						det.getOrderDetailNo(),
+						det.getOrderDetailMenuName(),
+						det.getOrderDetailAmount(),
+						det.getOrderDetailTodayPrice()
+				))
+				.toList();
 		
-		return detEntity;
+		OrderListResponseDTO resDto = new OrderListResponseDTO(
+				listEntity.getOrderListNo(),
+				listEntity.getOrderStoreName(),
+				listEntity.getOrderListVisitTime(),
+				listEntity.getOrderListVisitType(),
+				listEntity.getOrderListRequest(),
+				listEntity.getOrderListTotalPrice(),
+				listEntity.getOrderListFinalPrice(),
+				detailList
+				);
+		
+		return resDto;
 	} //selectOne
 
 	
