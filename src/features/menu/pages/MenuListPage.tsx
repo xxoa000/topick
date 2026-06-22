@@ -41,7 +41,6 @@ export default function MenuListPage({ photos = [] }: MenuListPageProps) {
     const updateList = async () => {
       try {
         const data = await menuApi.selectList(Number(storeNo));
-        //console.log(data);
         setMenuList(data);
       } catch (error) {
         if (!axios.isAxiosError(error)) return;

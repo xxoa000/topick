@@ -2,7 +2,7 @@ import type { OrderCreateRequestDTO } from "../types/orderDTO";
 import { useFormContext } from "react-hook-form";
 import axios from "axios";
 import { orderApi } from "../services/orderApi";
-import s from "@/features/order/components/_orderForm.module.scss";
+import s from "@/features/order/components/_order-form.module.scss";
 import { useNavigate } from "react-router-dom";
 import useCustomLogin from "@/hooks/useCustomLogin";
 
@@ -16,11 +16,24 @@ export default function OrderForm() {
   const navigate = useNavigate();
   const { isLogin } = useCustomLogin();
 
-  // const now = new Date();
-  // 미국 시간을 한국 시간으로 변환
-  // now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  // YYYY-MM-DDTHH:mm 년-월-일-시간-분 까지만 추출
-  // const minDateTime = now.toISOString().slice(0,16);
+  
+  // 미국 시간을 한국 시간으로 변환 (미국-한국 시차는 -540분이므로 60000(초)을 곱한다)
+  const toDateTimeLocal = (date: Date) => {
+    const offset = date.getTimezoneOffset() * 60000;
+    // YYYY-MM-DDTHH:mm 년-월-일-시간-분 까지만 추출
+    return new Date(date.getTime() - offset).toISOString().slice(0,16);
+  }
+
+  // 예약시간보다 이전 날짜, 시간은 예약 불가하는 코드
+  const now = new Date();
+  const minDateTime = toDateTimeLocal(now);
+
+  // 오늘 시간만 예약 가능하도록 설정하는 코드
+  const endDay = new Date(now);
+  // 마지막 예약 가능 시간은 21시로 하드코딩 (추후 개선)
+  endDay.setHours(21,0,0,0);
+  const maxDateTime = toDateTimeLocal(endDay);
+
 
   // 총 금액 계산
   const detailList = watch("detailList") ?? [];
@@ -30,21 +43,17 @@ export default function OrderForm() {
 
 
   const handleOrderCreate = async (data:OrderCreateRequestDTO) => {
-    console.log("submitData: ",data);
     if (!isLogin) {
       alert("먼저 로그인을 해주세요.");
       navigate("/member/login");
       return;
     }
     try {
-      await orderApi.create(data);
-      console.log("order result: ",data);
-
-      alert("주문완료! 홈으로 돌아갑니다.");
-      navigate("/");
+      const orderListNo = await orderApi.create(data);
+      //console.log("order result: ",orderListNo);
       
-      // alert("주문완료, 결제창으로 넘어갑니다.");
-      // navigate("/payment");
+      alert("주문완료, 결제창으로 넘어갑니다.");
+      navigate(`/payment/${orderListNo}`);
 
     } catch(error) {
       if (!axios.isAxiosError(error)) {
@@ -60,7 +69,7 @@ export default function OrderForm() {
   <form onSubmit={handleSubmit(handleOrderCreate)} className={s.form}>
     <div className={s.row}>
       <label>방문일시<span className={s.required}>*</span></label>
-        <input type="datetime-local" {...register("orderListVisitTime")}></input>
+        <input type="datetime-local" min={minDateTime} max={maxDateTime} {...register("orderListVisitTime")}></input>
     </div>
     
     <div className={s.row}>
