@@ -1,7 +1,8 @@
+import { useStore } from "../hooks/useStore.ts";
 import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useReview } from '../../review/hooks/useReview';
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
 import styles from './_store-page.module.scss';
 
@@ -22,26 +23,19 @@ interface StoreData {
 export default function StorePage() {
 
 	const location = useLocation();
-	const [storeData, setStoreData] = useState<any>(null);
 	const state = location.state as { store: StoreData } | null;
 	const store = state?.store;
+	const { storeData, getStoreData } = useStore();
 	const { reviewTotal, getStoreReviewTotal } = useReview();
 
-
-
-
 	useEffect(() => {
-		// 스프링 부트 API 호출
-		fetch(`http://localhost:8080/api/store/${store?.storeNo}/kakaoId/${store?.id}/lat/${store?.y}/lng/${store?.y}`)
-			.then(res => res.json())
-			.then(data => setStoreData(data));
+		if (!store?.storeNo) return;
+		getStoreData(store.storeNo, store.id, store.y, store.x);
+		getStoreReviewTotal(store.storeNo);
 
-		if (store?.storeNo) {
-			getStoreReviewTotal(store.storeNo);
-		}
-	}, [store?.storeNo, getStoreReviewTotal]);
+	}, [store?.storeNo, store?.id, store?.y, store?.x, getStoreReviewTotal]);
 
-	
+
 
 	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
 	if (!store || !storeData) {
@@ -58,7 +52,7 @@ export default function StorePage() {
 
 	return (
 		<div className={styles.container}>
-			{/* <a href={store.placeUrl} className={styles.placeLink}>placeUrl: {store.placeUrl}</a><br /><br /> */}
+			<a href={store.placeUrl} className={styles.placeLink}>placeUrl: {store.placeUrl}</a><br /><br />
 
 			{/* 1. 상단 상세정보 카드 영역 */}
 			<div className={styles.card}>

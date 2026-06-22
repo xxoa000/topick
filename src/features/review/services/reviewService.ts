@@ -1,4 +1,4 @@
-import accessApiClient from '@/config/axios';
+import { accessApiClient, publicApiClient }from '@/config/axios';
 import type { Review } from '../types/reviewType';
 
 export const reviewService = {
@@ -87,7 +87,7 @@ export const reviewService = {
 
   //가게 평균 리뷰 보기
   getReviewTotal: async (storeNo: number): Promise<{avg: number, total: number}> => {
-    const response = await accessApiClient.get<{avg: number, total: number}>(`/reviews/store/${storeNo}/total`);
+    const response = await publicApiClient.get<{avg: number, total: number}>(`/reviews/store/${storeNo}/total`);
     return response.data;
   }
 };
