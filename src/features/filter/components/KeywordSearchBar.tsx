@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import KeywordSearchForm from './KeywordSearchForm';
 import { useFilterSearch } from '../context/FilterSearchContext';
 import type { FilterNavigateState } from '../types/navigate';
-import '../styles/filterKeywordSearch.module.scss';
+import '../styles/filterKeywordSearch.scss';
 
 function isFilterPath(pathname: string) {
   return pathname === '/filter' || pathname.startsWith('/filter/');

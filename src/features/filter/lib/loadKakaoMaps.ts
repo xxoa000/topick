@@ -48,7 +48,7 @@ function appendMapsScript(appKey: string): Promise<void> {
 
     const script = document.createElement('script');
     script.dataset.kakaoMapsSdk = 'true';
-    script.src = `${KAKAO_SDK_URL}?appkey=${encodeURIComponent(appKey)}&autoload=false`;
+    script.src = `${KAKAO_SDK_URL}?appkey=${encodeURIComponent(appKey)}&libraries=services&autoload=false`;
     script.onload = () => {
       waitForKakaoMaps(win).then(resolve).catch(reject);
     };

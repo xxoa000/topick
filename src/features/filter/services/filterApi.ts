@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { publicApiClient } from '@/config/axios';
 import type { StoreRequest } from '../../store/types';
 import type {
   FilterRequest,
@@ -9,44 +9,33 @@ import type {
   Tag,
 } from '../types';
 
-const filterHttp = axios.create({
-  baseURL: 'http://localhost:8080',
-  headers: { 'Content-Type': 'application/json' },
-});
-
 export const searchByKeyword = async (
   body: KeywordRequest,
 ): Promise<SearchResponse> => {
-  const { data } = await filterHttp.post<SearchResponse>(
-    '/api/keyword',
-    body,
-  );
+  const { data } = await publicApiClient.post<SearchResponse>('/keyword', body);
   return data;
 };
 
 export const searchByFilter = async (
   body: FilterRequest,
 ): Promise<SearchResponse> => {
-  const { data } = await filterHttp.post<SearchResponse>(
-    '/api/filter',
-    body,
-  );
+  const { data } = await publicApiClient.post<SearchResponse>('/filter', body);
   return data;
 };
 
 export const fetchTags = async (): Promise<Tag[]> => {
-  const { data } = await filterHttp.get<Tag[]>('/api/tag');
+  const { data } = await publicApiClient.get<Tag[]>('/tag');
   return data;
 };
 
 export const fetchStoreMenus = async (body: StoreRequest): Promise<Menu[]> => {
-  const { data } = await filterHttp.post<Menu[]>('/api/filter/menu/store', body);
+  const { data } = await publicApiClient.post<Menu[]>('/filter/menu/store', body);
   return data;
 };
 
 export const fetchKakaoMapsJsKey = async (): Promise<string> => {
-  const { data } = await filterHttp.get<KakaoMapsConfig>(
-    '/api/filter/kakao-maps-js-key',
+  const { data } = await publicApiClient.get<KakaoMapsConfig>(
+    '/filter/kakao-maps-js-key',
   );
   if (!data.jsKey?.trim()) {
     throw new Error(
