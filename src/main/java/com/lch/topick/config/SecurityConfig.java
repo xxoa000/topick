@@ -1,5 +1,6 @@
 package com.lch.topick.config;
 
+import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,6 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.lch.topick.jwtToken.JwtAuthenticationFilter;
 
@@ -121,40 +125,60 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 	
-	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		
 		// 1. Filter 등록
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-		/* jwtAuthenticationFilter: JWT 인증용 커스텀 필터, 유효성 검사, 토큰 기반 인증 처리
-		 * UsernamePasswordAuthenticationFilter.class : 스프링 시큐리티 기본 필터 (폼 로그인 시 사용자 이름과 비밀번호를 받아 인증)
-         * Before 인 이유는 JWT 인증 필터가 먼저 실행되도록 하기 위해
-         
-         * 동작 순서
-         * 1. jwtAuthenticationFilter(jwt 인증 필터)가 먼저 실행 -> Request 헤더의 JWT 토큰 검사 -> 인증 객체 생성 or 실패 처리
-         * 2. UsernamePasswordAuthenticationFilter 가 실행 되어 로그인 처리
-         * 3. 만약 JWT 토큰이 유효할 경우, 이 후 필터는 이미 인증된 상태로 Request 처리(로그인 유지의 경우) */
-		
 		
 		// 2. HttpSecurity 빌더 설정 & return
 		return http.httpBasic(httpBasic -> httpBasic.disable())								// HTTP 기본 인증 비활성화
 				.formLogin(formLogin -> formLogin.disable())								// 기본 formLogin 비활성화
 				.logout(logout -> logout.disable())											// 기본 logout 비활성화
 				.csrf(csrf -> csrf.disable())												// CSRF 비활성화_필수항목
-				.cors(cors -> {})															// CORS 설정 활성화(기본값)_필수항목
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))			// 커스텀 CORS 설정 적용
 				.sessionManagement(session -> session
-						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))			// 세션 비활성화(무상태) -> 매 요청마다 인증 하도록
-				.authorizeHttpRequests(auth -> auth 										// authorizeHttpRequests : 인가 규칙 정의, 경로별 권한 설정
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))			// 세션 비활성화(무상태)
+				.authorizeHttpRequests(auth -> auth 										// 인가 규칙 정의, 경로별 권한 설정
+						// 로그인, 회원가입, 태그 등 인증 없이 통과해야 하는 public API를 최상단에 명시
+						.requestMatchers("/api/member/login", "/api/member/join", "/api/tag").permitAll()
+						
+						// 권한별 접근 제한
 						.requestMatchers("/api/admin/**").hasRole("ADMIN")
 						.requestMatchers("/api/owner/**").hasRole("OWNER")
 						.requestMatchers("/api/payment/**", "/api/myPage/**").hasRole("MEMBER")
+						
+						// CORS Preflight(OPTIONS) 요청 전체 허용
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.anyRequest().permitAll()) 											// 모든요청 허용
+						.anyRequest().permitAll()) // 나머지 모든 요청 허용
+						
 				.build();
 		
 	} //filterChain
 
+//배포 및 로컬 환경을 위한 CORS 세부 설정 Bean
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+    
+    // 1. 인증 정보(쿠키, JWT 등)를 허용할 때 오리진을 패턴으로 유연하게 설정
+    config.setAllowedOriginPatterns(Arrays.asList("*")); 
+    
+    // 2. 필요한 HTTP 메서드만 명시적으로 허용
+    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+    
+    // 3. 모든 헤더 허용
+    config.setAllowedHeaders(Arrays.asList("*"));
+    
+    // 4. 쿠키 및 인증 헤더 허용 (JWT 사용 시 필수)
+    config.setAllowCredentials(true); 
+    
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config); // 모든 URL 경로에 적용
+    return source;
+	}
+	
 	
 }//class
