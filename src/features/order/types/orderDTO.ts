@@ -18,3 +18,22 @@ export type OrderDetailRequestDTO = {
   orderDetailAmount: number;
 	menuPrice : number;
 }
+
+export type OrderListResponseDTO = {
+	orderListNo : number,
+	orderStoreName : string;
+	orderListVisitTime : string;
+	orderListVisitType : string ;
+	orderListRequest : string;
+	orderListTotalPrice?: number;
+	orderListFinalPrice?: number;
+
+	detailList: OrderDetailResponseDTO[];
+}
+
+export type OrderDetailResponseDTO = {
+	orderDetailNo : number;
+	orderDetailMenuName : string;
+	orderDetailAmount: number;
+	orderDetailTodayPrice: number;
+}

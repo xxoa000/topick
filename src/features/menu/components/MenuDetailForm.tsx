@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import type { MenuResponseDTO } from "../types/menuDTO";
 import s from "@/features/menu/components/_menuDetailForm.module.scss";
 import type { OrderCreateRequestDTO } from "@/features/order/types/orderDTO";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 type MenuDetailFormProps = {
   menu: MenuResponseDTO;
@@ -12,10 +11,20 @@ type MenuDetailFormProps = {
 
 export default function MenuDetailForm({menu}: MenuDetailFormProps) {
   const { storeNo } = useParams();
-  const [amount,setAmount] = useState(0);
-  const { setValue, getValues } = useFormContext<OrderCreateRequestDTO>();
+  const { setValue, getValues, control } = useFormContext<OrderCreateRequestDTO>();
 
   // 주문용 상세 데이터 저장
+  const detailList = useWatch({
+    control,
+    name: "detailList",
+  }) ?? [];
+
+  // 저장된 값이 없다면 수량 1부터 시작
+  const amount = detailList.find(
+    (m) => m.menuNo === Number(menu.menuNo)
+  )?.orderDetailAmount ?? 0;
+
+
   const saveMenu = (nextAmount:number) => {
     //오류 방지
     if (!storeNo || !menu?.menuNo) return;
@@ -44,31 +53,11 @@ export default function MenuDetailForm({menu}: MenuDetailFormProps) {
 
   // 수량 증감
   const handleDecrease = () => {
-    const nextAmount = amount > 0 ? amount-1 : 0;
-    setAmount(nextAmount);
-    saveMenu(nextAmount);
+    saveMenu(amount > 0 ? amount-1 : 0);
   };
   const handleIncrease = () => {
-    const nextAmount = amount+1;
-    setAmount(nextAmount);
-    saveMenu(nextAmount);
+    saveMenu(amount+1);
   };
-
-  // 메뉴 오픈시 출력
-  useEffect(() => {
-    if (!menu?.menuNo) return;
-    //저장된 값이 없다면 수량 1부터 시작
-    const currentList = getValues("detailList") ?? [];
-    const findMenu = currentList.find(
-      (m) => m.menuNo === Number(menu.menuNo)
-    );
-    const saveAmount = findMenu?.orderDetailAmount ?? 0;
-    setAmount(saveAmount);
-    saveMenu(saveAmount);
-  },[menu?.menuNo, getValues]);
-
-
-
 
 
 
