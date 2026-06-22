@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class OrderDetailRequestDTO {
-
+	
 	private Long menuNo;
 	private Integer orderDetailAmount;
 	//private String orderDetailMenuName;

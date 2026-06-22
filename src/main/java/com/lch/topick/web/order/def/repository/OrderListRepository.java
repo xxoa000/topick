@@ -10,6 +10,9 @@ public interface OrderListRepository extends JpaRepository<OrderList,Long> {
 	
 	public List<OrderList> findByMemberId( String memberId );
 	
+	// 결제에서 사용
+	public OrderList findByMemberIdAndOrderListNo(String memberId, Long orderListNo);
+	
 	
 
 } //interface

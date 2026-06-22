@@ -31,9 +31,9 @@ public class OrderController {
 									@RequestBody OrderCreateRequestDTO creReqDto) {
 		log.info("memberId: {}", memberId);
 		log.info("creReqDto: {}", creReqDto);
-		orderService.create(memberId, creReqDto);
+		
 		return ResponseEntity.status(HttpStatus.CREATED)
-							.body("메뉴 선택 완료, 결제 창으로 이동합니다.");
+							 .body(orderService.create(memberId, creReqDto));
 	}
 	
 	
