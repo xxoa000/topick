@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -152,16 +151,28 @@ public class MemberController {
 	
 	// 기존 계정 수정
 	@PatchMapping("/update/{memberId}")
-	public ResponseEntity<?> update(@PathVariable String memberId, @RequestBody MemberUpdateRequestDTO requestDto) {
+	public ResponseEntity<?> update(@AuthenticationPrincipal String memberId, @RequestBody MemberUpdateRequestDTO requestDto) {
 		
 		return ResponseEntity.ok(memberService.update(memberId, requestDto));
 		
 	}//update
 	
 
-	// 계정 삭제
-	@DeleteMapping("/resign/{memberId}")
-	public void resign(@PathVariable String memberId, Member entity) {
-	}// delete
+	// 계정 탈퇴
+	@PatchMapping("/resign")
+	public void resign(@AuthenticationPrincipal String memberId, HttpServletResponse response) {
+		memberService.resign(memberId);
+				
+		// 쿠키에 저장된 refreshToken 삭제
+		ResponseCookie deleteCookie = 
+				ResponseCookie.from("refreshToken", "")
+							  .httpOnly(true)
+							  .secure(false) 		// 주소가 http://localhost...면 false
+							  .path("/")
+							  .maxAge(0)
+							  .sameSite("Lax")
+							  .build();
+		response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+	}//resign
 
 }// class

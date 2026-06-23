@@ -94,7 +94,7 @@ public class MemberServiceImpl implements MemberService {
 	public MemberLoginResultDTO login(MemberLoginRequestDTO requestDto) {
 		
 		// 1.1 아이디 존재여부 체크
-		Member entity = repository.findById(requestDto.getMemberId())
+		Member entity = repository.findByMemberIdAndMemberStatus(requestDto.getMemberId(), "active")
 						 		  .orElseThrow(() -> new CustomException(ErrorCode.LOGIN_FAILED));
 		// 1.2 탈퇴 계정 여부 체크
 		if ( "delete".equals(entity.getMemberStatus()) ) {
@@ -194,9 +194,10 @@ public class MemberServiceImpl implements MemberService {
 	// UPDATE 계정 탈퇴
 	@Override
 	public void resign(String memberId) {
-		Member entity = repository.findById(memberId)
+		Member entity = repository.findByMemberIdAndMemberStatus(memberId, "active")
 				  		.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 		entity.resign();
+		entity.clearToken();
 	} //resign
 	
 	
