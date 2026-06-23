@@ -3,18 +3,23 @@ import styles from './_store-tab.module.scss';
 
 export const StoreTab: React.FC = () => {
     // 우선 기능 없이 UI 및 시각적 전환만 확인하기 위해 로컬 State로 구성했습니다.
-    const [activeTab, setActiveTab] = useState('홈');
-    const tabs = ['홈', '메뉴', '사진', '리뷰'];
+    const [activeTab, setActiveTab] = useState('home');
+    const tabs = [
+        { id: 'home', label: '홈' },
+        { id: 'menu', label: '메뉴' },
+        { id: 'photo', label: '사진' },
+        { id: 'review', label: '리뷰' }
+    ];
 
     return (
         <div className={styles.tabsContainer}>
             {tabs.map((tab) => (
                 <button
-                    key={tab}
-                    className={`${styles.tabItem} ${activeTab === tab ? styles.active : ''}`}
-                    onClick={() => setActiveTab(tab)}
+                    key={tab.id}
+                    className={`${styles.tabItem} ${activeTab === tab.id ? styles.active : ''}`}
+                    onClick={() => setActiveTab(tab.id)}
                 >
-                    {tab}
+                    {tab.label}
                 </button>
             ))}
         </div>

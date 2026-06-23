@@ -29,7 +29,7 @@ export default function StorePage() {
 	const store = state?.store;
 	const { storeData, getStoreData } = useStore();
 	const { reviewTotal, getStoreReviewTotal } = useReview();
-
+	
 	useEffect(() => {
 		if (!store?.storeNo) return;
 		getStoreData(store.storeNo, store.id, store.y, store.x);
@@ -47,7 +47,15 @@ export default function StorePage() {
 	const photos = storeData.storeDetails.menu?.menus?.photos || [];
 	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
 	const storeTag = storeData.storeDetails.place_add_info?.tags || [];
-	storeTag.push(store?.categoryName.split('>')[1]?.trim());
+	const newTag = store?.categoryName.split('>')[1]?.trim();
+	if (newTag) {
+		// 1. 기존 배열과 새 값을 합쳐 중복 없는 배열 생성
+		const uniqueTags = [...new Set([...storeTag, newTag])];
+
+		// 2. 기존 배열의 내용을 비우고 새로운 값들로 채워넣음 (원본 유지)
+		storeTag.length = 0;
+		storeTag.push(...uniqueTags);
+	}
 
 	return (
 		<div className={styles.container}>
@@ -56,13 +64,12 @@ export default function StorePage() {
 			{/* 1. 상단 상세정보 카드 영역 */}
 			<div className={styles.card}>
 
-
-
 				{/* 텍스트 정보 영역 */}
 				<div className={styles.infoSection}>
 
 					{/* 타이틀 이름 / 별점 / 버튼 */}
 					<div className={styles.titleRow}>
+
 						<div className={styles.titleLeft}>
 							<h1>{store.placeName}</h1>
 							{/* 별점 컨테이너 */}
@@ -82,10 +89,12 @@ export default function StorePage() {
 							</div>
 							<span className={styles.reviewCount}>({reviewTotal.total})</span>
 						</div>
+
 						<div className={styles.btnGroup}>
 							<button>북마크</button>
 							<button>공유</button>
 						</div>
+
 					</div>
 
 					{/* 태그 리스트 */}
@@ -96,12 +105,13 @@ export default function StorePage() {
 							</span>
 						))}
 					</div>
+
 					{/* 대표 이미지 배너 */}
 					<ThumbnailPhoto storeData={storeData} />
 
 					{/*  탭 컴포넌트 */}
 					<StoreTab />
-					
+					{/* 탭 홈 일떄만, 메뉴, 리뷰일떄는 안보이게 */}
 					{/* 상세 안내 정보 & 우측 지도 */}
 					<div className={styles.detailsRow}>
 
@@ -150,10 +160,13 @@ export default function StorePage() {
 					</div>
 
 				</div>
+
+				{/* 탭 메뉴 일떄만 */}
+				{/* 메뉴 리스트 */}
+				<MenuListPage photos={photos} />
+
 			</div>
 
-			{/* 메뉴 리스트 */}
-			<MenuListPage photos={photos} />
 
 			<div>
 				<ReviewPage storeNo={store.storeNo} />
