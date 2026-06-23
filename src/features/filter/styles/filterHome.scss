@@ -2,7 +2,7 @@
 
 .filter-home {
   width: 100%;
-  height: calc(100vh - 180px);
+  height: 700px;
   font-family: 'Pretendard', 'Malgun Gothic', Arial, sans-serif;
   color: #222;
 }
@@ -28,7 +28,6 @@
   min-height: 0;
   height: 100%;
   overflow: visible;
-  z-index: 1;
 }
 
 .filter-results-panel {
