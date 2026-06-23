@@ -31,9 +31,9 @@ export default function MyResignPage() {
 
 	return (
   <section>
-    회원 탈퇴
-
-      <button type="button" onClick={handleResign}>탈퇴 하기</button>
+    <h3>회원 탈퇴</h3><br />
+    정말로 탈퇴하시겠습니까?<br/>
+    <button type="button" onClick={handleResign}>탈퇴 하기</button>
   </section>
   );
 }
