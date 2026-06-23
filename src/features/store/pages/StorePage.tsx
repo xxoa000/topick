@@ -54,7 +54,7 @@ export default function StorePage() {
 		const uniqueTags = [...new Set([...storeTag, newTag])];
 
 		// 2. 기존 배열의 내용을 비우고 새로운 값들로 채워넣음 (원본 유지)
-		storeTag.length = 0;
+		storeTag.length = 0;	
 		storeTag.push(...uniqueTags);
 	}
 
@@ -173,6 +173,7 @@ export default function StorePage() {
 				}
 
 			</div>
+
 			{activeTab === "review" &&
 				<div>
 					<ReviewPage storeNo={store.storeNo} />
