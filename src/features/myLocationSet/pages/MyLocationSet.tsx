@@ -12,8 +12,14 @@ const MyLocationSet = () => {
     , addressList, isLoading
   } = useMyLocation();
 
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+  
   return (
-    <div className={styles.modalOverlay}>
+    <div className={styles.modalOverlay} onClick={handleOverlayClick}>
       <div className={styles.modalContent}>
 
         {/* [화면 1] 나의 저장위치 목록 */}

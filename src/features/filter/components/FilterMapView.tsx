@@ -34,16 +34,32 @@ function waitForElementSize(el: HTMLElement): Promise<void> {
   });
 }
 
+const DEFAULT_CENTER = { lat: 37.3500951835995, lng: 127.108932846326 }; // 미금역
+
 function getCurrentCenter(): Promise<{ lat: number; lng: number }> {
   return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(DEFAULT_CENTER);
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      resolve(DEFAULT_CENTER);
+    }, 5000);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        window.clearTimeout(timeoutId);
         resolve({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
       },
+      () => {
+        window.clearTimeout(timeoutId);
+        resolve(DEFAULT_CENTER);
+      },
+      { timeout: 5000, maximumAge: 60_000 },
     );
   });
 }

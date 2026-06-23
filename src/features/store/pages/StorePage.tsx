@@ -1,7 +1,8 @@
+import { useStore } from "../hooks/useStore.ts";
 import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useReview } from '../../review/hooks/useReview';
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
 import styles from './_store-page.module.scss';
 
@@ -22,31 +23,25 @@ interface StoreData {
 export default function StorePage() {
 
 	const location = useLocation();
-	const [storeData, setStoreData] = useState<any>(null);
 	const state = location.state as { store: StoreData } | null;
 	const store = state?.store;
+	const { storeData, getStoreData } = useStore();
 	const { reviewTotal, getStoreReviewTotal } = useReview();
 
-
-
-
 	useEffect(() => {
-		// 스프링 부트 API 호출
-		fetch(`${import.meta.env.VITE_API_BASE_URL}/api/store/${store?.storeNo}/kakaoId/${store?.id}/lat/${store?.y}/lng/${store?.x}`)
-			.then(res => res.json())
-			.then(data => setStoreData(data));
+		if (!store?.storeNo) return;
+		getStoreData(store.storeNo, store.id, store.y, store.x);
+		getStoreReviewTotal(store.storeNo);
 
-		if (store?.storeNo) {
-			getStoreReviewTotal(store.storeNo);
-		}
-	}, [store?.storeNo, getStoreReviewTotal]);
+	}, [store?.storeNo, store?.id, store?.y, store?.x, getStoreReviewTotal]);
 
-	console.log(reviewTotal);
 
 	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
 	if (!store || !storeData) {
 		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
 	}
+
+	console.log(storeData);
 
 	const photos = storeData.storeDetails.menu?.menus?.photos || [];
 	const allPhotos = storeData.storeDetails.photos?.photos || [];
