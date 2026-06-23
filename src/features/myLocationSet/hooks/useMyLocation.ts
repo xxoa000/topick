@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Address } from 'react-daum-postcode';
 import { useNavigate } from 'react-router-dom';
 import useCustomLogin from '@/hooks/useCustomLogin';
-import { saveMyLocationApi, getMyLocationListApi, changeAddressDefaultApi } from '../services/locationService'
+import { saveMyLocationApi, getMyLocationListApi, changeAddressDefaultApi, deleteMyLocationApi} from '../services/locationService'
 import type { AddressItem } from '../types/location'; // 타입 추가
 
 export const useMyLocation = () => {
@@ -52,6 +52,21 @@ export const useMyLocation = () => {
     }
   }, [member?.memberId]); //감시대상 지정
 
+  // 내 위치 삭제
+    const deleteMyLocation = async (addressNo: number) => {
+      if (!member?.memberId) return false;
+      try {
+        const response = await deleteMyLocationApi(addressNo);
+        alert(response);
+        return true;
+      } catch (err) {
+        console.error('내 위치 삭제 실패:', err);
+        return false;
+      } finally {
+        fetchAddressList();
+      }
+    };
+
   //컴포넌트 마운트 시점 혹은 member 정보가 수정되는 경우
   useEffect(() => {
     if (member?.memberId) {
@@ -95,7 +110,7 @@ export const useMyLocation = () => {
     // console.log("우편번호 addressData");
     console.log("지도 addressData");
     console.log(addressData);
-    
+
     if (!addressData) {
       alert("주소를 먼저 검색해주세요.");
       return;
@@ -103,7 +118,7 @@ export const useMyLocation = () => {
       alert("좌표로 변환할 수 없는 주소입니다.");
       return;
     }
-    
+
     const requestData = {
       memberId: member?.memberId,
       addressPostcode: addressData.zonecode,
@@ -163,7 +178,7 @@ export const useMyLocation = () => {
     const initMap = (latitude: string, longitude: string, myLevel: number) => {
       const options = { center: new kakao.maps.LatLng(latitude, longitude), level: myLevel }; //지도의 중심점, 확대/축소 수준
       const map = new kakao.maps.Map(mapContainerRef.current, options); //그려질 div, 옵션 전달
-      
+
       const marker = new kakao.maps.Marker({ position: new kakao.maps.LatLng(latitude, longitude) }); // 마커 생성 및 표시
 
       marker.setMap(map); //마커를 지도에 뛰움
@@ -234,7 +249,7 @@ export const useMyLocation = () => {
   return {
     step, setStep, address, addressData, addressName, setAddressName,
     addressDetail, setAddressDetail, mapContainerRef,
-    handleClose, handleComplete, sendToServer, changeAdderssDefault, handleConfirmCurrentLocation
+    handleClose, handleComplete, sendToServer, changeAdderssDefault, handleConfirmCurrentLocation, deleteMyLocation
     , addressList, isLoading
   };
 };

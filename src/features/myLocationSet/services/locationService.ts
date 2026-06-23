@@ -11,10 +11,15 @@ export async function saveMyLocationApi(requestData: LocationSaveRequest) {
 
 // 회원별 내 주소록 목록 조회 API 호출
 export async function getMyLocationListApi(memberId: string) {
-  // 백엔드 엔드포인트 설계에 맞게 URL을 수정하세요 (예: /myLocationSet/list?memberId=xxx)
   const response = await accessApiClient.get<AddressItem[]>('/myLocationSet/addresslist', {
     params: { memberId }
   });
+  return response.data;
+}
+
+// 내 주소록 삭제 API 호출
+export async function deleteMyLocationApi(addressNo: number) {
+  const response = await accessApiClient.delete<String>(`/myLocationSet/delete/${addressNo}`);
   return response.data;
 }
 
