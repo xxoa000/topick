@@ -1,4 +1,4 @@
-import { useStore } from "../hooks/useStore.ts";
+import { useStore, useStoreTab } from "../hooks/useStore.ts";
 import MenuListPage from "@/features/menu/pages/MenuListPage";
 import { ReviewPage } from "@/features/review/pages/ReviewPage";
 import { useReview } from '../../review/hooks/useReview';
@@ -28,8 +28,9 @@ export default function StorePage() {
 	const state = location.state as { store: StoreData } | null;
 	const store = state?.store;
 	const { storeData, getStoreData } = useStore();
+	const { activeTab, setActiveTab } = useStoreTab();
 	const { reviewTotal, getStoreReviewTotal } = useReview();
-	
+
 	useEffect(() => {
 		if (!store?.storeNo) return;
 		getStoreData(store.storeNo, store.id, store.y, store.x);
@@ -110,67 +111,74 @@ export default function StorePage() {
 					<ThumbnailPhoto storeData={storeData} />
 
 					{/*  탭 컴포넌트 */}
-					<StoreTab />
+					<StoreTab activeTab={activeTab} setActiveTab={setActiveTab} />
+
 					{/* 탭 홈 일떄만, 메뉴, 리뷰일떄는 안보이게 */}
+
 					{/* 상세 안내 정보 & 우측 지도 */}
-					<div className={styles.detailsRow}>
+					{activeTab === "home" &&
+						<div className={styles.detailsRow}>
 
-						{/* 왼쪽 안내문구 */}
-						<div className={styles.detailsLeft}>
-							<div className={styles.addressBlock}>
-								<strong>주소</strong> <span>{storeData.storeDetails.summary.address.road}</span>
-								<span className={styles.distance}>현재 위치에서 {store.distance}m</span>
-							</div>
+							{/* 왼쪽 안내문구 */}
+							<div className={styles.detailsLeft}>
+								<div className={styles.addressBlock}>
+									<strong>주소</strong> <span>{storeData.storeDetails.summary.address.road}</span>
+									<span className={styles.distance}>현재 위치에서 {store.distance}m</span>
+								</div>
 
-							<div className={styles.timeBlock}>
-								<strong>영업 시간</strong>
-								<div className={styles.timeDetails}>
-									{storeRunTime.map((i: any, index: number) => (
-										i.days.map((day: any, dayIndex: number) => (
-											<Fragment key={`${index}-${dayIndex}`}>
-												<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span>
-												{
-													day.on_days?.break_times_desc &&
-													<>
-														<br />
-														<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.break_times_desc[0]}</span>
-													</>
-												}
-												<br />
-												{
-													day.on_days?.last_order_times_desc &&
-													<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.last_order_times_desc[0]}</span>
-												}
-											</Fragment>
-										))
-									))}
+								<div className={styles.timeBlock}>
+									<strong>영업 시간</strong>
+									<div className={styles.timeDetails}>
+										{storeRunTime.map((i: any, index: number) => (
+											i.days.map((day: any, dayIndex: number) => (
+												<Fragment key={`${index}-${dayIndex}`}>
+													<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span>
+													{
+														day.on_days?.break_times_desc &&
+														<>
+															<br />
+															<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.break_times_desc[0]}</span>
+														</>
+													}
+													<br />
+													{
+														day.on_days?.last_order_times_desc &&
+														<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.last_order_times_desc[0]}</span>
+													}
+												</Fragment>
+											))
+										))}
+									</div>
+								</div>
+
+								<div>
+									<strong>전화번호</strong> <span>{store.phone}</span>
 								</div>
 							</div>
 
-							<div>
-								<strong>전화번호</strong> <span>{store.phone}</span>
+							{/* 우측 미니 지도 미포함 플레이스홀더 */}
+							<div className={styles.mapPlaceholder}>
+								[지도 미리보기 영역]
 							</div>
-						</div>
 
-						{/* 우측 미니 지도 미포함 플레이스홀더 */}
-						<div className={styles.mapPlaceholder}>
-							[지도 미리보기 영역]
 						</div>
-
-					</div>
+					}
 
 				</div>
 
 				{/* 탭 메뉴 일떄만 */}
 				{/* 메뉴 리스트 */}
-				<MenuListPage photos={photos} />
+				{activeTab === "menu" &&
+					<MenuListPage photos={photos} />
+				}
 
 			</div>
 
-
-			<div>
-				<ReviewPage storeNo={store.storeNo} />
-			</div>
+			{activeTab === "review" &&
+				<div>
+					<ReviewPage storeNo={store.storeNo} />
+				</div>
+			}
 		</div>
 	);
 }

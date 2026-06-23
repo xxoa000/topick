@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import styles from './_store-tab.module.scss';
 
-export const StoreTab: React.FC = () => {
+interface StoreTabProps {
+    activeTab: string;
+    setActiveTab: (id: string) => void;
+}
+
+export const StoreTab: React.FC<StoreTabProps> = ({ activeTab, setActiveTab }) => {
     // 우선 기능 없이 UI 및 시각적 전환만 확인하기 위해 로컬 State로 구성했습니다.
-    const [activeTab, setActiveTab] = useState('home');
     const tabs = [
         { id: 'home', label: '홈' },
         { id: 'menu', label: '메뉴' },
@@ -25,3 +29,4 @@ export const StoreTab: React.FC = () => {
         </div>
     );
 };
+

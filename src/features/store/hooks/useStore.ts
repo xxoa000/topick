@@ -22,3 +22,11 @@ export const useStore = () => {
         storeData
     };
 };
+
+export const useStoreTab = () => {
+    const [activeTab, setActiveTab] = useState('home');
+    return {
+        activeTab,
+        setActiveTab
+    };
+};
