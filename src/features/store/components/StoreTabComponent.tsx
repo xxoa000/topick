@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import styles from './_store-tab.module.scss';
 
 interface StoreTabProps {
