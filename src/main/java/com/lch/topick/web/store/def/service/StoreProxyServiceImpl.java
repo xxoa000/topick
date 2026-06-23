@@ -70,7 +70,6 @@ public class StoreProxyServiceImpl implements StoreProxyService {
         String targetUrl = "https://frontyo.yogiyo.co.kr/v1/aggregation/shops/" + yogiyId 
         		+ "/menus?lat="+lat+"&lng="+lng+"&order_serving_type=delivery";
 
-        // [공통 공격 방지 및 브라우저 식별 헤더 구성]
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json, text/plain, */*");
         headers.set("Accept-Language", "ko,en;q=0.9");
@@ -79,16 +78,9 @@ public class StoreProxyServiceImpl implements StoreProxyService {
         headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36");
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // JLS §14.20 (The try statement) 규칙에 따라 구체적인 예외부터 계층적으로 catch 구조를 선언합니다.
         try {
-            // ==========================================
-            // [STEP 1] 고객 임시 세션 생성 및 authorization_url 획득
-            // ==========================================
-            // 요청 본문(Payload)이 비어있다면 빈 JSON 객체("{}")를 전송합니다.
             HttpEntity<String> customerEntity = new HttpEntity<>("{}", headers);
             ResponseEntity<String> customerResponse = restTemplate.exchange(customerUrl, HttpMethod.POST, customerEntity, String.class);
-
-            // JLS §15.26 (Assignment Operators)에 따라 평가된 JSON 트리에서 authorization_url 문자열을 할당합니다.
             JsonNode customerJson = objectMapper.readTree(customerResponse.getBody());
             String authorizationUrl = customerJson.path("authorization_url").asText();
 
@@ -97,35 +89,22 @@ public class StoreProxyServiceImpl implements StoreProxyService {
                 return "{\"error\": \"인증 URL을 가져오지 못했습니다.\"}";
             }
 
-            // ==========================================
-            // [STEP 2] authorization_url 호출을 통한 실제 Access Token 교환
-            // ==========================================
             HttpEntity<Void> authEntity = new HttpEntity<>(headers);
             ResponseEntity<String> authResponse = restTemplate.exchange(authorizationUrl, HttpMethod.GET, authEntity, String.class);
-
-            // 인증 서버의 응답 바디(JSON) 구조에서 최종 access_token을 추출합니다.
             JsonNode authJson = objectMapper.readTree(authResponse.getBody());
             String accessToken = authJson.path("access_token").asText();
 
-            // 백엔드 명세 변경으로 필드명이 다를 경우를 대비한 Fallback 처리
             if (accessToken.isEmpty()) {
                 accessToken = authJson.path("token").asText();
             }
-
             if (accessToken.isEmpty()) {
                 log.error("최종 Access Token 추출 실패. 응답 바디: {}", authResponse.getBody());
                 return "{\"error\": \"Access Token을 파싱하지 못했습니다.\"}";
             }
 
-            // ==========================================
-            // [STEP 3] 획득한 동적 토큰을 Bearer 헤더에 담아 메뉴 데이터 조회
-            // ==========================================
             headers.set("Authorization", "Bearer " + accessToken);
             HttpEntity<Void> menuEntity = new HttpEntity<>(headers);
-            
             ResponseEntity<String> menuResponse = restTemplate.exchange(targetUrl, HttpMethod.GET, menuEntity, String.class);
-
-            // JLS §14.15 (The return Statement)에 따라 최종 메뉴 결과를 반환하고 메서드를 정상 종료합니다.
             return menuResponse.getBody();
 
         } catch (HttpClientErrorException e) {

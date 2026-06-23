@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,6 +87,19 @@ public class MyLocationSetController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 										.body("변경 실패: " + e.getMessage());
 		}
-	}
+	}//changeAddressDefault
+	
+	@DeleteMapping("/delete/{addressNo}")
+    public ResponseEntity<?> deleteReview(
+            @PathVariable("addressNo") Long addressNo) {
+        
+        String result = myLocationSetService.deleteById(addressNo);
+        
+        if (result.startsWith("NOT_FOUND")) {
+            return ResponseEntity.status(404).body("존재하지 않거나 이미 삭제된 리뷰입니다.");
+        }
+        
+        return ResponseEntity.ok("저장된 위치가 삭제되었습니다.");
+    }
 	
 }

@@ -16,7 +16,7 @@ public interface MyLocationSetService {
 	MyLocationSet save(MyLocationSet entity);
 
 	//** delete
-	void deleteById(long id) throws Exception;
+	String deleteById(long id);
 	
 	List<MyLocationSet> findByMemberId(String memberId);
 
