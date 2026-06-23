@@ -175,7 +175,7 @@ export default function StorePage() {
 			</div>
 
 			{/* 메뉴 리스트 */}
-			<MenuListPage photos={photos} />
+			<MenuListPage photos={photos} />ç
 
 			<div>
 				<ReviewPage storeNo={store.storeNo} />

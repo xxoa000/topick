@@ -1,6 +1,7 @@
-import { publicApiClient, refreshApiClient } from "@/config/axios";
+import accessApiClient, { publicApiClient, refreshApiClient } from "@/config/axios";
 import type { LoginRequestDTO } from "@member/types/loginDTO";
 import type { JoinRequestDTO } from "../types/joinDTO";
+import type { UpdateRequestDTO } from "../types/updateDTO";
 
 
 const memberApi = {
@@ -37,10 +38,26 @@ const memberApi = {
 
 
 	// 내 정보 조회
+	selectOne: async(memberId:string) => {
+		const response = await accessApiClient.get( `member/${memberId}`);
+		return response.data;
+	},
 
 	// 내 정보 수정
+	update: async(memberId:string, request: UpdateRequestDTO) => {
+		const response = await accessApiClient.patch( `member/update/${memberId}`, request );
+		return response.data;
+	},
 
 	// 회원 탈퇴
+	resign: async() => {
+		const response = await accessApiClient.patch( 
+			`member/resign`,
+			null,
+			{withCredentials: true}
+		);
+		return response.data;
+	}
 
 }
 

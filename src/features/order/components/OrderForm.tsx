@@ -48,9 +48,10 @@ export default function OrderForm() {
       navigate("/member/login");
       return;
     }
+    if (totalPrice<10000) return;   //최소 금액 설정
+
     try {
       const orderListNo = await orderApi.create(data);
-      //console.log("order result: ",orderListNo);
       
       alert("주문완료, 결제창으로 넘어갑니다.");
       navigate(`/payment/${orderListNo}`);
@@ -94,7 +95,8 @@ export default function OrderForm() {
       <span className={s.totalPrice}>{totalPrice.toLocaleString()}원</span>
     </div>
 
-    <button type="submit" className={s.submit}>주문하기</button>
+    {totalPrice < 10000 && <span className={s.message}>⚠︎ 최소 주문금액은 10,000원 입니다.</span>}
+    <button type="submit" className={s.submit} disabled={totalPrice<10000}>주문하기</button>
   </form>
   );
 }

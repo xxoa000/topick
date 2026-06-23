@@ -1,8 +1,6 @@
 .menuContainer {
   position: relative;
-  //left: -50px;
   width: 100%;
-  //max-width: 750px;
   margin: 20px auto;
   padding: 25px;
 
@@ -50,23 +48,24 @@
   width: 100%;
 }
 
+
 .right {
   position: fixed;
-  top: 155px;
+  bottom: clamp(5px, 3dvh, 30px);
   right: 20px;
-  bottom: 30px;
 
   width: 280px;
-  min-height: 500px;
-  max-height: 700px;
-  overflow-y: auto;
-  z-index: 99;
 
-  padding: 24px;
+  height: fit-content;
+  max-height: calc(100dvh - 60px);
+  overflow-y: auto;
+
+  padding: 15px;
+  z-index: 99;
 
   border: 1px solid #ddd;
   border-radius: 12px;
-  background-color: #fff;
+  background: #fff;
 }
 
 .menuItem {
