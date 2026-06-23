@@ -15,6 +15,7 @@ type AuthType = {
   member : LoginResponseDTO | null;
   login : (data: LoginResponseDTO) => void;
   logout : () => void;
+  resign : () => void;
 }
 
 
@@ -34,6 +35,11 @@ export const zustandAuthStore = create<AuthType>((set) => ({
     sessionStorage.removeItem(SESSION.ACCESS_DATA);
     set({ member: null })
   },
+
+  resign: () => {
+    sessionStorage.removeItem(SESSION.ACCESS_DATA);
+    window.location.replace("/");
+  }
 }));
 
 
@@ -44,6 +50,7 @@ const useCustomLogin = () => {
   const member = zustandAuthStore((state) => state.member);
   const login = zustandAuthStore((state) => state.login);
   const logout = zustandAuthStore((state) => state.logout);
+  const resign = zustandAuthStore((state) => state.resign);
 
   // 로그인 여부
   const isLogin = !!member;
@@ -52,7 +59,8 @@ const useCustomLogin = () => {
     member,
     login,
     logout,
-    isLogin
+    isLogin,
+    resign
   }
 }
 

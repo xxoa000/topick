@@ -31,7 +31,7 @@ export default function LoginHeader(){
   <div className={s.btnBox}>
     {isLogin ?  <div className={s.login}><span><b>{member?.memberName}</b> 님 환영합니다!</span>
                   <button type="button" onClick={handleLogout} className={s.btn}>로그아웃</button>
-                  <button className={s.btn}><NavLink to='/'>마이페이지</NavLink></button>
+                  <button className={s.btn}><NavLink to='/my-info/food-log'>마이페이지</NavLink></button>
                 </div>
               : <button type="button" className={s.btn}><NavLink to='/member/login'>로그인</NavLink></button> }
   </div>
