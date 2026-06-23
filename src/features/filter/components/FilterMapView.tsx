@@ -106,7 +106,6 @@ export default function FilterMapView() {
           center: new maps.LatLng(center.lat, center.lng),
           level: 5,
         });
-        map.setDraggable?.(false); //드래그 이동 비활성화
         map.setZoomable?.(true); //줌은 활성화
         mapRef.current = map;
         setMapInstance(map);
