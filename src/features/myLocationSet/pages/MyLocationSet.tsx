@@ -9,7 +9,7 @@ const MyLocationSet = () => {
     step, setStep, address, addressData, addressName, setAddressName,
     addressDetail, setAddressDetail, mapContainerRef,
     handleClose, handleComplete, sendToServer, changeAdderssDefault, handleConfirmCurrentLocation
-    , addressList, isLoading
+    , addressList, isLoading, deleteMyLocation
   } = useMyLocation();
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -57,7 +57,7 @@ const MyLocationSet = () => {
                           < button onClick={() => alert('수정 기능 준비 중')} className={styles.editBtn} >
                             수정
                           </button>
-                          < button onClick={() => alert('삭제 기능 준비 중')} className={styles.deleteBtn} >
+                          < button onClick={() => deleteMyLocation(item.addressNo)} className={styles.deleteBtn} >
                             삭제
                           </button>
                         </div>
