@@ -32,7 +32,7 @@ export default function StorePage() {
 
 	useEffect(() => {
 		// 스프링 부트 API 호출
-		fetch(`http://localhost:8080/api/store/${store?.storeNo}/kakaoId/${store?.id}/lat/${store?.y}/lng/${store?.y}`)
+		fetch(`${import.meta.env.VITE_API_BASE_URL}/api/store/${store?.storeNo}/kakaoId/${store?.id}/lat/${store?.y}/lng/${store?.x}`)
 			.then(res => res.json())
 			.then(data => setStoreData(data));
 
