@@ -46,7 +46,7 @@ export default function PaymentForm() {
 			await paymentApi.ready(paymentData);
       console.log("결제 data: ",paymentData);
 			alert("모의 결제 완료, 테스트에 참가해 주셔서 감사합니다.");
-			navigate("/");
+			navigate("/my-info/order");
 
 		} catch(error) {
 			if (!axios.isAxiosError(error)) {
