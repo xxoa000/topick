@@ -99,7 +99,7 @@ export default function JoinInfoForm() {
     {/* 3. 이메일 인증 */}
     <section className={s.formRow}>
       <label htmlFor="memberEmail">이메일<span className={s.required}>*</span></label>
-      <div className={s.inputBox}>
+      <div className={s.emailBox}>
         <input id="emailFirst" type="text" {...emailFirstRegister} />
         <span id="emailMiddle">@</span>
         <input id="emailLast" type="text" {...emailLastRegister} readOnly={emailDomain!=="custom"}/>
