@@ -13,8 +13,8 @@ export default function LoginPage() {
 		<LoginForm />
 
 		<ul className={styles.linkList}>
-			<li><NavLink to="">아이디 찾기</NavLink></li>
-			<li><NavLink to="">PW 찾기</NavLink></li>
+			{/* <li><NavLink to="">아이디 찾기</NavLink></li>
+			<li><NavLink to="">PW 찾기</NavLink></li> */}
 			<li><NavLink to="/member/join">회원가입</NavLink></li>
 		</ul>
 		</main>
