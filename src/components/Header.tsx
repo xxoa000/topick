@@ -24,7 +24,7 @@ export default function Header(){
         </div> 
       ) : (
         <div>
-          <NavLink to='/member/login'>내 위치 설정</NavLink>
+          <NavLink to='/member/login' onClick={handleClear}>내 위치 설정</NavLink>
         </div>
       )}
       
