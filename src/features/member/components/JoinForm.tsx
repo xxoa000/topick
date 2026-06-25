@@ -11,7 +11,6 @@ import JoinAgreeForm from "./JoinAgreeForm";
 import JoinPwCheckForm from "./JoinPwCheckForm";
 import JoinInfoForm from "./JoinInfoForm";
 import axios from "axios";
-import { useEffect } from "react";
 
 /* 
 	react-hook-form 을 사용하기 위한 기본 설정

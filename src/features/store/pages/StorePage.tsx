@@ -47,7 +47,7 @@ export default function StorePage() {
 
 	const photos = storeData.storeDetails.menu?.menus?.photos || [];
 	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
-	const allPhotos = storeData.storeDetails.photos?.photos
+	//const allPhotos = storeData.storeDetails.photos?.photos
 
 	// 기존 배열과 새 값을 합쳐 중복 없는 배열 생성
 	const existingTags = storeData.storeDetails.place_add_info?.tags || [];
