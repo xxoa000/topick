@@ -4,9 +4,11 @@ import memberApi from "../services/memberApi";
 import s from "@member/components/_join-form.module.scss";
 
 export default function JoinIdCheckForm() {
+  // 반드시 중복확인 통과한 아이디만 submit 되도록 하는 코드
 
   const {
     register,
+    setValue,
     getValues,
     trigger,
     setError,
@@ -29,7 +31,11 @@ export default function JoinIdCheckForm() {
       pattern: {
         value: /^[a-zA-Z0-9_]+$/,
         message: "아이디는 영문, 숫자, 언더바만 사용할 수 있습니다."
-      }
+      },
+      onChange: () => {
+        setValue("idCheck", false);
+        setValue("availableId", "");
+      },
     });
 
   // Id 중복 확인 form
@@ -40,20 +46,32 @@ export default function JoinIdCheckForm() {
     // 현재 입력된 아이디 꺼내기
     const memberId = getValues("memberId");
 
-    // 서버에 중복 확인 요청
+    //서버에 중복 확인 요청
     try {
       const isAvailable = await memberApi.idCheck(memberId);
+      //중복인 경우
       if (!isAvailable) {
+        setValue("idCheck", false);
+        setValue("availableId", "");
+
         setError("memberId", {
           type: "server",
           message: "이미 존재하는 아이디 입니다."
         })
         return;
-      }
+      }//if
+      
+      //사용가능인 경우
+      setValue("idCheck", true);
+      setValue("availableId", memberId);
       clearErrors("memberId");
       alert ("사용가능한 아이디 입니다.");
+
     } catch(error) {
       console.error(error);
+      setValue("idCheck", false);
+      setValue("availableId", "");
+
       setError("memberId", {
         type: "server",
         message: "아이디 중복확인 중 오류가 발생했습니다"

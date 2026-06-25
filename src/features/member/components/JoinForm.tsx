@@ -44,7 +44,9 @@ export default function JoinForm() {
 		defaultValues : {
 			isAgree : false,
 			isPrivacyAgree : false,
-			ageCheck : false
+			ageCheck : false,
+			idCheck: false,
+			availableId: ""
 		}
 	});
 
@@ -55,12 +57,20 @@ export default function JoinForm() {
 
 	const handleJoin = async(data:JoinFormDTO) => {
 
+		// id 중복확인 안했으면 리턴
+		if (!data.idCheck || data.availableId !== data.memberId) {
+			setError("memberId", {
+				type: "manual",
+				message: "아이디 중복확인을 해주세요.",
+			});
+			return;
+		}
+
 		// 이메일 단어 합쳐서 서버로 전달
 		const email = data.emailFirst && data.emailLast ? `${data.emailFirst}@${data.emailLast}` : "";
 
 		// "" 값 방지용, 선택사항을 선택하지 않은 경우엔 null 전송
 		const requestData = {
-			//...joinData,
 			memberId: data.memberId,
 			memberPw: data.memberPw,
 			memberName: data.memberName,
@@ -69,8 +79,11 @@ export default function JoinForm() {
 			memberGender : data.memberGender || "none",
 			memberBirthday : data.memberBirthday || null,
 		}
-
+		
+		
     try {
+			
+
 			await memberApi.join(requestData);
 			// 회원가입 성공시, 서버로 보내서 DB 에 insert
 			console.log(requestData);

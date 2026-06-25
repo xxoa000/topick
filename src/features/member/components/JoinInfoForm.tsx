@@ -152,6 +152,7 @@ export default function JoinInfoForm() {
 
   {/* submit 버튼 */}
   <div className={s.buttonBox}>
+    {/* {errors.root?.message || errors.memberId?.message || errors.memberPw?.message || errors.emailFirst?.message } */}
     <button type="button" className={s.prevButton} onClick={()=>setStep(1)}>이전 단계로</button>
     <button type="submit" className={allCheck ? s.activeButton : s.disableButton}>회원가입</button>
   </div>

@@ -17,6 +17,9 @@ export type JoinFormDTO = JoinRequestDTO & {
 	isPrivacyAgree : boolean;
 	memberPwCheck? : string;
 
+	idCheck: boolean;
+	availableId: string;
+
 	emailFirst: string;
 	emailLast: string;
 }
