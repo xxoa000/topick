@@ -54,12 +54,14 @@ const MyLocationSet = () => {
                             < div className={styles.cardAddress} > {item.addressRoad} {item.addressDetail} </div>
                           </div>
 
-                          < button onClick={() => alert('수정 기능 준비 중')} className={styles.editBtn} >
+                          {/* < button onClick={() => alert('수정 기능 준비 중')} className={styles.editBtn} >
                             수정
-                          </button>
+                          </button> */}
+                          {item.addressDefault === 'N' &&
                           < button onClick={() => deleteMyLocation(item.addressNo)} className={styles.deleteBtn} >
                             삭제
                           </button>
+                          }
                         </div>
                       ))}
                   </div>

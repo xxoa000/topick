@@ -32,9 +32,9 @@ export const ThumbnailPhoto: React.FC<any> = ({storeData}) => {
                     <img src={allPhotos[4].url} alt={allPhotos[4].title} referrerPolicy="no-referrer" />
 
                     {/* 전체 사진이 5개보다 많을 때만 오버레이 표시 */}
-                    {allPhotos.length > 5 && (
+                    {/* {allPhotos.length > 5 && (
                         <div className={styles.photoOverlay}>
-                            {/* 사진 갤러리 아이콘 (SVG) */}
+                            사진 갤러리 아이콘 (SVG) 
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="28"
@@ -51,12 +51,12 @@ export const ThumbnailPhoto: React.FC<any> = ({storeData}) => {
                                 <polyline points="21 15 16 10 5 21"></polyline>
                             </svg>
 
-                            {/* 남은 사진 개수 계산 */}
-                            <span className={styles.moreCount}>
+                            남은 사진 개수 계산
+                            <span className={styles.moreCount} >
                                 {allPhotos.length - 4}+
                             </span>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </div>
         </div>
