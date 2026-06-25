@@ -457,16 +457,15 @@ export function FilterSearchProvider({ children }: { children: ReactNode }) {
   );
 
   const handleClear = useCallback(() => {
-  if (isFilterPage) {
+  
     setSearchKeyword('');
     searchKeywordRef.current = ''
     selectedTagsRef.current = new Set()
     setSelectedTags(new Set())
     lastModeRef.current = 'keyword'
     lastFetchedBoundsKeyRef.current = ''
-    }
-  }, 
-  [isFilterPage]
+    },
+  [],
 );
 
 
