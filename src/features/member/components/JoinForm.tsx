@@ -11,6 +11,7 @@ import JoinAgreeForm from "./JoinAgreeForm";
 import JoinPwCheckForm from "./JoinPwCheckForm";
 import JoinInfoForm from "./JoinInfoForm";
 import axios from "axios";
+import { useEffect } from "react";
 
 /* 
 	react-hook-form 을 사용하기 위한 기본 설정
@@ -42,23 +43,23 @@ export default function JoinForm() {
 		//fromData 지만 서버론 보내지 않는다는 의미, 단계 이동시에도 값 저장됨
 		shouldUnregister : false,
 		defaultValues : {
+      memberId: "",
+			availableId: "",
 			isAgree : false,
 			isPrivacyAgree : false,
 			ageCheck : false,
 			idCheck: false,
-			availableId: ""
 		}
 	});
 
 	// 구조분해
 	const { setError, handleSubmit } = joinMethod;
-		
-
+	
 
 	const handleJoin = async(data:JoinFormDTO) => {
 
 		// id 중복확인 안했으면 리턴
-		if (!data.idCheck || data.availableId !== data.memberId) {
+		if (!data.idCheck || data.availableId !== data.memberId.trim()) {
 			setError("memberId", {
 				type: "manual",
 				message: "아이디 중복확인을 해주세요.",
