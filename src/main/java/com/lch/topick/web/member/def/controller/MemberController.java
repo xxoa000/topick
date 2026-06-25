@@ -20,7 +20,6 @@ import com.lch.topick.web.member.def.domain.MemberLoginRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberLoginResultDTO;
 import com.lch.topick.web.member.def.domain.MemberRoleUpdateRequestDTO;
 import com.lch.topick.web.member.def.domain.MemberUpdateRequestDTO;
-import com.lch.topick.web.member.def.entity.Member;
 import com.lch.topick.web.member.def.service.MemberService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,7 +48,7 @@ public class MemberController {
 	
 	// 고객 상세(내 정보 보기)
 	@GetMapping("/{memberId}")
-	public ResponseEntity<?> selectOne(@PathVariable String memberId) {
+	public ResponseEntity<?> selectOne(@AuthenticationPrincipal String memberId) {
 		
 		return ResponseEntity.status(HttpStatus.OK)
 							 .body(memberService.selectOne(memberId));

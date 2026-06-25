@@ -56,8 +56,7 @@ public class MemberServiceImpl implements MemberService {
 	public Boolean exist(String memberId) {
 		// id 가 제대로 들어오지 않은 경우 오류 출력
 		if (memberId == null) throw new CustomException(ErrorCode.MEMBER_ID_EXIST);
-		if ( repository.existsById(memberId)) return false; // 이미 존재하는 아이디
-		
+		if ( repository.existsById(memberId)) return false; // 이미 존재하는 아이디	 
 		return true; // 사용가능 아이디
 	}//exist
 	
