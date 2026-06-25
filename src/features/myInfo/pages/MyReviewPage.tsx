@@ -1,5 +1,5 @@
 // src/features/myInfo/pages/MyReviewPage.tsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useReview } from '../../review/hooks/useReview'; 
 import { ReviewComponent } from '../../review/components/ReviewComponent'; 
 import { useStore } from "@/features/store/hooks/useStore"; // 💡 가게 정보 조회를 위해 useStore 훅 임포트
