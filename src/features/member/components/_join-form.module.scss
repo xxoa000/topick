@@ -141,6 +141,54 @@
   }
 }
 
+.emailBox {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+
+  input,
+  select {
+    height: 44px;
+    padding: 0 12px;
+
+    border: 1px solid #c6c6c6;
+    border-radius: 5px;
+    background-color: #fff;
+
+    color: #222;
+    font-size: 16px;
+    outline: none;
+
+    &:focus {
+      border-color: #ff7a00;
+    }
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  input[readonly] {
+    background-color: #f7f7f7;
+    color: #666;
+  }
+
+  span {
+    flex-shrink: 0;
+    color: #555;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  select {
+    width: 140px;
+    cursor: pointer;
+  }
+}
+
 .isAgreeContent {
   display: block;
   width: 100%;
