@@ -22,6 +22,11 @@ export default function KeywordSearchBar() {
   useEffect(() => {
     if (onFilterPage) {
       setInputValue(searchKeyword);
+      return;
+    }
+    if (searchKeyword == '') {
+      setInputValue('');
+      setHomeKeyword('');
     }
   }, [searchKeyword, onFilterPage]);
 
