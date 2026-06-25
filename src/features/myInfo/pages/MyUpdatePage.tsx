@@ -8,7 +8,7 @@ import axios from "axios";
 
 export default function MyUpdatePage() {
   const [emailDomain, setEmailDomain] = useState("");
-  const { member } = useCustomLogin();
+  const { member, login } = useCustomLogin();
 
   // reset() : 폼의 값을 한번에 초기화 하거나 덮어쓰는 함수, 내 정보 수정용
   const {
@@ -112,7 +112,11 @@ export default function MyUpdatePage() {
     try {
 			await memberApi.update(member?.memberId, requestData);
 			// 정보 수정 성공
-			console.log(requestData);
+			console.log("수정 data: ", requestData);
+      login({
+        ...member,
+        memberName: requestData.memberName,
+      });
       alert("정보 수정 성공!");
 
     } catch(error) {
