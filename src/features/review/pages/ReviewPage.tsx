@@ -7,9 +7,10 @@ import styles from './review-page.module.scss';
 
 interface ReviewPageProps {
   storeNo: number;
+  storeName?: string;
 }
 
-export const ReviewPage: React.FC<ReviewPageProps> = ({ storeNo }) => {
+export const ReviewPage: React.FC<ReviewPageProps> = ({ storeNo, storeName }) => {
   const { member } = useCustomLogin();
   const { reviews, loading, getStoreReviewList, addReview, removeReview, updateReviewContent } = useReview();
 
@@ -53,15 +54,17 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({ storeNo }) => {
     try {
       const success = await addReview(storeNo, starInput, contentInput, imageFiles);
       
-      //백엔드 저장에 성공한 경우에만 초기화 및 DB 최신화 진행
       if (success) {
+        if (storeName) {
+          localStorage.setItem(`store_name_${storeNo}`, storeName);
+        }
+
         setContentInput('');
         setStarInput(5);
         setImageFiles([]);
         setPreviewUrls([]);
         if (fileInputRef.current) fileInputRef.current.value = ''; // 파일 인풋 캐시 초기화
         
-        // 오직 서버의 리얼 타임 상태만 믿고 깔끔하게 목록 갱신
         await getStoreReviewList(storeNo, isPhotoOnly);
       } else {
         alert("리뷰 등록에 실패. 서버 로그를 확인 요망");

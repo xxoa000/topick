@@ -39,7 +39,13 @@ export const useReview = () => {
   }, [member]);
 
   // 3. 신규 리뷰 등록
-  const addReview = async (storeNo: number, reviewStar: number, reviewContent: string, imageFiles?: File[]) => {
+  const addReview = async (
+    storeNo: number, 
+    reviewStar: number, 
+    reviewContent: string, 
+    imageFiles?: File[],
+    storeName?: string //
+  ) => {
     if (!member?.memberId) {
       alert('로그인이 필요한 기능입니다.');
       return false;
@@ -50,7 +56,8 @@ export const useReview = () => {
         memberId: member.memberId,
         storeNo,
         reviewStar,
-        reviewContent
+        reviewContent,
+        storeName
       };
 
       const newReview = await reviewService.createReview(reviewPayload, imageFiles);

@@ -7,4 +7,6 @@ export interface Review {
   reviewCreateAt?: string;     // 리뷰 작성일자
   reviewUpdateAt?: string | null; //리뷰 수정일자
   reviewImage?: string | null; // 이미지 파일명
+
+  storeName?: string;          // 카카오 API 기반 가게 이름 (선택 항목)
 }
