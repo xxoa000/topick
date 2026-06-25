@@ -44,15 +44,15 @@ export default function JoinIdCheckForm() {
     const validate = await trigger("memberId");
     if (!validate) return;
     // 현재 입력된 아이디 꺼내기
-    const memberId = getValues("memberId");
+    const memberId = getValues("memberId").trim();
 
     //서버에 중복 확인 요청
     try {
       const isAvailable = await memberApi.idCheck(memberId);
       //중복인 경우
       if (!isAvailable) {
-        setValue("idCheck", false);
-        setValue("availableId", "");
+        setValue("idCheck", false, {shouldValidate: true});
+        setValue("availableId", "", {shouldValidate: true});
 
         setError("memberId", {
           type: "server",
@@ -62,15 +62,15 @@ export default function JoinIdCheckForm() {
       }//if
       
       //사용가능인 경우
-      setValue("idCheck", true);
-      setValue("availableId", memberId);
+      setValue("idCheck", true, {shouldValidate: true});
+      setValue("availableId", memberId, {shouldValidate: true});
       clearErrors("memberId");
       alert ("사용가능한 아이디 입니다.");
 
     } catch(error) {
       console.error(error);
-      setValue("idCheck", false);
-      setValue("availableId", "");
+      setValue("idCheck", false, {shouldValidate: true});
+      setValue("availableId", "", {shouldValidate: true});
 
       setError("memberId", {
         type: "server",
