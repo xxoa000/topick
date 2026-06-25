@@ -77,7 +77,7 @@ public class StoreServiceImpl implements StoreService {
 				for (JsonNode itemNode : kakaoMenuData) {
 					String menuName = itemNode.path("name").asText();
 					String menuImage = defaultMenuImage;
-					Integer menuPrice = itemNode.path("price").asInt();
+					Integer menuPrice = itemNode.path("price").asInt() < 0 ? 0 : itemNode.path("price").asInt();
 					Integer menuStock = 999;
 					String menuContent = itemNode.path("ai_mate_desc").asText();
 
