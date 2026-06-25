@@ -58,7 +58,7 @@ public class MemberController {
 	
 	// 회원가입 - Id 중복 확인
 	@GetMapping("/idCheck/{memberId}")
-	public ResponseEntity<Boolean> idCheck(@AuthenticationPrincipal String memberId) {
+	public ResponseEntity<Boolean> idCheck(@PathVariable("memberId") String memberId) {
 		
 		boolean exist = memberService.exist(memberId);
 		//if (exist) return null;
