@@ -39,20 +39,20 @@ const memberApi = {
 
 	// 내 정보 조회
 	selectOne: async(memberId:string) => {
-		const response = await accessApiClient.get( `member/${memberId}`);
+		const response = await accessApiClient.get( `/member/${memberId}`);
 		return response.data;
 	},
 
 	// 내 정보 수정
 	update: async(memberId:string, request: UpdateRequestDTO) => {
-		const response = await accessApiClient.patch( `member/update/${memberId}`, request );
+		const response = await accessApiClient.patch( `/member/update/${memberId}`, request );
 		return response.data;
 	},
 
 	// 회원 탈퇴
 	resign: async() => {
 		const response = await accessApiClient.patch( 
-			`member/resign`,
+			`/member/resign`,
 			null,
 			{withCredentials: true}
 		);
