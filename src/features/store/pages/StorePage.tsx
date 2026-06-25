@@ -47,7 +47,8 @@ export default function StorePage() {
 
 	const photos = storeData.storeDetails.menu?.menus?.photos || [];
 	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
-	
+	const allPhotos = storeData.storeDetails.photos?.photos
+
 	// 기존 배열과 새 값을 합쳐 중복 없는 배열 생성
 	const existingTags = storeData.storeDetails.place_add_info?.tags || [];
 	const newTag = store?.categoryName.split('>')[1]?.trim();
@@ -103,7 +104,7 @@ export default function StorePage() {
 					</div>
 
 					{/* 대표 이미지 배너 */}
-					<ThumbnailPhoto storeData={storeData} />
+					<ThumbnailPhoto storeData={storeData}/>
 
 					{/*  탭 컴포넌트 */}
 					<StoreTab activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -151,29 +152,51 @@ export default function StorePage() {
 								</div>
 							</div>
 
-							{/* 우측 미니 지도 미포함 플레이스홀더 */}
+							{/* 우측 미니 지도 미포함 플레이스홀더
 							<div className={styles.mapPlaceholder}>
 								[지도 미리보기 영역]
-							</div>
+							</div> */}
 
 						</div>
 					}
 
+
+
+					{/* 탭 메뉴 일떄만 */}
+					{/* 메뉴 리스트 */}
+					{activeTab === "menu" &&
+						<MenuListPage photos={photos} />
+					}
+
+
+					{activeTab === "review" &&
+						<div>
+							<ReviewPage storeNo={store.storeNo} />
+						</div>
+					}
+
+					{/* 탭 사진 일때만 */}
+					{activeTab === "photo" && (
+						<div className={styles.photoGrid}>
+							{photos.length > 0 ? (
+								photos.map((photo: any, index: number) => (
+									<div key={photo.id || index} className={styles.photoItem}>
+										<img
+											src={photo.url}
+											alt={`${store.placeName} 사진 ${index + 1}`}
+											loading="lazy"
+										/>
+									</div>
+								))
+							) : (
+								<div className={styles.noPhoto}>등록된 사진이 없습니다.</div>
+							)}
+								
+						</div>
+					)}
+
 				</div>
-
-				{/* 탭 메뉴 일떄만 */}
-				{/* 메뉴 리스트 */}
-				{activeTab === "menu" &&
-					<MenuListPage photos={photos} />
-				}
-
 			</div>
-
-			{activeTab === "review" &&
-				<div>
-					<ReviewPage storeNo={store.storeNo} />
-				</div>
-			}
 		</div>
 	);
 }
