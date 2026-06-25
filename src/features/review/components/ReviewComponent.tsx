@@ -59,7 +59,7 @@ export const ReviewComponent: React.FC<ReviewComponentProps> = ({ review, onDele
       {review.reviewImage && (
         <div className={styles.imageContainer}>
           <img 
-            src={`${import.meta.env.VITE_API_BASE_URL}/uploads/reviews/${review.reviewImage}`} 
+            src={`http://localhost:8080/uploads/reviews/${review.reviewImage}`} 
             alt="리뷰 이미지" 
           />
         </div>

@@ -171,7 +171,7 @@ export default function StorePage() {
 
 					{activeTab === "review" &&
 						<div>
-							<ReviewPage storeNo={store.storeNo} />
+							<ReviewPage storeNo={store.storeNo} storeName={store.placeName} />
 						</div>
 					}
 
