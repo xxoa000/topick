@@ -69,7 +69,9 @@ export default function MenuDetailForm({menu}: MenuDetailFormProps) {
         <span className={s.name}>{menu.menuName}</span>
       </div>
       <div className={s.amountBox}>
+        {menu.menuPrice !== 0 &&
         <span className={s.price}>{menu.menuPrice?.toLocaleString()}원</span>
+        }
         <button type="button" onClick={handleDecrease}>-</button>
         <span>{amount}</span>
         <button type="button" onClick={handleIncrease}>+</button>
