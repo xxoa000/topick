@@ -47,16 +47,10 @@ export default function StorePage() {
 
 	const photos = storeData.storeDetails.menu?.menus?.photos || [];
 	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
-	const storeTag = storeData.storeDetails.place_add_info?.tags || [];
+	// 기존 배열과 새 값을 합쳐 중복 없는 배열 생성
+	const existingTags = storeData.storeDetails.place_add_info?.tags || [];
 	const newTag = store?.categoryName.split('>')[1]?.trim();
-	if (newTag) {
-		// 1. 기존 배열과 새 값을 합쳐 중복 없는 배열 생성
-		const uniqueTags = [...new Set([...storeTag, newTag])];
-
-		// 2. 기존 배열의 내용을 비우고 새로운 값들로 채워넣음 (원본 유지)
-		storeTag.length = 0;	
-		storeTag.push(...uniqueTags);
-	}
+	const storeTag = newTag ? [...new Set([...existingTags, newTag])] : existingTags;
 
 	return (
 		<div className={styles.container}>
