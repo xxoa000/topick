@@ -70,7 +70,7 @@ export default function OrderForm() {
   <form onSubmit={handleSubmit(handleOrderCreate)} className={s.form}>
     <div className={s.row}>
       <label>방문일시<span className={s.required}>*</span></label>
-        <input type="datetime-local" min={minDateTime} max={maxDateTime} {...register("orderListVisitTime")}></input>
+        <input type="datetime-local" min={minDateTime} max={maxDateTime} step="300" {...register("orderListVisitTime")}></input>
     </div>
     
     <div className={s.row}>

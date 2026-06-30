@@ -10,7 +10,6 @@ export default function MyOrderPage() {
     useEffect(() => {
       const fetchOrder = async () => {
         const data = await orderApi.selectList();
-        console.log("주문리스트:", data);
         setOrder(data);
       }
       fetchOrder();
@@ -31,16 +30,21 @@ export default function MyOrderPage() {
         <span> </span>
     </header>
     <section className={s.body}>
-      {order.map((list)=> (
-        <div key={list.orderListNo}>
-          <span>{list.orderStoreName}</span>
-          <span>{list.orderListVisitTime?.replace("T"," ").slice(2,16)}</span>
-          <span>{list.orderListVisitType}</span>
-          <span>{list.orderListFinalPrice?.toLocaleString()}</span>
-          <span><NavLink to="">상세보기</NavLink></span>
+      {order.length > 0 ? (
+        order.map((list) => (
+          <div key={list.orderListNo}>
+            <span>{list.orderStoreName}</span>
+            <span>{list.orderListVisitTime?.replace("T", " ").slice(2, 16)}</span>
+            <span>{list.orderListVisitType}</span>
+            <span>{list.orderListFinalPrice?.toLocaleString()}</span>
+            <span><NavLink to={`/my-info/order/detail/${list.orderListNo}`}>상세보기</NavLink></span>
+          </div>
+        ))) : (
+        <div className={s.empty}>
+          <span>아직 주문 내역이 없습니다.</span>
         </div>
-      ))}
-      </section>
+      )}
+    </section>
   </section>
   );
 }

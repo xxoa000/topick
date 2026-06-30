@@ -5,7 +5,7 @@ import MyUpdatePage from "./MyUpdatePage";
 import MyOrderPage from "./MyOrderPage";
 import MyReviewPage from "./MyReviewPage";
 import MyResignPage from "./MyResignPage";
-import MyFoodLogPage from "./MyFoodLogPage";
+import MyOrderDetailPage from "./MyOrderDetailPagem";
 
 export default function MyInfoPage() {
 	const navigate = useNavigate();
@@ -19,9 +19,17 @@ export default function MyInfoPage() {
 	return (
 	<main className={s.page}>
 		<nav className={s.left}>
-			<div><span><b>{member?.memberName}</b> 님</span></div>
+			<div className={s.profileBox}>
+				<span><b>{member?.memberName}</b> 님</span>
+				<span className={s.roleBadge}>
+					{member?.roleList?.includes("ADMIN")
+						? "관리자" : member?.roleList?.includes("OWNER")
+						? "점주" : member?.roleList?.includes("MEMBER")
+						? "회원" : ""}
+				</span>
+			</div>
+		
 			<ul>
-				<li><NavLink to='/my-info/food-log'>푸드 로그</NavLink></li>
 				<li><NavLink to='/my-info/update'>내 정보 수정</NavLink></li>
 				<li><NavLink to='/my-info/order'>주문 내역</NavLink></li>
 				<li><NavLink to='/my-info/review'>내 리뷰 보기</NavLink></li>
@@ -30,9 +38,9 @@ export default function MyInfoPage() {
 		</nav>
 		<section className={s.right}>
 			<Routes>
-        <Route path="food-log/*" element={<MyFoodLogPage />} />
         <Route path="update/*" element={<MyUpdatePage />} />
         <Route path="order/*" element={<MyOrderPage />} />
+        <Route path="order/detail/:orderListNo" element={<MyOrderDetailPage />} />
         <Route path="review/*" element={<MyReviewPage />} />
         <Route path="resign/*" element={<MyResignPage />} />
       </Routes>

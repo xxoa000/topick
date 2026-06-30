@@ -31,11 +31,17 @@ export default function LoginHeader(){
   
   return (
   <div className={s.btnBox}>
-    {isLogin ?  <div className={s.login}><span><b>{member?.memberName}</b> 님 환영합니다!</span>
-                  <button type="button" onClick={handleLogout} className={s.btn}>로그아웃</button>
-                  <button className={s.btn}><NavLink to='/my-info/food-log' onClick={handleClear}>마이페이지</NavLink></button>
+    {isLogin ?  <div className={s.login}><span className={s.pc}><b>{member?.memberName}</b> 님 환영합니다!</span>
+                  <button type="button" onClick={handleLogout} className={s.btn}>
+                    <span className={s.pc}>로그아웃</span>
+                    <span className={s.mobile}><img src="/logout.png" alt="logout" /></span>
+                  </button>
+                  <button className={s.btn}><NavLink to='/my-info/update' onClick={handleClear}>
+                    <span className={s.pc}>마이페이지</span>
+                    <span className={s.mobile}>MY</span>
+                  </NavLink></button>
                 </div>
-              : <button type="button" className={s.btn}><NavLink to='/member/login' onClick={handleClear}>로그인</NavLink></button> }
+              : <div className={s.login}><button type="button" className={s.btn}><NavLink to='/member/login' onClick={handleClear}>로그인</NavLink></button></div> }
   </div>
   );
 }//LoginHeader()
