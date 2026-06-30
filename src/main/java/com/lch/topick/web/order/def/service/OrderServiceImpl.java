@@ -144,7 +144,9 @@ public class OrderServiceImpl implements OrderService {
 				.toList();
 		
 		OrderListResponseDTO resDto = new OrderListResponseDTO(
+				listEntity.getOrderListCreateAt(),
 				listEntity.getOrderListNo(),
+				listEntity.getStoreNo(),				
 				listEntity.getOrderStoreName(),
 				listEntity.getOrderListVisitTime(),
 				listEntity.getOrderListVisitType(),

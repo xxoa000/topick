@@ -60,6 +60,9 @@ dependencies {
 	
 	// GSON: json 객체 <-> java 객체를 자동변환 해주는 대표 라이브러리
 	implementation("com.google.code.gson:gson:2.13.2")
+	
+	// .env 파일 읽어오는 라이브러리
+	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 }
 
 
