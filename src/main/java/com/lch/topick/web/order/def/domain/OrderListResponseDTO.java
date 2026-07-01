@@ -14,7 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderListResponseDTO {
 
+	private LocalDateTime orderListCreateAt;
 	private Long orderListNo;
+	private Long storeNo;
 	private String orderStoreName;
 	private LocalDateTime orderListVisitTime;
 	private String orderListVisitType;

@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderDetailResponseDTO {
 
-	//private Long orderListNo;
-	//private Long menuNo;
 	private Long orderDetailNo;
 	private String orderDetailMenuName;
 	private Integer orderDetailAmount;
