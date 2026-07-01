@@ -1,7 +1,7 @@
 .page {
   width: 80%;
   min-height: 100vh;
-  padding: 30px;
+  padding: 30px 10px;
   gap: 30px;
 
   display: flex;
@@ -10,7 +10,7 @@
 
   .left {
     flex: 0 0 200px;
-    min-height: 600px;
+    min-height: 500px;
     padding: 15px;
 
     border: 1px solid #ff803b;
@@ -34,6 +34,47 @@
       }
     }
   }
+
+.profileBox {
+  margin-bottom: 18px;
+  padding: 18px 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border: 1px solid #ffe1cc;
+  border-radius: 12px;
+  background-color: #fff;
+
+  span:first-child {
+    font-size: 17px;
+    color: #222;
+
+    b {
+      font-size: 1.1em;
+      font-weight: 800;
+      color: #111;
+    }
+  }
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+  background-color: #ff7a00;
+
+  color: #fff;
+  font-size: 0.8em;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
 
   .right {
     flex: 1;

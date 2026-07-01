@@ -13,18 +13,25 @@ export default function Header(){
   return (
     <header className={s.header}>
       <NavLink to="/" className={s.logoLink} onClick={handleClear}>
-        <img src="/logo_1.png" alt="오늘의 식당 로고" />
+        <picture>
+          <source media="(max-width: 700px)" srcSet="/icon_2.png" />
+          <img src="/logo_1.png" alt="오늘의 식당 로고" />
+        </picture>
   	  </NavLink>
 
       {isLogin ? (
         <div>
           <NavLink to='/my-location-set' state={{ backgroundLocation: location }}>
-            내 위치 설정
+            <span className={s.pc}>내 위치 설정</span>
+            <span className={s.mobile}><img src="/marker.png" alt="marker" /></span>
           </NavLink>
         </div> 
       ) : (
         <div>
-          <NavLink to='/member/login' onClick={handleClear}>내 위치 설정</NavLink>
+          <NavLink to='/member/login' onClick={handleClear}>
+            <span className={s.pc}>내 위치 설정</span>
+            <span className={s.mobile}><img src="/marker.png" alt="marker" /></span>
+          </NavLink>
         </div>
       )}
       

@@ -22,8 +22,6 @@ type MenuListPageProps = {
 
 
 export default function MenuListPage({ photos = [] }: MenuListPageProps) {
-  // 추후 옵션 용으로 쓸 예정
-  //const [openMenuNo, setOpenMenuNo] = useState<number | null>(null);
   const { storeNo } = useParams();
   const [menuList, setMenuList] = useState<MenuResponseDTO[]>([]);
 
@@ -41,8 +39,6 @@ export default function MenuListPage({ photos = [] }: MenuListPageProps) {
     const updateList = async () => {
       try {
         const data = await menuApi.selectList(Number(storeNo));
-        console.log("menuList data:", data);
-        console.log("menuNo 목록:", data.map((m) => m.menuNo));
         setMenuList(data);
       } catch (error) {
         if (!axios.isAxiosError(error)) return;
@@ -55,11 +51,12 @@ export default function MenuListPage({ photos = [] }: MenuListPageProps) {
     <main className={s.menuContainer}>
       <article className={s.photoSection}>
         <h2 className={s.photoTitle}>메뉴</h2>
-        {photos && photos.length > 0 && (
+        {photos.filter(Boolean).length > 0 && (
           <div className={s.photoWrapper}>
-            {photos.map((photo,index) => (
-              <div key={photo.photo_id | index} className={s.photoItem}>
-                <img src={photo.url} alt={photo.title || "메뉴 사진"} referrerPolicy="no-referrer" />
+            {photos.filter(Boolean).map((photo, index) => (
+              <div key={photo.photo_id ?? index} className={s.photoItem}>
+                <img src={photo?.url ?? "/no-image.png"}
+                    alt={photo?.title || "메뉴 사진"} referrerPolicy="no-referrer" />
               </div>
             ))}
           </div>
@@ -71,12 +68,8 @@ export default function MenuListPage({ photos = [] }: MenuListPageProps) {
           <section className={s.left}>
             {menuList.map((menu, index) => (
               <div key={menu.menuNo} className={s.menuItem}
-                  style={{ borderBottom: index === menuList.length - 1 ? "none" : "1px solid #eee" }}
-                // onClick={() => setOpenMenuNo(prev => prev === menu.menuNo ? null : menu.menuNo)}
-                >
+                  style={{ borderBottom: index === menuList.length - 1 ? "none" : "1px solid #eee" }}>
                   <MenuDetailForm menu={menu} />
-                  {/* 추후 메뉴 옵션 선택용 */}
-                  {/* {openMenuNo === menu.menuNo && <MenuOptionForm menu={menu} />} */}
               </div>
             ))}
           </section>

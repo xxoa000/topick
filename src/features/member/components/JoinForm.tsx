@@ -53,7 +53,7 @@ export default function JoinForm() {
 
 	// 구조분해
 	const { setError, handleSubmit } = joinMethod;
-	
+
 
 	const handleJoin = async(data:JoinFormDTO) => {
 
@@ -86,7 +86,7 @@ export default function JoinForm() {
 
 			await memberApi.join(requestData);
 			// 회원가입 성공시, 서버로 보내서 DB 에 insert
-			console.log(requestData);
+			//console.log(requestData);
 
 			// 회원가입 성공시 로그인 페이지로 이동
 			navigate("/member/login");

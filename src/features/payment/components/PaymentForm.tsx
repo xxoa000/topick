@@ -19,7 +19,7 @@ export default function PaymentForm() {
 
     const fetchOrder = async () => {
       const data = await orderApi.selectOne(Number(orderListNo));
-      console.log("주문 data:", data);
+      //console.log("주문 data:", data);
       setOrder(data);
     }
     fetchOrder();

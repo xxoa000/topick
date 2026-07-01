@@ -20,13 +20,15 @@ export type OrderDetailRequestDTO = {
 }
 
 export type OrderListResponseDTO = {
-	orderListNo : number,
+	orderListNo : number;
+	storeNo : number;
 	orderStoreName : string;
 	orderListVisitTime : string;
 	orderListVisitType : string ;
 	orderListRequest : string;
-	orderListTotalPrice?: number;
-	orderListFinalPrice?: number;
+	orderListTotalPrice? : number;
+	orderListFinalPrice? : number;
+	orderListCreateAt? : string;
 
 	detailList: OrderDetailResponseDTO[];
 }
