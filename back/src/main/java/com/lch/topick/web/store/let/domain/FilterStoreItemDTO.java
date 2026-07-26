@@ -1,0 +1,24 @@
+package com.lch.topick.web.store.let.domain;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class FilterStoreItemDTO {
+	
+	
+	private String id;
+	/** DB store 테이블 PK (검색 응답 시 채움) */
+	private Long storeNo;
+    private String placeName;    // 카카오 "place_name"
+    private String placeUrl;     // 카카오 "place_url"
+    private String categoryName;     // 카카오 "category_name"
+    private Double x;       // 카카오 "x" (경도)
+    private Double y;       // 카카오 "y" (위도)
+    private String addressName;      // 카카오 "road_address_name"
+    private String phone; // 카카오 "phone"
+    private String distance; //내 위치로부터 식당 거리
+}
