@@ -1,0 +1,204 @@
+.container {
+  position: relative;
+  left: -50px;
+  max-width: 750px;
+  margin: 20px auto;
+  font-family: sans-serif;
+  color: #333;
+
+  /* 1. 상단 상세정보 카드 영역 */
+  .card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    margin-bottom: 20px;
+
+    /* 텍스트 정보 영역 */
+    .infoSection {
+      padding: 25px;
+
+      /* 타이틀 / 별점 / 버튼 Row */
+      .titleRow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+
+        .titleLeft {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+          }
+
+          .starRating {
+            position: relative;
+            display: inline-block;
+            font-size: 18px;
+            /* 별 크기는 여기서 자유롭게 조절하세요 */
+            color: #e0e0e0;
+            /* 배경 회색 별 색상 */
+            user-select: none;
+            /* 별이 드래그되는 현상 방지 */
+
+            // 1. 채워진 노란색 별 스타일
+            .starsFill {
+              position: absolute;
+              top: 0;
+              left: 0;
+              color: #ffca28;
+              /* 채워질 노란색(금색) 별 색상 */
+              overflow: hidden;
+              /* 🔥 핵심: 설정된 width를 넘어서는 별들을 숨김 */
+              white-space: nowrap;
+              /* 너비가 줄어들어도 별이 아래로 떨어지지 않게 고정 */
+              width: 0;
+              /* 기본값 (JSX에서 변경됨) */
+            }
+
+            // 2. 배경 회색 별 스타일
+            .starsBase {
+              white-space: nowrap;
+            }
+          }
+
+          .reviewCount {
+            color: #aaa;
+            font-size: 14px;
+          }
+        }
+
+        .btnGroup {
+          display: flex;
+          gap: 8px;
+
+          button {
+            padding: 6px 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+          }
+        }
+      }
+
+      /* 태그 리스트 */
+      .tagList {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 20px;
+
+        .tag {
+          background-color: #ff9800;
+          color: #fff;
+          padding: 4px 10px;
+          border-radius: 12px;
+          font-size: 13px;
+        }
+      }
+
+      /* 상세 안내 정보 & 우측 지도 */
+      .detailsRow {
+        display: flex;
+        justify-content: space-between;
+        gap: 30px;
+
+        /* 왼쪽 안내문구 */
+        .detailsLeft {
+          flex: 1;
+          font-size: 14px;
+          line-height: 1.7;
+
+          span {
+            margin-left: 10px;
+          }
+
+          .addressBlock {
+            margin-top: 20px;
+            margin-bottom: 12px;
+
+            .distance {
+              color: #999;
+              margin-left: 5px;
+              font-size: 13px;
+            }
+          }
+
+          .timeBlock {
+            display: flex;
+            margin-bottom: 12px;
+
+            .timeDetails {
+              margin-left: 10px;
+            }
+          }
+        }
+
+        /* 우측 미니 지도 플레이스홀더 */
+        .mapPlaceholder {
+          width: 24px;
+          min-width: 220px;
+          height: 130px;
+          background-color: #eef2f5;
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 13px;
+          color: #888;
+        }
+      }
+    }
+  }
+
+  .photoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); // 한 줄에 4개씩 균등 배치
+  gap: 12px;                             // 사진 사이의 간격
+  padding: 16px 0;
+
+  // 반응형: 화면이 좁아지면 한 줄에 2개 또는 3개씩 보이도록 조절
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.photoItem {
+  position: relative;
+  width: 100%;
+  // 1:1 정정사각형 비율을 유지하기 위한 트릭 (Aspect Ratio 호환성 확보)
+  aspect-ratio: 1 / 1; 
+  overflow: hidden;
+  border-radius: 12px; // 이미지 모서리를 둥글게 (두 번째 사진 느낌)
+  background-color: #f5f5f5;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // 비율을 유지하며 가득 채움
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+      transform: scale(1.03); // 마우스 올렸을 때 미세한 확대 효과 (선택)
+    }
+  }
+}
+
+.noPhoto {
+  grid-column: 1 / -1; // 그리드 전체 칸을 차지하도록 설정
+  text-align: center;
+  padding: 40px 0;
+  color: #888;
+}
+}

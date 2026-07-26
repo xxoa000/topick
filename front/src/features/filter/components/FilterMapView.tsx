@@ -1,0 +1,138 @@
+import { useLayoutEffect, useRef, useState } from 'react';
+import { getKakaoMaps } from '../lib/kakaoMapsApi';
+import {
+  loadKakaoMaps,
+  relayoutMap,
+  type KakaoMap,
+} from '../lib/loadKakaoMaps';
+import { fetchKakaoMapsJsKey } from '../services/filterApi';
+import { useFilterSearch } from '../context/FilterSearchContext';
+import MapZoomControls from './MapZoomControls';
+
+import useCustomLogin from '@/hooks/useCustomLogin';
+
+function waitForElementSize(el: HTMLElement): Promise<void> {
+  return new Promise((resolve) => {
+    let attempts = 0;
+
+    const check = () => {
+      if (el.offsetWidth > 0 && el.offsetHeight > 0) {
+        resolve();
+        return;
+      }
+
+      attempts += 1;
+      if (attempts >= 40) {
+        resolve();
+        return;
+      }
+
+      requestAnimationFrame(check);
+    };
+
+    check();
+  });
+}
+
+const DEFAULT_CENTER = { lat: 37.3500951835995, lng: 127.108932846326 }; // 미금역
+
+function getCurrentCenter(): Promise<{ lat: number; lng: number }> {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(DEFAULT_CENTER);
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      resolve(DEFAULT_CENTER);
+    }, 5000);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        window.clearTimeout(timeoutId);
+        resolve({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      () => {
+        window.clearTimeout(timeoutId);
+        resolve(DEFAULT_CENTER);
+      },
+      { timeout: 5000, maximumAge: 60_000 },
+    );
+  });
+}
+
+export default function FilterMapView() {
+  const { attachMap, reportMapError } = useFilterSearch();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<KakaoMap | null>(null);
+  const [mapInstance, setMapInstance] = useState<KakaoMap | null>(null);
+
+  const { member } = useCustomLogin();
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el || mapRef.current) return;
+
+    let cancelled = false;
+
+    const handleResize = () => {
+      if (mapRef.current) relayoutMap(mapRef.current);
+    };
+
+    (async () => {
+      try {
+        await waitForElementSize(el);
+        if (cancelled) return;
+
+        const jsKey = await fetchKakaoMapsJsKey();
+        await loadKakaoMaps(jsKey);
+        if (cancelled) return;
+        let center;
+        if (member?.addressX != null && member?.addressY != null) {
+          center = {
+            lat: Number(member.addressY), // 위도 = Y
+            lng: Number(member.addressX), // 경도 = X
+          };
+        } else {
+          center = await getCurrentCenter(); // 로그인 토큰이 없는 경우 (위치권한 | 기본 좌표 사용)
+        }
+        if (cancelled) return;
+
+        const maps = getKakaoMaps();
+        const map = new maps.Map(el, {
+          center: new maps.LatLng(center.lat, center.lng),
+          level: 5,
+        });
+        map.setZoomable?.(true); //줌은 활성화
+        mapRef.current = map;
+        setMapInstance(map);
+        relayoutMap(map);
+        window.addEventListener('resize', handleResize);
+        await attachMap(map);
+      } catch (e) {
+        if (!cancelled) {
+          const message = e instanceof Error ? e.message : '지도 초기화 실패';
+          reportMapError(message);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('resize', handleResize);
+      mapRef.current = null;
+      setMapInstance(null);
+      void attachMap(null);
+    };
+  }, [attachMap, reportMapError]);
+
+  return (
+    <div className="filter-map-wrap">
+      <div ref={containerRef} className="filter-map" />
+      <MapZoomControls map={mapInstance} />
+    </div>
+  );
+}

@@ -1,0 +1,299 @@
+@import './filterKeywordSearch.scss';
+
+.filter-home {
+  width: 100%;
+  height: 700px;
+  font-family: 'Pretendard', 'Malgun Gothic', Arial, sans-serif;
+  color: #222;
+}
+
+.filter-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  height: 100%;
+}
+
+.filter-map-wrap {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: visible;
+  background: #e9ecef;
+}
+
+.filter-map-column {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: visible;
+}
+
+.filter-results-panel {
+  padding: 18px;
+  background: #fff;
+  border-right: 1px solid #eee;
+  min-height: 0;
+  position: relative;
+  overflow: auto;
+  z-index: 2;
+}
+
+.filter-tags-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  padding: 18px;
+  z-index: 1;
+  background: #fff;
+  border-right: 1px solid #eee;
+  transform: translateX(0);
+}
+
+.filter-tags-panel.closed {
+  transform: translateX(-100%);
+  overflow: visible;
+}
+
+.filter-panel-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: #ff6b00;
+}
+
+.filter-count {
+  font-weight: normal;
+  color: #888;
+  font-size: 14px;
+}
+
+.filter-selected-tags {
+  font-size: 12px;
+  color: #ff6b00;
+  min-height: 18px;
+  margin: 0 0 10px;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 2px solid #ff6b00;
+  background: #fff;
+  color: #ff6b00;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+
+  &.selected {
+    background: #ff6b00;
+    color: #fff;
+  }
+}
+
+.filter-tag-group {
+  margin-bottom: 12px;
+}
+
+.filter-tag-type {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #999;
+}
+
+.filter-result-item {
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  h4 {
+    margin: 0 0 6px;
+    font-size: 15px;
+  }
+
+  a {
+    color: #222;
+    text-decoration: none;
+
+    &:hover {
+      color: #ff6b00;
+    }
+  }
+
+  p {
+    margin: 2px 0;
+    font-size: 13px;
+    color: #666;
+  }
+}
+
+.filter-result-item.selected {
+  border-color: #ff6b00;
+  box-shadow: 0 0 0 1px #ff6b00;
+}
+
+.filter-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.filter-map-zoom {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.filter-map-zoom-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #fff;
+  color: #333;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+
+  &:active {
+    background: #eee;
+  }
+
+  & + & {
+    border-top: 1px solid #e0e0e0;
+  }
+}
+
+.filter-status {
+  font-size: 12px;
+  color: #999;
+  margin-top: 8px;
+}
+
+.filter-empty {
+  color: #aaa;
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+.filter-iw {
+  width: 260px;
+  max-height: 280px;
+  overflow: auto;
+  padding: 4px 2px;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.filter-iw-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.filter-iw-meta {
+  margin: 2px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.filter-iw-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ff6b00;
+  text-decoration: none;
+}
+
+.filter-iw-menus {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.filter-iw-menus-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.filter-iw-status,
+.filter-iw-empty {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.filter-iw-error {
+  margin: 0;
+  font-size: 12px;
+  color: #c62828;
+}
+
+.filter-iw-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.filter-iw-menu-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f3f3;
+  font-size: 12px;
+}
+
+.filter-iw-menu-price {
+  font-weight: 600;
+  color: #ff6b00;
+  white-space: nowrap;
+}
+
+.filter-tag-button {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateX(-50%);
+  transform: translateY(-50%);
+}
+
+.filter-tag-button button {
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  color: #ffe7d6;
+  font-weight: bold;
+  background-Color: #ff9d57;
+  padding-bottom: 3px;
+  text-align: center;
+  border: none;
+}

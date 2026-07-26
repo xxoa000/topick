@@ -1,0 +1,69 @@
+.header {
+  width: 100%;
+  min-height: 50px;
+  background-color: rgb(255, 255, 255);
+  border-bottom: 1px solid rgb(228, 225, 216);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.marker {
+  display: flex;
+  justify-content: center;
+  line-height: 0; // img 아래 미세 공백 제거
+  align-items: center;
+  gap: 3px;
+
+  img {
+    min-height: 20px;
+    height: 25px;
+  }
+}
+
+.logoLink {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 5px 5px 0;
+  line-height: 0;
+
+  picture {
+    display: block;
+  }
+
+  img {
+    display: block;
+    min-height: 30px;
+    height: 60px;
+  }
+}
+
+.pc {
+  display: inline;
+}
+.mobile {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .logoLink img {
+    height: 42px; // 필요하면 크기만 조절
+  }
+  .pc {
+    display: none;
+  }
+  .mobile {
+    display: inline;
+    img {
+      display: block;
+      margin: 0 auto;
+      min-height: 20px;
+      height: 25px;
+      color:#fff;
+    }
+  }
+}
+
+

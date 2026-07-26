@@ -1,0 +1,72 @@
+
+.loginMain {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  width: 100%;
+  max-width: 500px;
+  min-height: 80vh;
+
+  margin: 30px auto;
+  padding: 30px 40px 100px 40px;
+
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.logoLink {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  margin-top: 1em;
+  margin-bottom: 3em;
+  padding-top: 0;
+  line-height: 0; // img 아래 미세 공백 제거
+
+  img {
+    display: block;
+    width: 300px;
+  }
+}
+
+
+.linkList {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+
+  margin-top: 30px;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    position: relative;
+
+    &:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -12px;
+
+      width: 1px;
+      height: 14px;
+
+      background-color: #ddd;
+      transform: translateY(-50%);
+    }
+  }
+
+  a {
+    color: #666;
+    font-size: 14px;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

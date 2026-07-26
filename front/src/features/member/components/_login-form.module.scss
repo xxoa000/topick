@@ -1,0 +1,80 @@
+
+.loginForm {
+  width: 100%;
+}
+
+.formBox {
+  overflow: hidden;
+}
+
+.inputBox {
+  display: grid;
+  align-items: center;
+
+  height: 74px;
+  padding: 10px 30px 5px 20px;
+  border: 1px solid #c6c6c6;
+  
+  &:first-child {
+    border-bottom: 1px solid  #eee;
+    border-radius: 10px 10px 0px 0px;
+  }
+  &:nth-child(2) {
+    border-top: none;
+    border-radius: 0px 0px 10px 10px;
+  }
+
+  label {
+    width: 90px;
+    flex-shrink: 0;
+    cursor: pointer;
+
+    color: #666;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  input {
+    min-width: 0;
+    height: 90%;
+
+    border: none;
+    outline: none;
+    padding-top: 5px;
+
+    font-size: 18px;
+    color: #222;
+
+  }
+
+  input::placeholder {
+      color: #e2e0de;
+      font-size: 0.9em;
+    }
+}
+
+.loginButton {
+  width: 100%;
+  height: 64px;
+  margin-top: 50px;
+
+  border: none;
+  border-radius: 10px;
+
+  background-color: #ff9900;
+  color: #fff;
+
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f08f00;
+  }
+}
+
+.message {
+  width: 100%;
+  color: #d93025;
+  font-size: 14px;
+}

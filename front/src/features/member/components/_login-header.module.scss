@@ -1,0 +1,83 @@
+.btnBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  span {
+    white-space: nowrap;
+    font-size: 15px;
+  }
+}
+
+.btn {
+  flex: 1;
+  min-width: 70px;
+  max-width: 100px;
+  height: 40px;
+  padding: 3px;
+
+  border: none;
+  border-radius: 10px;
+
+  background-color: #ff9900;
+  color: #fff;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &:hover {
+    background-color: #f08f00;
+  }
+}
+
+.pc {
+  display: inline;
+}
+.mobile {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .login {
+    margin-left: 3px;
+    gap: 3px;
+  }
+  .btn {
+    min-width: 50px;
+    max-width: 80px;
+    height: 40px;
+
+    justify-content: center;
+    align-items: center;
+  }
+  .pc {
+    display: none;
+  }
+  .mobile {
+    display: inline;
+    img {
+      display: block;
+      margin: 0 auto;
+      min-height: 20px;
+      height: 25px;
+      color:#fff;
+    }
+  }
+}

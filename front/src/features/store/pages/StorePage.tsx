@@ -1,0 +1,195 @@
+import { useStore, useStoreTab } from "../hooks/useStore.ts";
+import MenuListPage from "@/features/menu/pages/MenuListPage";
+import { ReviewPage } from "@/features/review/pages/ReviewPage";
+import { useReview } from '../../review/hooks/useReview';
+import { ThumbnailPhoto } from '../components/ThumbnailPhotoComponent.tsx'
+import { StoreTab } from '../components/StoreTabComponent.tsx'
+import { Fragment, useEffect } from "react";
+import { useLocation } from 'react-router-dom';
+import s from './_store-page.module.scss';
+
+interface StoreData {
+	addressName: string;
+	categoryName: string;
+	distance: string;
+	id: string;
+	placeName: string;
+	placeUrl: string;
+	storeNo: number;
+	x: string;
+	y: string;
+	phone: string;
+}
+
+
+export default function StorePage() {
+
+	const location = useLocation();
+	const state = location.state as { store: StoreData } | null;
+	const store = state?.store;
+	const { storeData, getStoreData } = useStore();
+	const { activeTab, setActiveTab } = useStoreTab();
+	const { reviewTotal, getStoreReviewTotal } = useReview();
+
+	useEffect(() => {
+		if (!store?.storeNo) return;
+		getStoreData(store.storeNo, store.id, store.y, store.x);
+		getStoreReviewTotal(store.storeNo);
+
+	}, [store?.storeNo, store?.id, store?.y, store?.x, getStoreReviewTotal]);
+
+	// 사용자가 URL을 직접 입력해서 들어오는 등 state가 없을 때의 예외 처리가 필요합니다.
+	if (!store || !storeData) {
+		return <div>가게 정보 데이터가 없습니다. (직접 접근 혹은 새로고침)</div>;
+	}
+
+	const photos = storeData.storeDetails.menu?.menus?.photos || [];
+	const storeRunTime = storeData.storeDetails.open_hours?.week_from_today?.week_periods || [];
+
+	// 기존 배열과 새 값을 합쳐 중복 없는 배열 생성
+	const existingTags = storeData.storeDetails.place_add_info?.tags || [];
+	const newTag = store?.categoryName.split('>')[1]?.trim();
+	const storeTag = newTag ? [...new Set([...existingTags, newTag])] : existingTags;
+
+	return (
+		<div className={s.container}>
+			{/* <a href={store.placeUrl} className={s.placeLink}>placeUrl: {store.placeUrl}</a><br /><br /> */}
+
+			{/* 1. 상단 상세정보 카드 영역 */}
+			<div className={s.card}>
+
+				{/* 텍스트 정보 영역 */}
+				<div className={s.infoSection}>
+
+					{/* 타이틀 이름 / 별점 / 버튼 */}
+					<div className={s.titleRow}>
+
+						<div className={s.titleLeft}>
+							<h1>{store.placeName}</h1>
+							{/* 별점 컨테이너 */}
+							<div className={s.starRating}>
+								{/* 1. 채워진 별 (노란색) - 평점 퍼센트만큼만 보여짐 */}
+								<div
+									className={s.starsFill}
+									style={{ width: `${(reviewTotal.avg / 5) * 100}%` }}
+								>
+									<span>★★★★★</span>
+								</div>
+
+								{/* 2. 기본 별 (회색) - 배경에 항상 깔려있음 */}
+								<div className={s.starsBase}>
+									<span>★★★★★</span>
+								</div>
+							</div>
+							<span className={s.reviewCount}>({reviewTotal.total})</span>
+						</div>
+
+						<div className={s.btnGroup}>
+							<button>북마크</button>
+							<button>공유</button>
+						</div>
+
+					</div>
+
+					{/* 태그 리스트 */}
+					<div className={s.tagList}>
+						{storeTag.map((tag: string) => (
+							<span key={tag} className={s.tag}>
+								{tag}
+							</span>
+						))}
+					</div>
+
+					{/* 대표 이미지 배너 */}
+					<ThumbnailPhoto storeData={storeData}/>
+
+					{/*  탭 컴포넌트 */}
+					<StoreTab activeTab={activeTab} setActiveTab={setActiveTab} />
+
+					{/* 탭 홈 일떄만, 메뉴, 리뷰일떄는 안보이게 */}
+
+					{/* 상세 안내 정보 & 우측 지도 */}
+					{activeTab === "home" &&
+						<div className={s.detailsRow}>
+
+							{/* 왼쪽 안내문구 */}
+							<div className={s.detailsLeft}>
+								<div className={s.addressBlock}>
+									<strong>주소</strong> <span>{storeData.storeDetails.summary.address.road}</span>
+									<span className={s.distance}>현재 위치에서 {store.distance}m</span>
+								</div>
+
+								<div className={s.timeBlock}>
+									<strong>영업 시간</strong>
+									<div className={s.timeDetails}>
+										{storeRunTime.map((i: any, index: number) => (
+											i.days.map((day: any, dayIndex: number) => (
+												<Fragment key={`${index}-${dayIndex}`}>
+													<span>{day.day_of_the_week_desc} {day.on_days ? day.on_days.start_end_time_desc : day.off_days_desc}</span>
+													{
+														day.on_days?.break_times_desc &&
+														<>
+															<br />
+															<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.break_times_desc[0]}</span>
+														</>
+													}
+													<br />
+													{
+														day.on_days?.last_order_times_desc &&
+														<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{day.on_days.last_order_times_desc[0]}</span>
+													}
+												</Fragment>
+											))
+										))}
+									</div>
+								</div>
+
+								<div>
+									<strong>전화번호</strong> <span>{store.phone}</span>
+								</div>
+							</div>
+
+							{/* 우측 미니 지도 미포함 플레이스홀더
+							<div className={s.mapPlaceholder}>
+								[지도 미리보기 영역]
+							</div> */}
+
+						</div>
+					}
+
+
+
+					{/* 탭 메뉴 일떄만 */}
+					{/* 메뉴 리스트 */}
+					{activeTab === "menu" &&
+						<MenuListPage photos={photos} />
+					}
+
+
+					{activeTab === "review" &&
+						<div>
+							<ReviewPage storeNo={store.storeNo} storeName={store.placeName} />
+						</div>
+					}
+
+					{/* 탭 사진 일때만 */}
+					{activeTab === "photo" && (
+						<div className={s.photoGrid}>
+							{photos.filter(Boolean).length > 0 ? (
+								photos.filter(Boolean).map((photo: any, index: number) => (
+									<div key={photo.id || index} className={s.photoItem}>
+										<img src={photo?.url ?? "/no-image.png"}
+												alt={`${store.placeName} 사진 ${index + 1}`} loading="lazy" />
+									</div>
+								))
+							) : (
+								<div className={s.noPhoto}>등록된 사진이 없습니다.</div>
+							)}
+						</div>
+					)}
+
+				</div>
+			</div>
+		</div>
+	);
+}

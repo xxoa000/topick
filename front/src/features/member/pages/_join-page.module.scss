@@ -1,0 +1,64 @@
+.joinPage {
+  width: 100%;
+  max-width: 700px;
+  min-height: 900px;
+
+  margin: 40px auto;
+  padding: 36px 40px 44px;
+  display: flex;
+  flex-direction: column;
+
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+}
+
+.joinHeader {
+  margin-bottom: 28px;
+
+  h2 {
+    margin: 0;
+    color: #222;
+    font-size: 30px;
+    font-weight: 800;
+    text-align: left;
+  }
+}
+
+.stepBox {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 36px;
+}
+
+.step,
+.activeStep {
+  flex: 1;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.step {
+  background-color: #eee;
+  color: #888;
+}
+
+.activeStep {
+  background-color: #ff9900;
+  color: #fff;
+}
+
+.formSection {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  background-color: #fff;
+}

@@ -1,0 +1,318 @@
+.joinForm {
+  padding: 20px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  h3 {
+    color: #222;
+    font-size: 1.2em;
+    display: block;
+    margin-top: 1.1em;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  label {
+    flex-shrink: 0;
+    margin-right: 10px;
+
+    display: flex;
+    align-items: center;
+    color: #222;
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
+
+.formBox {
+  overflow: hidden;
+}
+
+.agreeRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 64px;
+  padding: 10px;
+  flex-wrap: wrap;
+  
+  label {
+    gap: 6px;
+  }
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  width: 100%;
+  min-height: 64px;
+  padding: 10px;
+
+  flex-wrap: wrap;
+
+  h3 {
+    border-bottom: 1px solid #ddd;
+  }
+
+  label {
+    width: 95px;
+    align-items: center;
+  }
+  .radio {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    
+    height: 3em;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+
+    color: #535353;
+    cursor: pointer;
+  }
+  .radio:has(input:checked) {
+    border: 1px solid #ff7a00;
+    color: #ff7a00;
+    border-color: #ff7a00;
+    background-color: #fff4e8;
+  }
+  input[type="radio"] {
+    appearance: none;
+    display: none;
+    //flex: 1;
+    cursor: pointer;
+  }
+}
+
+.inputBox {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 12px;
+
+  border: 1px solid #c6c6c6;
+  border-radius: 5px;
+  background-color: #fff;
+
+  label {
+    flex-shrink: 0;
+    margin-right: 10px;
+    width: 100%;
+    height: 80%;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #222;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    margin-left: 10px;
+
+    border: none;
+    outline: none;
+
+    color: #222;
+    font-size: 18px;
+    background-color: transparent;
+  }
+}
+
+.emailBox {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+
+  input,
+  select {
+    height: 44px;
+    padding: 0 12px;
+
+    border: 1px solid #c6c6c6;
+    border-radius: 5px;
+    background-color: #fff;
+
+    color: #222;
+    font-size: 16px;
+    outline: none;
+
+    &:focus {
+      border-color: #ff7a00;
+    }
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  input[readonly] {
+    background-color: #f7f7f7;
+    color: #666;
+  }
+
+  span {
+    flex-shrink: 0;
+    color: #555;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  select {
+    width: 140px;
+    cursor: pointer;
+  }
+}
+
+.isAgreeContent {
+  display: block;
+  width: 100%;
+  height: 150px;
+  padding: 16px;
+  margin-bottom: 10px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  border: 1px solid #c6c6c6;
+  border-radius: 5px;
+  outline: none;
+
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  font-size: 15px;
+  line-height: 1.6;
+
+  dt {
+    width: 400px;
+    margin: 0;
+
+    color: #666;
+    font-size: 16px;
+    font-weight: 600;
+  }
+    dd {
+    color: #939393;
+    margin-bottom: 10px;
+  }
+}
+
+
+.message {
+  width: 100%;
+  color: #d93025;
+  font-size: 14px;
+}
+
+
+.buttonBox {
+  display: flex;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.prevButton {
+  width: 100%;
+  height: 64px;
+  border: none;
+  border-radius: 10px;
+
+  background-color: #ddd;
+  color: #333;
+  font-size: 20px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.disableButton {
+  width: 100%;
+  height: 64px;
+  border: none;
+  border-radius: 10px;
+
+  background-color: #ddd;
+  color: #939393;
+  font-size: 20px;
+  font-weight: 700;
+
+  cursor: not-allowed;
+}
+
+.activeButton {
+  width: 100%;
+  height: 64px;
+  border: none;
+  border-radius: 10px;
+
+  background-color: #ff9900;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+
+.idCheckBtn {
+  width: 100px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  
+  background-color: #ff9900;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.submitBtn {
+  width: 100%;
+  height: 64px;
+  border: none;
+  border-radius: 10px;
+  
+  background-color: #ff9900;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.required {
+  color: rgb(250, 75, 0);
+  font-size: 0.8em;
+  position: relative;
+  left: 2px;
+  top: -2px;
+}
